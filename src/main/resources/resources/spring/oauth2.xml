@@ -23,7 +23,7 @@
 
 	<bean id="qqOauth2Impl" class="me.qyh.oauth2.qq.QQOauth2Impl">
 		<property name="appId" value="101243309" />
-		<property name="appKey" value="851b2a4a5638562a2321c4891d470ba9" />
+		<property name="appKey" value="******" />
 		<property name="authorizationCodeUrl" value="https://graph.qq.com/oauth2.0/authorize" />
 		<property name="authorizationUrl" value="https://graph.qq.com/oauth2.0/token" />
 		<property name="redirectUri" value="http://www.qyh.me/oauth2/qq/success" />
