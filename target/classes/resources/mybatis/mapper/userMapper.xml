@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.qyh.dao.UserDao">
+
+	<resultMap type="User" id="UserDetail">
+		<id column="user_id" property="id" />
+		<result column="user_name" property="username" />
+		<result column="user_password" property="password" />
+		<result column="user_email" property="email" />
+		<result column="registerDate" property="registerDate" />
+		<result column="activateDate" property="activateDate" />
+		<result column="activate" property="activate" />
+		<result column="user_enable" property="enabled" />
+		<result column="nickname" property="nickname" />
+		<result column="accountNonExpired" property="accountNonExpired" />
+		<result column="accountNonLocked" property="accountNonLocked" />
+		<result column="credentialsNonExpired" property="credentialsNonExpired" />
+		<association property="avatar" javaType="MyFile">
+			<id column="avatar" property="id" />
+			<result column="file_name" property="name" />
+			<result column="extension" property="extension" />
+			<result column="uploadDate" property="uploadDate" />
+			<result column="file_store" property="store" typeHandler="FileStoreTypeHandler" />
+			<result column="relativePath" property="relativePath" />
+		</association>
+		<association property="space" javaType="Space">
+			<id column="space_id" property="id" />
+			<result property="status" column="space_status" typeHandler="EnumOrdinalTypeHandler" />
+		</association>
+		<collection property="roles" ofType="Role">
+			<id column="role_id" property="id" />
+			<result column="role_name" property="role" typeHandler="EnumTypeHandler" />
+		</collection>
+	</resultMap>
+
+	<select id="selectByName" resultMap="UserDetail">
+		SELECT u.id AS
+		user_id,user_name,user_email,registerDate,activateDate,user_enable,accountNonExpired,
+		accountNonLocked,credentialsNonExpired,activate,user_password,avatar,nickname,file_name,extension,uploadDate,file_store,relativePath
+		FROM blog_user u
+		LEFT OUTER JOIN blog_file bf ON u.avatar = bf.id
+		WHERE u.user_name = #{name}
+	</select>
+
+	<select id="selectByEmail" resultMap="UserDetail">
+		SELECT u.id AS
+		user_id,user_name,user_email,registerDate,activateDate,user_enable,accountNonExpired,
+		accountNonLocked,credentialsNonExpired,activate,user_password,avatar,nickname,file_name,extension,uploadDate,file_store,relativePath
+		FROM blog_user u
+		LEFT OUTER JOIN blog_file bf ON u.avatar = bf.id
+		WHERE u.user_email = #{email}
+	</select>
+
+	<select id="selectById" resultMap="UserDetail">
+		SELECT u.id AS
+		user_id,user_name,user_email,registerDate,activateDate,user_enable,accountNonExpired,sp.id
+		AS space_id,
+		accountNonLocked,credentialsNonExpired,activate,user_password,avatar,nickname,file_name,extension,uploadDate,file_store,relativePath
+		FROM blog_user u
+		LEFT OUTER JOIN blog_file bf ON bf.id = u.avatar
+		LEFT
+		OUTER JOIN user_space sp ON sp.user_id = u.id
+		WHERE u.id = #{id}
+	</select>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+		INSERT
+		INTO
+		blog_user(user_name,user_email,user_password,registerDate,nickname)
+		VALUES(#{username},#{email},#{password},#{registerDate},#{nickname})
+	</insert>
+
+	<update id="update">
+		UPDATE blog_user
+		<set>
+			<if test="password != null and password != ''">user_password = #{password},</if>
+			<if test="activateDate != null">activateDate = #{activateDate},</if>
+			<if test="activate != null">activate = #{activate},</if>
+			<if test="avatar != null">avatar = #{avatar.id},</if>
+			<if test="nickname != null">nickname = #{nickname}</if>
+		</set>
+		WHERE id = #{id}
+	</update>
+
+	<update id="updateUserAbled">
+		UPDATE blog_user
+		SET
+		user_enable = #{enabled}
+		WHERE id =
+		#{id}
+	</update>
+
+	<insert id="insertUserRole">
+		INSERT INTO user_role(user_id,role_id)
+		VALUES(#{user.id},#{role.id})
+	</insert>
+
+	<select id="selectBySpaces" resultMap="UserDetail">
+		SELECT u.id AS
+		user_id,user_name,avatar,file_name,extension,file_store,relativePath,us.id
+		AS space_id,nickname,file_name,extension,uploadDate,file_store,relativePath
+		FROM blog_user u
+		LEFT OUTER JOIN blog_file bf ON
+		bf.id = u.avatar
+		INNER JOIN user_space us ON us.user_id = u.id
+		WHERE
+		us.id IN(
+		<foreach collection="spaces" item="space" open="" separator=","
+			close="">
+			#{space}
+		</foreach>
+		)
+	</select>
+
+	<select id="selectBySpace" resultMap="UserDetail">
+		SELECT u.id AS
+		user_id,user_name,user_email,registerDate,activateDate,user_enable,accountNonExpired,sp.id
+		AS space_id,
+		accountNonLocked,credentialsNonExpired,activate,user_password,avatar,nickname,file_name,extension,uploadDate,file_store,relativePath
+		FROM blog_user u
+		LEFT OUTER JOIN blog_file bf ON bf.id = u.avatar
+		INNER JOIN user_space sp ON sp.user_id = u.id
+		WHERE
+		sp.id = #{id}
+	</select>
+
+	<select id="selectByIds" resultMap="UserDetail">
+		SELECT u.id AS
+		user_id,user_name,avatar,file_name,extension,file_store,relativePath,us.id
+		AS space_id,nickname,file_name,extension,uploadDate,file_store,relativePath
+		FROM blog_user u
+		LEFT OUTER JOIN blog_file bf ON
+		bf.id = u.avatar
+		LEFT OUTER JOIN user_space us ON us.user_id = u.id
+		WHERE u.id IN(
+		<foreach collection="ids" item="id" open="" separator=","
+			close="">
+			#{id}
+		</foreach>
+		)
+	</select>
+
+	<select id="selectByRole" resultMap="UserDetail">
+		SELECT DISTINCT(u.id) AS
+		user_id,user_name
+		FROM blog_user u
+		INNER JOIN user_role ur ON u.id =
+		ur.user_id
+		INNER JOIN role r ON ur.role_id = r.id
+		WHERE role_name =
+		#{role,javaType=RoleEnum,typeHandler=EnumTypeHandler}
+	</select>
+
+	<delete id="deleteAvatarFile">
+		UPDATE blog_file SET file_status = 1 WHERE id IN (
+		SELECT avatar AS id FROM blog_user WHERE id = #{id})
+	</delete>
+
+	<select id="selectAvatar" resultMap="me.qyh.dao.FileDao.FileDetail">
+		SELECT bf.id,file_name
+		,file_status ,extension,file_store,relativePath
+		FROM blog_user bu INNER
+		JOIN blog_file bf ON bu.avatar = bf.id
+		WHERE bu.id = #{id}
+	</select>
+
+	<select id="selectPage" resultMap="UserDetail">
+		SELECT u.id AS user_id,user_name,user_email,registerDate,activateDate,
+		user_enable,accountNonExpired,accountNonLocked,credentialsNonExpired,
+		activate,user_password,nickname,us.space_status,us.id AS space_id,file_name,extension,uploadDate,file_store,relativePath
+		FROM
+		blog_user u
+		LEFT OUTER JOIN blog_file bf ON u.avatar = bf.id
+		LEFT OUTER JOIN user_space us ON u.id = us.user_id
+		WHERE
+		u.`activate` = TRUE
+		AND NOT EXISTS (
+		SELECT ur.user_id FROM user_role ur
+		LEFT OUTER JOIN role r ON ur.role_id = r.id
+		WHERE u.id = ur.`user_id`
+		AND r.role_name IN (
+		<foreach collection="ignoreRoles" item="role" open=""
+			separator="," close="">
+			#{role,javaType=RoleEnum,typeHandler=EnumTypeHandler}
+		</foreach>
+		)
+		GROUP BY ur.user_id
+		)
+		<if test="name != null">
+			AND user_name LIKE CONCAT('%', #{name},'%')
+		</if>
+		<if test="nickname != null">
+			AND nickname LIKE CONCAT('%', #{nickname},'%')
+		</if>
+		<if test="begin != null and end != null">
+			AND registerDate BETWEEN #{begin} AND #{end}
+		</if>
+		<if test="enabled != null">
+			AND user_enable = #{enabled}
+		</if>
+		ORDER BY u.id DESC
+		LIMIT #{offset},#{pageSize}
+	</select>
+
+	<select id="selectCount" resultType="int">
+		SELECT COUNT(id)
+		FROM blog_user
+		WHERE activate = true
+		<if test="name != null">
+			AND user_name LIKE CONCAT('%', #{name},'%')
+		</if>
+		<if test="nickname != null">
+			AND nickname LIKE CONCAT('%', #{nickname},'%')
+		</if>
+		<if test="begin != null and end != null">
+			AND registerDate BETWEEN #{begin} AND #{end}
+		</if>
+		<if test="enabled != null">
+			AND user_enable = #{enabled}
+		</if>
+	</select>
+
+	<update id="updateFixedTerm">
+		UPDATE blog_user
+		<set>
+			<if test="username != null and username != ''">user_name = #{username},</if>
+			<if test="email!= null">user_email = #{email}</if>
+		</set>
+		WHERE id = #{id}
+	</update>
+
+	<delete id="deleteUserRole">
+		DELETE FROM user_role
+		WHERE user_id = #{user.id}
+		AND
+		role_id = #{role.id}
+	</delete>
+</mapper>

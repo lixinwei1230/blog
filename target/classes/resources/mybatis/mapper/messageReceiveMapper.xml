@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.qyh.dao.MessageReceiveDao">
+
+	<resultMap type="MessageReceive" id="MessageReceiveDetail">
+		<id property="id" column="id" />
+		<result column="message_status" property="status"
+			typeHandler="EnumOrdinalTypeHandler" />
+		<result column="isRead" property="isRead" />
+		<association property="receiver" javaType="User">
+			<id column="receiver" property="id" />
+		</association>
+		<association property="message" javaType="MessageSend">
+			<result column="message" property="id" />
+			<result column="sendDate" property="sendDate" />
+			<association property="detail" javaType="MessageDetail">
+				<id column="detail" property="id" />
+				<result column="title" property="title" />
+				<result column="content" property="content" />
+			</association>
+			<association property="sender" javaType="User">
+				<id column="sender" property="id" />
+			</association>
+		</association>
+	</resultMap>
+
+	<insert id="insert">
+		INSERT INTO
+		message_receive(message,receiver,message_status,isRead)
+		VALUES(#{message.id},#{receiver.id},#{status,javaType=MessageStatus,typeHandler=EnumOrdinalTypeHandler},#{isRead})
+	</insert>
+
+	<update id="update">
+		UPDATE message_receive
+		<set>
+			<if test="status != null">
+				message_status =
+				#{status,javaType=MessageStatus,typeHandler=EnumOrdinalTypeHandler},
+			</if>
+			<if test="isRead != null">
+				isRead = #{isRead},
+			</if>
+		</set>
+		WHERE id = #{id}
+	</update>
+
+	<select id="selectById" resultMap="MessageReceiveDetail">
+		SELECT
+		mr.id,message_status,isRead,message,sendDate,sender,detail,title,receiver,content
+		FROM message_receive mr
+		LEFT OUTER JOIN message_send ms ON mr.message =
+		ms.id
+		LEFT OUTER JOIN message_detail md ON ms.detail = md.id
+		WHERE mr.id
+		= #{id} AND mr.isDeleted = false
+	</select>
+
+	<insert id="inserts" parameterType="java.util.List">
+		INSERT INTO message_receive(message,receiver,message_status,isRead)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.message.id},#{item.receiver.id},
+			#{item.status,javaType=MessageStatus,typeHandler=EnumOrdinalTypeHandler},#{item.isRead}
+			)
+		</foreach>
+	</insert>
+
+	<select id="selectPage" resultMap="MessageReceiveDetail">
+		SELECT
+		mr.id,message_status,receiver,isRead,message,sendDate,sender,detail,title
+		FROM message_receive mr
+		LEFT OUTER JOIN message_send ms ON mr.message =
+		ms.id
+		LEFT OUTER JOIN message_detail md ON ms.detail = md.id
+		WHERE
+		mr.isDeleted = false
+		<if test="receiver != null">
+			AND mr.receiver = #{receiver.id}
+		</if>
+		<if test="send != null">
+			AND mr.message = #{send.id}
+		</if>
+		<if test="isRead != null">
+			AND mr.isRead = #{isRead}
+		</if>
+		<if test="status != null">
+			AND mr.message_status =
+			#{status,javaType=MessageStatus,typeHandler=EnumOrdinalTypeHandler}
+		</if>
+		<if test="begin != null and end != null">
+			AND ms.sendDate BETWEEN #{begin} AND #{end}
+		</if>
+		ORDER BY mr.id DESC
+		LIMIT #{offset},#{pageSize}
+	</select>
+
+	<select id="selectCount" resultType="int">
+		SELECT COUNT(mr.id) FROM message_receive mr
+		LEFT OUTER JOIN
+		message_send ms ON mr.message = ms.id
+		WHERE
+		mr.isDeleted = false
+		<if test="receiver != null">
+			AND mr.receiver = #{receiver.id}
+		</if>
+		<if test="send != null">
+			AND mr.message = #{send.id}
+		</if>
+		<if test="isRead != null">
+			AND mr.isRead = #{isRead}
+		</if>
+		<if test="status != null">
+			AND mr.message_status =
+			#{status,javaType=MessageStatus,typeHandler=EnumOrdinalTypeHandler}
+		</if>
+		<if test="begin != null and end != null">
+			AND ms.sendDate BETWEEN #{begin} AND #{end}
+		</if>
+	</select>
+
+	<update id="deleteById">
+		UPDATE message_receive SET isDeleted = true WHERE id
+		= #{id}
+	</update>
+
+	<update id="deleteByOverdaysAndStatus">
+		UPDATE message_receive mr LEFT OUTER JOIN message_send ms ON
+		mr.`message` = ms.`id`
+		SET mr.isDeleted = TRUE
+		WHERE DATE(ms.`sendDate`) <![CDATA[ <= ]]>
+		DATE(DATE_SUB(NOW(),INTERVAL #{days} DAY))
+		AND mr.message_status =
+		#{status,javaType=MessageStatus,typeHandler=EnumOrdinalTypeHandler}
+	</update>
+
+</mapper>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.qyh.dao.BlogTagDao">
+
+	<resultMap type="WebTag" id="WebTagDetail">
+		<id property="id" column="id" />
+		<result property="name" column="tag_name" />
+		<result property="createDate" column="create_date" />
+	</resultMap>
+
+	<insert id="insert">
+		INSERT INTO blog_tag(blog,tag_id)
+		VALUES(#{blog.id},#{tag.id})
+	</insert>
+
+	<delete id="deleteByBlog">
+		DELETE FROM blog_tag WHERE blog = #{id}
+	</delete>
+
+	<select id="selectByBlog" resultMap="WebTagDetail">
+		SELECT wt.id,tag_name FROM
+		blog_tag bt
+		LEFT OUTER JOIN web_tag wt ON bt.tag_id = wt.id
+		WHERE blog = #{id}
+	</select>
+
+</mapper>

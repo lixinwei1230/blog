@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.qyh.dao.WebTagDao">
+
+	<resultMap type="WebTag" id="WebTagDetail">
+		<id property="id" column="id" />
+		<result property="name" column="tag_name" />
+		<result property="createDate" column="create_date" />
+	</resultMap>
+
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+		INSERT
+		INTO web_tag(tag_name,create_date)
+		VALUES(#{name},#{createDate})
+	</insert>
+
+	<select id="selectByName" resultMap="WebTagDetail">
+		SELECT id,tag_name,create_date FROM web_tag WHERE REPLACE(UPPER(tag_name),' ','') = #{name}
+	</select>
+
+	<select id="selectPage" resultMap="WebTagDetail">
+		SELECT wt.id,tag_name,create_date
+		FROM web_tag wt
+		LEFT OUTER JOIN
+		web_tag_count wtc ON wt.id = wtc.tag_id
+		<where>
+			<if test="module != null">
+				wtc.module =
+				#{module,javaType=TagModule,typeHandler=EnumOrdinalTypeHandler}
+				AND
+				wtc.refrences_count > 0
+			</if>
+			<if test="name != null and name != ''">
+				AND tag_name LIKE CONCAT('%', #{name},'%')
+			</if>
+		</where>
+		<if test="module != null">
+			ORDER BY wtc.refrences_count DESC,wt.id DESC
+		</if>
+		LIMIT #{offset},#{pageSize}
+	</select>
+
+	<select id="selectCount" resultType="int">
+		SELECT COUNT(wt.id)
+		FROM web_tag wt
+		LEFT OUTER JOIN web_tag_count wtc ON
+		wt.id = wtc.tag_id
+		<where>
+			<if test="module != null">
+				wtc.module =
+				#{module,javaType=TagModule,typeHandler=EnumOrdinalTypeHandler}
+				AND
+				wtc.refrences_count > 0
+			</if>
+			<if test="name != null and name != ''">
+				AND tag_name LIKE CONCAT('%', #{name},'%')
+			</if>
+		</where>
+	</select>
+
+	<select id="selectById" resultMap="WebTagDetail">
+		SELECT
+		id,tag_name,blog_count,create_date FROM web_tag
+		WHERE id = #{id}
+	</select>
+
+</mapper>

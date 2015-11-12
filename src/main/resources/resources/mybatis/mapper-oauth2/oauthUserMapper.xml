@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.qyh.oauth2.dao.OauthUserDao">
+
+	<resultMap type="OauthUser" id="OauthUserDetail">
+		<id column="id" property="id" />
+		<result column="userid" property="userid" />
+		<result column="create_date" property="createDate" />
+		<result property="type" column="oauth_type" typeHandler="EnumOrdinalTypeHandler" />
+		<association property="user" javaType="User">
+			<id column="user_id" property="id" />
+			<result column="user_name" property="username" />
+		</association>
+	</resultMap>
+
+	<select id="selectByUserIdAndType" resultMap="OauthUserDetail">
+		SELECT
+		user_id,oa.id,create_date,user_name FROM oauth_user oa
+		LEFT OUTER JOIN
+		blog_user bu ON oa.user_id = bu.id
+		WHERE userid = #{userid}
+		AND oauth_type =
+		#{type,javaType=OauthType,typeHandler=EnumOrdinalTypeHandler}
+	</select>
+
+	<insert id="insert" keyColumn="id" keyProperty="id"
+		useGeneratedKeys="true">
+		INSERT INTO oauth_user
+		(
+		userid,
+		user_id,
+		create_date,
+		oauth_type
+		)
+		values
+		(
+		#{userid},
+		#{user.id},
+		#{createDate},
+		#{type,javaType=OauthType,typeHandler=EnumOrdinalTypeHandler}
+		)
+	</insert>
+
+	<select id="selectByUserAndType" resultMap="OauthUserDetail">
+		SELECT
+		user_id,oa.id,create_date FROM oauth_user oa
+		WHERE user_id = #{user.id}
+		AND oauth_type =
+		#{type,javaType=OauthType,typeHandler=EnumOrdinalTypeHandler}
+	</select>
+
+	<select id="selectByUser" resultMap="OauthUserDetail">
+		SELECT
+		user_id,oa.id,create_date,oauth_type FROM oauth_user oa
+		WHERE user_id =
+		#{id}
+	</select>
+
+	<delete id="deleteById">
+		DELETE FROM oauth_user WHERE id = #{id}
+	</delete>
+
+</mapper>

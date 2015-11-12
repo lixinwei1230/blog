@@ -1,0 +1,72 @@
+package me.qyh.helper.cache;
+
+import java.lang.reflect.Method;
+import java.util.Date;
+
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.Cache.ValueWrapper;
+import org.springframework.cache.CacheManager;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.stereotype.Component;
+
+import me.qyh.exception.SystemException;
+
+@Component
+public class SignCacheInterceptor implements MethodInterceptor {
+
+	@Autowired
+	private CacheManager cacheManager;
+
+	@Autowired
+	private SignCacheStore signCacheStore;
+
+	@Override
+	public Object invoke(MethodInvocation invocation) throws Throwable {
+		Method method = invocation.getMethod();
+		SignCache signCache = AnnotationUtils.getAnnotation(method,
+				SignCache.class);
+		Cache cache = cacheManager.getCache(signCache.cacheName());
+		if (cache != null) {
+			StandardEvaluationContext context = CacheHelper.getContext(method,
+					invocation.getArguments());
+			SpelExpressionParser parser = new SpelExpressionParser();
+			Object cacheKey = parser.parseExpression(signCache.cacheKey())
+					.getValue(context);
+			ValueWrapper cached = cache.get(cacheKey);
+			if (cached != null) {
+				return cached.get();
+			}
+			Object result = invocation.proceed();
+			context.setVariable("result", result);
+			Object condition = parser.parseExpression(signCache.condition())
+					.getValue(context);
+			if (condition == null || !(condition instanceof Boolean)) {
+				throw new SystemException(
+						"SignCache Annotation中的condition表达式不能为空，并且必须是布尔表达式");
+			}
+			if (result != null && (Boolean) condition) {
+				Sign sign = signCacheStore.getSign(cacheKey);
+				if (sign == null) {
+					signCacheStore.addSign(cacheKey,
+							new Sign(signCache.periodSec(), signCache.hits()));
+				} else {
+					long now = new Date().getTime();
+					if (!sign.addHit(now)) {
+						signCacheStore.remove(cacheKey);
+					} else if (sign.cache()) {
+						cache.put(cacheKey, result);
+						signCacheStore.remove(cacheKey);
+					}
+				}
+			}
+			return result;
+		}
+		return invocation.proceed();
+	}
+
+}

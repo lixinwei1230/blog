@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.qyh.dao.UserCodeDao">
+
+	<resultMap type="UserCode" id="UserCodeDetail">
+		<id column="id" property="id" />
+		<result column="user_code" property="code" />
+		<result column="alive" property="alive" />
+		<result column="create_date" property="createDate" />
+		<result column="code_type" property="type" typeHandler="EnumOrdinalTypeHandler" />
+		<association property="user" javaType="User">
+			<id column="user_id" property="id" />
+		</association>
+	</resultMap>
+
+	<insert id="insert">
+		INSERT INTO user_code(user_code,alive,user_id,create_date,code_type)
+		VALUES(#{code},#{alive},#{user.id},#{createDate},#{type,javaType=UserCodeType,typeHandler=EnumOrdinalTypeHandler})
+	</insert>
+
+	<select id="selectByUserAndType" resultMap="UserCodeDetail">
+		SELECT id,user_code,alive,user_id,create_date,code_type
+		FROM user_code WHERE user_id = #{user.id} AND code_type =
+		#{type,javaType=UserCodeType,typeHandler=EnumOrdinalTypeHandler}
+		ORDER BY ID DESC
+		LIMIT 0,1
+	</select>
+
+	<update id="update">
+		UPDATE user_code
+		<set>
+			<if test="alive != null">
+				alive = #{alive},
+			</if>
+		</set>
+		WHERE id = #{id}
+	</update>
+
+</mapper>

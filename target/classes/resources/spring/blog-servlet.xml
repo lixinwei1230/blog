@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+	 http://www.springframework.org/schema/beans
+	 http://www.springframework.org/schema/beans/spring-beans.xsd
+	 http://www.springframework.org/schema/mvc
+	 http://www.springframework.org/schema/mvc/spring-mvc.xsd
+	 http://www.springframework.org/schema/context
+	 http://www.springframework.org/schema/context/spring-context.xsd
+	 http://www.springframework.org/schema/aop 
+	 http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+
+	<context:property-placeholder location="classpath:resources/config.properties" />
+
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="50000000" />
+		<property name="maxInMemorySize" value="1024" />
+	</bean>
+
+	<mvc:view-controller path="login" view-name="/login" />
+	<mvc:view-controller path="bug" view-name="/bug" />
+
+
+	<!-- 静态资源，缓存控制 -->
+	<mvc:resources location="/static/" mapping="/static/**"
+		cache-period="31556926" />
+	<!-- 网站图标 -->
+	<mvc:resources mapping="/favicon.ico" location="/static/imgs/favicon.ico" />
+
+	<bean class="me.qyh.web.SpringContextHolder" />
+
+	<!-- 包扫描 -->
+	<context:component-scan
+		base-package="me.qyh.web.controller,me.qyh.manage.web.controller,me.qyh.oauth2.web.controller,me.qyh.entity.validator" />
+
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+		p:viewClass="org.springframework.web.servlet.view.JstlView" p:prefix="/WEB-INF/blog/jsp/"
+		p:suffix=".jsp" />
+
+	<mvc:annotation-driven>
+		<mvc:message-converters register-defaults="true">
+			<bean
+				class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+				<property name="objectMapper" ref="objectMapper" />
+			</bean>
+			<bean class="org.springframework.http.converter.ResourceHttpMessageConverter"/>
+		</mvc:message-converters>
+		<mvc:argument-resolvers>
+			<bean class="me.qyh.page.widget.config.WidgetConfigResolver">
+				<property name="readers">
+					<list>
+						<ref bean="blogWidgetConfigReader" />
+						<ref bean="defaultWidgetConfigReader" />
+					</list>
+				</property>
+			</bean>
+		</mvc:argument-resolvers>
+	</mvc:annotation-driven>
+	<mvc:default-servlet-handler />
+
+	<bean id="blogWidgetConfigReader"
+		class="me.qyh.page.widget.config.support.BlogWidgetConfigReader">
+		<constructor-arg index="0" value="blog" />
+	</bean>
+
+	<bean id="defaultWidgetConfigReader"
+		class="me.qyh.page.widget.config.support.DefaultWidgetConfigReader">
+		<constructor-arg index="0" value="default" />
+	</bean>
+
+	<bean id="configValidatr" class="me.qyh.page.widget.config.WidgetConfigValidator">
+		<property name="readers">
+			<list>
+				<ref bean="blogWidgetConfigReader" />
+				<ref bean="defaultWidgetConfigReader" />
+			</list>
+		</property>
+	</bean>
+
+	<bean
+		class="org.springframework.web.context.support.ServletContextAttributeExporter">
+		<property name="attributes">
+			<map>
+				<entry key="urlHelper">
+					<ref bean="urlHelper" />
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="localeResolver"
+		class="org.springframework.web.servlet.i18n.SessionLocaleResolver" />
+
+	<bean id="localeChangeInterceptor"
+		class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" />
+
+	<mvc:interceptors>
+		<ref bean="localeChangeInterceptor" />
+		<bean class="me.qyh.web.tag.token.TokenInterceptor" />
+	</mvc:interceptors>
+
+	<bean id="blogRssView" class="me.qyh.web.rss.SpaceBlogRssFeedView" />
+
+	<bean class="me.qyh.upload.server.inner.InnerUploadController" />
+</beans>

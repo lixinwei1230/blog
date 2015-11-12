@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.qyh.dao.BlogDao">
+
+	<resultMap type="Blog" id="BlogDetail">
+		<id column="id" property="id" />
+		<result column="title" property="title" />
+		<result column="content" property="content" />
+		<result column="write_date" property="writeDate" />
+		<result column="hits" property="hits" />
+		<result column="summary" property="summary" />
+		<result column="comment_scope" property="commentScope"
+			typeHandler="EnumOrdinalTypeHandler" />
+		<result property="lastModifyDate" column="lastModifyDate" />
+		<result property="level" column="blog_level" />
+		<result property="recommend" column="recommend"/>
+		<result property="scope" column="scope" typeHandler="EnumOrdinalTypeHandler" />
+		<result property="status" column="blog_status" typeHandler="EnumOrdinalTypeHandler" />
+		<result property="from" column="blog_from" typeHandler="EnumOrdinalTypeHandler" />
+		<association property="category" javaType="BlogCategory">
+			<id column="category" property="id" />
+			<result property="name" column="category_name" />
+		</association>
+		<association property="space" javaType="Space">
+			<id column="space_id" property="id" />
+		</association>
+	</resultMap>
+
+	<resultMap type="me.qyh.bean.BlogCategoryFile" id="BlogCategoryFileDetail">
+		<id column="category_id" />
+		<result column="count" property="count" javaType="int" />
+		<association property="category" javaType="BlogCategory">
+			<result column="category_id" property="id" />
+			<result column="category_name" property="name" />
+		</association>
+	</resultMap>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+		INSERT
+		INTO blog
+		(
+		title,
+		content,
+		write_date,
+		hits,
+		summary,
+		scope,
+		blog_status,
+		blog_from,
+		category,
+		space_id,
+		comment_scope,
+		blog_level,
+		recommend
+		)
+		VALUES
+		(
+		#{title},
+		#{content},
+		#{writeDate},
+		0,
+		#{summary},
+		#{scope,javaType=Scope,typeHandler=EnumOrdinalTypeHandler},
+		#{status,javaType=BlogStatus,typeHandler=EnumOrdinalTypeHandler},
+		#{from,javaType=BlogFrom,typeHandler=EnumOrdinalTypeHandler},
+		#{category.id},
+		#{space.id},
+		#{commentScope,javaType=Scope,typeHandler=EnumOrdinalTypeHandler},
+		#{level},
+		#{recommend}
+		)
+	</insert>
+
+	<select id="selectById" resultMap="BlogDetail">
+		SELECT
+		b.id,b.summary,b.blog_level,b.write_date,b.title,b.hits,b.blog_from,b.category,b.space_id,bc.category_name,b.scope,comment_scope,blog_status,b.content,b.recommend
+		FROM blog b
+		LEFT OUTER JOIN blog_category bc ON b.category = bc.id
+		WHERE b.id = #{id}
+	</select>
+
+	<select id="selectPage" resultMap="BlogDetail">
+		SELECT
+		DISTINCT(b.id),b.summary,b.write_date,b.title,b.hits,b.blog_from,b.blog_level,
+		b.category,b.space_id,bc.category_name,scope,b.comment_scope,b.recommend
+		FROM blog
+		b
+		LEFT OUTER JOIN blog_category bc ON b.category = bc.id
+		<if test="tagIds != null and !tagIds.isEmpty()">
+			LEFT OUTER JOIN blog_tag bt ON bt.blog = b.id
+		</if>
+		<where>
+			<if test="recommend != null">
+				recommend = #{recommend}
+			</if>
+			<if test="space != null">
+				AND b.space_id = #{space.id}
+			</if>
+			<if test="from != null">
+				AND blog_from =
+				#{from,javaType=BlogFrom,typeHandler=EnumOrdinalTypeHandler}
+			</if>
+			<if test="status != null">
+				AND blog_status =
+				#{status,javaType=BlogStatus,typeHandler=EnumOrdinalTypeHandler}
+			</if>
+			<if test="title != null and title != ''">
+				AND title LIKE CONCAT('%', #{title},'%')
+			</if>
+			<if test="category != null and category.id != null">
+				AND category = #{category.id}
+			</if>
+			<if test="scopes != null and !scopes.isEmpty()">
+				AND
+				(
+				<foreach collection="scopes.scopes" item="s" open="" separator="OR"
+					close="">
+					scope =
+					#{s,javaType=Scope,typeHandler=EnumOrdinalTypeHandler}
+				</foreach>
+				)
+			</if>
+			<if test="begin != null and end != null">
+				AND write_date BETWEEN #{begin} AND #{end}
+			</if>
+			<if test="tagIds != null and !tagIds.isEmpty()">
+				AND bt.tag_id IN
+				(
+				<foreach collection="tagIds" item="t" open="" separator=","
+					close="">
+					#{t}
+				</foreach>
+				)
+			</if>
+		</where>
+		<choose>
+			<when test="space != null and !ignoreLevel">
+				ORDER BY b.blog_level DESC,id DESC
+			</when>
+			<otherwise>
+				ORDER BY b.id DESC
+			</otherwise>
+		</choose>
+		LIMIT #{offset},#{pageSize}
+	</select>
+
+	<select id="selectCount" resultType="int">
+		SELECT COUNT(DISTINCT(b.id))
+		FROM blog b
+		<if test="tagIds != null and !tagIds.isEmpty()">
+			LEFT OUTER JOIN blog_tag bt ON bt.blog = b.id
+		</if>
+		<where>
+			<if test="recommend != null">
+				recommend = #{recommend}
+			</if>
+			<if test="space != null">
+				AND b.space_id = #{space.id}
+			</if>
+			<if test="from != null">
+				AND blog_from =
+				#{from,javaType=BlogFrom,typeHandler=EnumOrdinalTypeHandler}
+			</if>
+			<if test="status != null">
+				AND blog_status =
+				#{status,javaType=BlogStatus,typeHandler=EnumOrdinalTypeHandler}
+			</if>
+			<if test="title != null and title != ''">
+				AND title LIKE CONCAT('%', #{title},'%')
+			</if>
+			<if test="category != null and category.id != null">
+				AND category = #{category.id}
+			</if>
+			<if test="scopes != null and !scopes.isEmpty()">
+				AND
+				(
+				<foreach collection="scopes.scopes" item="s" open="" separator="OR"
+					close="">
+					scope =
+					#{s,javaType=Scope,typeHandler=EnumOrdinalTypeHandler}
+				</foreach>
+				)
+			</if>
+			<if test="begin != null and end != null">
+				AND write_date BETWEEN #{begin} AND #{end}
+			</if>
+			<if test="tagIds != null and !tagIds.isEmpty()">
+				AND bt.tag_id IN
+				(
+				<foreach collection="tagIds" item="t" open="" separator=","
+					close="">
+					#{t}
+				</foreach>
+				)
+			</if>
+		</where>
+	</select>
+
+	<update id="update">
+		UPDATE blog
+		<set>
+			<if test="title != null">
+				title = #{title},
+			</if>
+			<if test="content != null">
+				content = #{content},
+			</if>
+			<if test="summary != null">
+				summary = #{summary},
+			</if>
+			<if test="from != null">
+				blog_from =
+				#{from,javaType=BlogFrom,typeHandler=EnumOrdinalTypeHandler},
+			</if>
+			<if test="status != null">
+				blog_status =
+				#{status,javaType=BlogStatus,typeHandler=EnumOrdinalTypeHandler},
+			</if>
+			<if test="lastModifyDate != null">
+				lastModifyDate = #{lastModifyDate},
+			</if>
+			<if test="scope != null">
+				scope =
+				#{scope,javaType=Scope,typeHandler=EnumOrdinalTypeHandler},
+			</if>
+			<if test="category != null">
+				category = #{category.id},
+			</if>
+			<if test="commentScope != null">
+				comment_scope =
+				#{commentScope,javaType=Scope,typeHandler=EnumOrdinalTypeHandler},
+			</if>
+			<if test="level != null">
+				blog_level = #{level}
+			</if>
+		</set>
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateRecommend">
+		UPDATE blog
+		SET recommend = #{recommend}
+		WHERE id = #{id}
+	</update>
+
+	<update id="updateHits">
+		UPDATE blog
+		SET hits = hits + #{hits}
+		WHERE id = #{id}
+	</update>
+
+	<select id="selectDateFile" resultType="me.qyh.bean.BlogDateFile">
+		SELECT write_date AS date,COUNT(id) AS count FROM blog
+		WHERE space_id =
+		#{space.id}
+		AND blog_status = 1
+		<if test="scopes != null and !scopes.isEmpty()">
+			AND
+			(
+			<foreach collection="scopes.scopes" item="s" open="" separator="OR"
+				close="">
+				scope =
+				#{s,javaType=Scope,typeHandler=EnumOrdinalTypeHandler}
+			</foreach>
+			)
+		</if>
+		<if test="begin != null and end != null">
+			AND write_date BETWEEN #{begin} AND #{end}
+		</if>
+		GROUP BY DATE_FORMAT(write_date,'%Y-%m')
+		ORDER BY id DESC
+	</select>
+
+	<select id="selectCategoryFile" resultMap="BlogCategoryFileDetail">
+		SELECT category_name,bc.id AS category_id,COUNT(b.id) AS COUNT
+		FROM
+		blog b
+		LEFT OUTER JOIN blog_category bc ON b.`category` = bc.id
+		WHERE
+		b.space_id = #{space.id}
+		AND blog_status = 1
+		<if test="scopes != null and !scopes.isEmpty()">
+			AND
+			(
+			<foreach collection="scopes.scopes" item="s" open="" separator="OR"
+				close="">
+				b.scope =
+				#{s,javaType=Scope,typeHandler=EnumOrdinalTypeHandler}
+			</foreach>
+			)
+		</if>
+		<if test="begin != null and end != null">
+			AND write_date BETWEEN #{begin} AND #{end}
+		</if>
+		GROUP BY bc.`id`
+		ORDER BY bc.`id` DESC
+	</select>
+
+
+	<delete id="deleteById">
+		DELETE FROM blog WHERE id = #{id}
+	</delete>
+
+</mapper>
