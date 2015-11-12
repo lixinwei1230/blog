@@ -40,8 +40,7 @@ public class SpaceOpenController extends BaseController {
 
 	@Token
 	@RequestMapping(value = "space", method = RequestMethod.POST)
-	public String openSpace(@Validated Space space, BindingResult result,
-			ModelMap model, RedirectAttributes ra) {
+	public String openSpace(@Validated Space space, BindingResult result, ModelMap model, RedirectAttributes ra) {
 		User current = UserContext.getUser();
 		if (current.hasRole(RoleEnum.ROLE_SPACE)) {
 			return "redirect:/";

@@ -15,47 +15,38 @@ import me.qyh.web.SpringContextHolder;
 public class FileStoreTypeHandler extends BaseTypeHandler<FileStore> {
 
 	@Override
-	public FileStore getNullableResult(ResultSet rs, String str)
-			throws SQLException {
+	public FileStore getNullableResult(ResultSet rs, String str) throws SQLException {
 		if (rs.wasNull()) {
 			return null;
 		} else {
-			FileStore store = SpringContextHolder.getBean(FileServer.class)
-					.getStore(rs.getInt(str));
-			return store == null ? SpringContextHolder.getBean("avatarStore",
-					FileStore.class) : store;
+			FileStore store = SpringContextHolder.getBean(FileServer.class).getStore(rs.getInt(str));
+			return store == null ? SpringContextHolder.getBean("avatarStore", FileStore.class) : store;
 		}
 	}
 
 	@Override
-	public FileStore getNullableResult(ResultSet rs, int index)
-			throws SQLException {
+	public FileStore getNullableResult(ResultSet rs, int index) throws SQLException {
 		if (rs.wasNull()) {
 			return null;
 		} else {
-			FileStore store = SpringContextHolder.getBean(FileServer.class)
-					.getStore(rs.getInt(index));
-			return store == null ? SpringContextHolder.getBean("avatarStore",
-					FileStore.class) : store;
+			FileStore store = SpringContextHolder.getBean(FileServer.class).getStore(rs.getInt(index));
+			return store == null ? SpringContextHolder.getBean("avatarStore", FileStore.class) : store;
 		}
 	}
 
 	@Override
-	public FileStore getNullableResult(CallableStatement cs, int index)
-			throws SQLException {
+	public FileStore getNullableResult(CallableStatement cs, int index) throws SQLException {
 		if (cs.wasNull()) {
 			return null;
 		} else {
-			FileStore store = SpringContextHolder.getBean(FileServer.class)
-					.getStore(cs.getInt(index));
-			return store == null ? SpringContextHolder.getBean("avatarStore",
-					FileStore.class) : store;
+			FileStore store = SpringContextHolder.getBean(FileServer.class).getStore(cs.getInt(index));
+			return store == null ? SpringContextHolder.getBean("avatarStore", FileStore.class) : store;
 		}
 	}
 
 	@Override
-	public void setNonNullParameter(PreparedStatement ps, int index,
-			FileStore store, JdbcType type) throws SQLException {
+	public void setNonNullParameter(PreparedStatement ps, int index, FileStore store, JdbcType type)
+			throws SQLException {
 		ps.setInt(index, store.id());
 	}
 

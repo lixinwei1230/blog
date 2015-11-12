@@ -19,18 +19,15 @@ public class SimpleAESPropertyDecoder implements PropertyDecoder {
 		return this.decrypt(encrypted);
 	}
 
-	private byte[] encryptToBytes(byte[] encodedKey, String content)
-			throws Exception {
+	private byte[] encryptToBytes(byte[] encodedKey, String content) throws Exception {
 		Cipher cipher = Cipher.getInstance(AES);
 		cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(encodedKey, AES));
 		return cipher.doFinal(content.getBytes(charset));
 	}
 
-	private String decryptByBytes(String key, byte[] encryptBytes)
-			throws Exception {
+	private String decryptByBytes(String key, byte[] encryptBytes) throws Exception {
 		Cipher cipher = Cipher.getInstance(AES);
-		cipher.init(Cipher.DECRYPT_MODE,
-				new SecretKeySpec(Base64.decodeBase64(key), AES));
+		cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(Base64.decodeBase64(key), AES));
 		byte[] decryptBytes = cipher.doFinal(encryptBytes);
 		return new String(decryptBytes);
 	}
@@ -46,10 +43,8 @@ public class SimpleAESPropertyDecoder implements PropertyDecoder {
 		kgen.init(128, new SecureRandom());
 		byte[] encodedKey = kgen.generateKey().getEncoded();
 		String base64d = Base64.encodeBase64String(encodedKey);
-		String encrypted = Base64
-				.encodeBase64String(encryptToBytes(encodedKey, content));
-		return Base64.encodeBase64String(
-				mixKeyAndPassword(base64d, encrypted).getBytes(charset));
+		String encrypted = Base64.encodeBase64String(encryptToBytes(encodedKey, content));
+		return Base64.encodeBase64String(mixKeyAndPassword(base64d, encrypted).getBytes(charset));
 	}
 
 	protected String mixKeyAndPassword(String key, String password) {

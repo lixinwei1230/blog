@@ -55,7 +55,7 @@ public class Scopes {
 	}
 
 	public boolean contains(Scopes scopes) {
-		if(scopes == null){
+		if (scopes == null) {
 			return false;
 		}
 		if (scopes.scopes.isEmpty() && this.scopes.isEmpty()) {

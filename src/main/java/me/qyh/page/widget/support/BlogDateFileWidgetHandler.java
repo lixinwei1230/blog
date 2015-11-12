@@ -25,8 +25,7 @@ import me.qyh.page.widget.support.BlogDateFiles.DateType;
  * @author henry.qian
  *
  */
-public class BlogDateFileWidgetHandler
-		extends AbstractSimpleSystemWidgetHandler {
+public class BlogDateFileWidgetHandler extends AbstractSimpleSystemWidgetHandler {
 
 	@Autowired
 	private BlogDao blogDao;
@@ -51,13 +50,11 @@ public class BlogDateFileWidgetHandler
 	}
 
 	@Override
-	String getWidgetHtml(WidgetConfig config, User owner, User visitor,
-			WebFreemarkers freeMarkers) {
+	String getWidgetHtml(WidgetConfig config, User owner, User visitor, WebFreemarkers freeMarkers) {
 		return parseHtml(owner, visitor, freeMarkers);
 	}
 
-	protected String parseHtml(User user, User visitor,
-			WebFreemarkers freeMarkers) {
+	protected String parseHtml(User user, User visitor, WebFreemarkers freeMarkers) {
 		BlogFilesQueryBean bean = new BlogFilesQueryBean();
 		bean.setSpace(user.getSpace());
 		bean.setScopes(userServer.userRelationship(user, visitor));
@@ -71,8 +68,7 @@ public class BlogDateFileWidgetHandler
 				cal.setTime(file.getDate());
 				int year = cal.get(Calendar.YEAR);
 				if (filesMap.containsKey(year)) {
-					filesMap.get(year)
-							.add(new BlogDateFiles(file, DateType.MONTH));
+					filesMap.get(year).add(new BlogDateFiles(file, DateType.MONTH));
 				} else {
 					List<BlogDateFiles> subfiles = new ArrayList<BlogDateFiles>();
 					subfiles.add(new BlogDateFiles(file, DateType.MONTH));
@@ -80,8 +76,7 @@ public class BlogDateFileWidgetHandler
 				}
 			}
 			_files = new ArrayList<BlogDateFiles>(filesMap.size());
-			for (Map.Entry<Integer, List<BlogDateFiles>> data : filesMap
-					.entrySet()) {
+			for (Map.Entry<Integer, List<BlogDateFiles>> data : filesMap.entrySet()) {
 				int year = data.getKey();
 				BlogDateFile _file = new BlogDateFile();
 				int count = 0;
@@ -120,8 +115,7 @@ public class BlogDateFileWidgetHandler
 		map.put("widget", super.getSimpleWidget());
 		map.put("user", user);
 
-		return freeMarkers.processTemplateIntoString(
-				"page/widget/widget_blog_file_date.ftl", map);
+		return freeMarkers.processTemplateIntoString("page/widget/widget_blog_file_date.ftl", map);
 	}
 
 }

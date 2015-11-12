@@ -34,8 +34,7 @@ public class UserInfoWidgetHandler extends AbstractSimpleSystemWidgetHandler {
 	}
 
 	@Override
-	String getWidgetHtml(WidgetConfig config, User owner, User visitor,
-			WebFreemarkers freeMarkers) {
+	String getWidgetHtml(WidgetConfig config, User owner, User visitor, WebFreemarkers freeMarkers) {
 
 		Map<String, Object> variables = new HashMap<String, Object>();
 
@@ -52,8 +51,7 @@ public class UserInfoWidgetHandler extends AbstractSimpleSystemWidgetHandler {
 		variables.put("user", owner);
 		variables.put("widget", getSimpleWidget());
 
-		return freeMarkers.processTemplateIntoString(
-				"page/widget/widget_userInfo.ftl", variables);
+		return freeMarkers.processTemplateIntoString("page/widget/widget_userInfo.ftl", variables);
 	}
 
 	@Override

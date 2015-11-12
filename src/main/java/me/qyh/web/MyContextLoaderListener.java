@@ -19,16 +19,14 @@ public class MyContextLoaderListener extends ContextLoaderListener {
 	public void contextInitialized(ServletContextEvent event) {
 		super.contextInitialized(event);
 
-		UrlHelper helper = super.getCurrentWebApplicationContext()
-				.getBean(UrlHelper.class);
+		UrlHelper helper = super.getCurrentWebApplicationContext().getBean(UrlHelper.class);
 
 		if (helper.isEnableSpaceDomain()) {
 			// 如果开启space域名，则增加SpaceDomainFilter
 			ServletContext sc = event.getServletContext();
 			Class<? extends Filter> spaceDomainFilter = SpaceDomainFilter.class;
 			sc.addFilter(spaceDomainFilter.getName(), spaceDomainFilter)
-					.addMappingForUrlPatterns(
-							EnumSet.of(DispatcherType.REQUEST), true, "/*");
+					.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
 
 			String domain = helper.getDomain();
 			if (domain.startsWith("www.")) {

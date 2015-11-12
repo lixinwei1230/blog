@@ -13,13 +13,10 @@ public interface CommentHandler {
 
 	boolean match(CommentScope target);
 
-	void doAuthencationBeforeInsert(Comment comment)
-			throws CommentAuthencationException, LogicException;
+	void doAuthencationBeforeInsert(Comment comment) throws CommentAuthencationException, LogicException;
 
-	void doAuthencationBeforeQuery(CommentScope target)
-			throws CommentAuthencationException, LogicException;
+	void doAuthencationBeforeQuery(CommentScope target) throws CommentAuthencationException, LogicException;
 
-	void tip(User scopeUser, Comment comment, TipServer tipService)
-			throws LogicException;
+	void tip(User scopeUser, Comment comment, TipServer tipService) throws LogicException;
 
 }

@@ -41,8 +41,7 @@ public class MyTemporaryBlogController {
 	}
 
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
-	public String loadTemporaryBlog(@PathVariable("id") int id, ModelMap model)
-			throws DataNotFoundException {
+	public String loadTemporaryBlog(@PathVariable("id") int id, ModelMap model) throws DataNotFoundException {
 		model.addAttribute(BLOG, blogService.getTemporaryBlog(id));
 		model.addAttribute(UPLOAD_URL, fileServer.getStore().uploadUrl());
 		return "my/blog/temporary";
@@ -50,8 +49,7 @@ public class MyTemporaryBlogController {
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	@ResponseBody
-	public Info saveTemporary(@RequestBody @Validated Blog blog)
-			throws LogicException {
+	public Info saveTemporary(@RequestBody @Validated Blog blog) throws LogicException {
 		blog.setSpace(UserContext.getSpace());
 
 		blogService.insertOrUpdateTemporaryBlog(blog);
@@ -60,8 +58,7 @@ public class MyTemporaryBlogController {
 
 	@RequestMapping(value = "handle", method = RequestMethod.POST)
 	@ResponseBody
-	public Info handle(@RequestBody @Validated Blog blog)
-			throws LogicException {
+	public Info handle(@RequestBody @Validated Blog blog) throws LogicException {
 		blog.setSpace(UserContext.getSpace());
 
 		blogService.handleTemporaryBlog(blog);

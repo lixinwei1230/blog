@@ -16,8 +16,7 @@ public class FileUploadConfig {
 		this.maxSizeOfUser = maxSizeOfUser;
 	}
 
-	public FileUploadConfig(long maxSizeOfUser, _Config config,
-			_ImageConfig imageConfig) {
+	public FileUploadConfig(long maxSizeOfUser, _Config config, _ImageConfig imageConfig) {
 		super();
 		this.maxSizeOfUser = maxSizeOfUser;
 		this.config = config;
@@ -53,14 +52,13 @@ public class FileUploadConfig {
 			return maxSizeOfQueue;
 		}
 
-		public _Config(SizeLimit sizeLimit, String[] allowFileTypes,
-				int maxSizeOfQueue) {
+		public _Config(SizeLimit sizeLimit, String[] allowFileTypes, int maxSizeOfQueue) {
 			this.sizeLimit = sizeLimit;
 			this.allowFileTypes = allowFileTypes;
 			this.maxSizeOfQueue = maxSizeOfQueue;
 		}
 	}
-	
+
 	public static class _ImageConfig extends _Config {
 		private Integer maxWidth;
 		private Integer maxHeight;
@@ -73,22 +71,22 @@ public class FileUploadConfig {
 			return maxHeight;
 		}
 
-		public _ImageConfig(SizeLimit sizeLimit, String[] allowExtensions,
-				int maxSizeOfQueue, Integer maxWidth, Integer maxHeight) {
+		public _ImageConfig(SizeLimit sizeLimit, String[] allowExtensions, int maxSizeOfQueue, Integer maxWidth,
+				Integer maxHeight) {
 			super(sizeLimit, allowExtensions, maxSizeOfQueue);
 			this.maxWidth = maxWidth;
 			this.maxHeight = maxHeight;
 		}
 	}
-	
-	public interface SizeLimit{
+
+	public interface SizeLimit {
 		Result allow(MultipartFile file);
-		
-		public static final class Result{
+
+		public static final class Result {
 			private boolean allow;
 			private long maxAllowSize;
 
-			public Result(boolean allow,long maxAllowSize) {
+			public Result(boolean allow, long maxAllowSize) {
 				this.allow = allow;
 				this.maxAllowSize = maxAllowSize;
 			}

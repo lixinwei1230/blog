@@ -9,8 +9,7 @@ public class Oauth2ConnectionException extends Oauth2Exception {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public Oauth2ConnectionException(OauthType type, String message,
-			Throwable cause) {
+	public Oauth2ConnectionException(OauthType type, String message, Throwable cause) {
 		super(type, message, cause);
 	}
 

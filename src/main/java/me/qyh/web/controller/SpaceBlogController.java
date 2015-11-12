@@ -33,8 +33,8 @@ public class SpaceBlogController extends SpaceBaseController {
 	private BlogService blogService;
 
 	@RequestMapping(value = "list/{currentPage}", method = RequestMethod.GET)
-	public String list(@PathVariable("currentPage") int currentPage,
-			BlogPageParam param, ModelMap model) throws DataNotFoundException {
+	public String list(@PathVariable("currentPage") int currentPage, BlogPageParam param, ModelMap model)
+			throws DataNotFoundException {
 
 		param.setCurrentPage(currentPage);
 		param.setPageSize(pageSize);
@@ -48,13 +48,11 @@ public class SpaceBlogController extends SpaceBaseController {
 	}
 
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
-	public String detail(@PathVariable("id") int blogId, ModelMap model)
-			throws LogicException {
+	public String detail(@PathVariable("id") int blogId, ModelMap model) throws LogicException {
 		Blog blog = blogService.getBlog(blogId);
 
 		if (!blog.getSpace().equals(getSpace(model))) {
-			return String.format("redirect:/space/%s/blog/%s",
-					blog.getSpace().getId(), blogId);
+			return String.format("redirect:/space/%s/blog/%s", blog.getSpace().getId(), blogId);
 		}
 
 		model.addAttribute(BLOG, blog);

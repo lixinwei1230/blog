@@ -27,12 +27,10 @@ public class BaseOauthController extends BaseController {
 			String state = (String) session.getAttribute(STATE);
 			session.removeAttribute(STATE);
 			String _state = request.getParameter(STATE);
-			valid = !(Validators.isEmptyOrNull(_state, true)
-					|| !_state.equals(state));
+			valid = !(Validators.isEmptyOrNull(_state, true) || !_state.equals(state));
 		}
 		if (!valid) {
-			throw new Oauth2InvalidStateException(type,
-					"oauth2 server传来的state无法被找到或者匹配失败，无法完成认证");
+			throw new Oauth2InvalidStateException(type, "oauth2 server传来的state无法被找到或者匹配失败，无法完成认证");
 		}
 	}
 

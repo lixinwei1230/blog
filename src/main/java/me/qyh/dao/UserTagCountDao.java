@@ -10,8 +10,7 @@ import me.qyh.entity.tag.UserTagCount;
 
 public interface UserTagCountDao extends BaseDao<UserTagCount, Integer> {
 
-	Integer updateCount(@Param("ut") UserTag ut,
-			@Param("module") TagModule module, @Param("count") int count);
+	Integer updateCount(@Param("ut") UserTag ut, @Param("module") TagModule module, @Param("count") int count);
 
 	List<UserTagCount> selectByTag(UserTag tag);
 }

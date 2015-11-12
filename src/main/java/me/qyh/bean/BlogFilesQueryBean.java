@@ -24,7 +24,7 @@ public class BlogFilesQueryBean implements Serializable {
 	private Date begin;// 开始时间
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date end;// 结束时间
-	private Scopes scopes ;
+	private Scopes scopes;
 	private Space space;// 所属空间
 
 	public Date getBegin() {

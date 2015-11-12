@@ -29,16 +29,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	private MessageSource messageSource;
 
 	@Override
-	public UserDetails loadUserByUsername(String nameOrEmail)
-			throws UsernameNotFoundException {
-		User user = (nameOrEmail.indexOf('@') != -1)
-				? userDao.selectByEmail(nameOrEmail)
+	public UserDetails loadUserByUsername(String nameOrEmail) throws UsernameNotFoundException {
+		User user = (nameOrEmail.indexOf('@') != -1) ? userDao.selectByEmail(nameOrEmail)
 				: userDao.selectByName(nameOrEmail);
 
 		if (user == null || !user.getActivate()) {
 			throw new UsernameNotFoundException(
-					messageSource.getMessage("error.user.notexists", null,
-							LocaleContextHolder.getLocale()));
+					messageSource.getMessage("error.user.notexists", null, LocaleContextHolder.getLocale()));
 		}
 		user.setRoles(roleDao.selectByUser(user));
 

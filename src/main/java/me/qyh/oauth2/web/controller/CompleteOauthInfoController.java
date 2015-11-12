@@ -43,32 +43,26 @@ public class CompleteOauthInfoController extends BaseController {
 		binder.setValidator(userValidator);
 	}
 
-	@RequestMapping(value = "my/oauth/completeEmail",
-			method = RequestMethod.GET)
+	@RequestMapping(value = "my/oauth/completeEmail", method = RequestMethod.GET)
 	public String sendCompleteInfoEmail() {
 		return "my/oauth/complete_email";
 	}
 
-	@RequestMapping(value = "my/oauth/authorizeEmail",
-			method = RequestMethod.POST)
+	@RequestMapping(value = "my/oauth/authorizeEmail", method = RequestMethod.POST)
 	@ResponseBody
-	public Info sendAuenthorizeEmail(
-			@RequestParam(value = "email", defaultValue = "") String email,
-			Locale locale) throws LogicException {
+	public Info sendAuenthorizeEmail(@RequestParam(value = "email", defaultValue = "") String email, Locale locale)
+			throws LogicException {
 		if (!Validators.validateEmail(email)) {
-			return new Info(false, messageSource.getMessage(
-					"validation.email.invalid", new Object[] {}, locale));
+			return new Info(false, messageSource.getMessage("validation.email.invalid", new Object[] {}, locale));
 		}
 		oauthService.sendAuthorizeEmail(email, UserContext.getUser());
 		return new Info(true);
 	}
 
 	@Token
-	@RequestMapping(value = "my/oauth/completeEmail",
-			method = RequestMethod.POST, params = { "email" })
-	public String sendCompleteInfoMail(
-			@RequestParam(value = "code", defaultValue = "") String code,
-			ModelMap model, RedirectAttributes ra) {
+	@RequestMapping(value = "my/oauth/completeEmail", method = RequestMethod.POST, params = { "email" })
+	public String sendCompleteInfoMail(@RequestParam(value = "code", defaultValue = "") String code, ModelMap model,
+			RedirectAttributes ra) {
 		if (code.isEmpty()) {
 			throw new InvalidParamException();
 		}
@@ -78,8 +72,7 @@ public class CompleteOauthInfoController extends BaseController {
 			model.addAttribute(ERROR, e.getI18nMessage());
 			return "my/oauth/complete_email";
 		}
-		ra.addFlashAttribute(SUCCESS,
-				new I18NMessage("success.oauth.completeUserInfo.sendEmail"));
+		ra.addFlashAttribute(SUCCESS, new I18NMessage("success.oauth.completeUserInfo.sendEmail"));
 		return "redirect:completeEmail";
 	}
 
@@ -88,11 +81,9 @@ public class CompleteOauthInfoController extends BaseController {
 		return "my/oauth/complete_info";
 	}
 
-	@RequestMapping(value = "oauth/completeInfo", method = RequestMethod.GET,
-			params = { "code", "userid" })
-	public String checkCompleteInfoEmail(
-			@RequestParam(value = "code", defaultValue = "") String code,
-			int userid, RedirectAttributes ra) {
+	@RequestMapping(value = "oauth/completeInfo", method = RequestMethod.GET, params = { "code", "userid" })
+	public String checkCompleteInfoEmail(@RequestParam(value = "code", defaultValue = "") String code, int userid,
+			RedirectAttributes ra) {
 		validate(code, userid);
 		try {
 			oauthService.checkCompleteInfoEmail(code, userid);
@@ -108,10 +99,8 @@ public class CompleteOauthInfoController extends BaseController {
 	// 这里为了节省验证篇幅，在前台为用户赋予mail@example.com的邮件
 	@Token
 	@RequestMapping(value = "oauth/completeInfo", method = RequestMethod.POST)
-	public String completeInfo(@Validated User user, BindingResult result,
-			@RequestParam("userid") int userid,
-			@RequestParam(value = "code", defaultValue = "") String code,
-			ModelMap model, RedirectAttributes ra) {
+	public String completeInfo(@Validated User user, BindingResult result, @RequestParam("userid") int userid,
+			@RequestParam(value = "code", defaultValue = "") String code, ModelMap model, RedirectAttributes ra) {
 		validate(code, userid);
 		if (result.hasErrors()) {
 			model.addAttribute("code", code);

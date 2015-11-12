@@ -50,11 +50,9 @@ public class MyPageController extends BaseController {
 	}
 
 	@RequestMapping(value = "design", method = RequestMethod.GET)
-	public String design(@RequestParam(value = "type",
-			defaultValue = "HOMEPAGE") PageType type, ModelMap model)
-					throws LogicException {
-		model.addAttribute(PAGE, new SimpleBootstrapPage(
-				widgetService.getPage(type, UserContext.getUser())));
+	public String design(@RequestParam(value = "type", defaultValue = "HOMEPAGE") PageType type, ModelMap model)
+			throws LogicException {
+		model.addAttribute(PAGE, new SimpleBootstrapPage(widgetService.getPage(type, UserContext.getUser())));
 
 		switch (type) {
 		case HOMEPAGE:
@@ -66,8 +64,7 @@ public class MyPageController extends BaseController {
 
 	@RequestMapping(value = "widget/put", method = RequestMethod.POST)
 	@ResponseBody
-	public Info putWidget(@RequestBody @Validated LocationWidget widget)
-			throws LogicException {
+	public Info putWidget(@RequestBody @Validated LocationWidget widget) throws LogicException {
 		widgetService.putWidget(widget);
 		return new Info(true);
 	}
@@ -87,24 +84,21 @@ public class MyPageController extends BaseController {
 
 	@RequestMapping(value = "widget/preview/{id}", method = RequestMethod.GET)
 	@ResponseBody
-	public Info previewWidget(
-			@RequestParam(value = "type",
-					defaultValue = "SYSTEM") WidgetType type,
+	public Info previewWidget(@RequestParam(value = "type", defaultValue = "SYSTEM") WidgetType type,
 			@PathVariable("id") int id) throws DataNotFoundException {
 		return new Info(true, widgetService.getPreviewWidget(id, type));
 	}
 
 	@RequestMapping(value = "widget/{id}/config", method = RequestMethod.GET)
 	@ResponseBody
-	public Info getWidgetConfig(@PathVariable("id") int id)
-			throws DataNotFoundException {
+	public Info getWidgetConfig(@PathVariable("id") int id) throws DataNotFoundException {
 		return new Info(true, widgetService.getConfig(id));
 	}
 
 	@RequestMapping(value = "config/update", method = RequestMethod.POST)
 	@ResponseBody
-	public Info getWidgetConfig(@WidgetConfigAttribute(validate = true,
-			requestBody = true) BindingResultWidgetConfig config)
+	public Info getWidgetConfig(
+			@WidgetConfigAttribute(validate = true, requestBody = true) BindingResultWidgetConfig config)
 					throws LogicException {
 		widgetService.updateConfig(config.getConfig());
 		return new Info(true);
@@ -112,8 +106,8 @@ public class MyPageController extends BaseController {
 
 	@RequestMapping(value = "widget/update", method = RequestMethod.POST)
 	@ResponseBody
-	public Info updateWidget(@RequestBody @Validated LocationWidget widget,
-			@RequestParam("wrap") boolean wrap) throws LogicException {
+	public Info updateWidget(@RequestBody @Validated LocationWidget widget, @RequestParam("wrap") boolean wrap)
+			throws LogicException {
 		widgetService.updateLocationWidget(widget, wrap);
 
 		return new Info(true);

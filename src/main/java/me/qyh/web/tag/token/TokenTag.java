@@ -26,14 +26,9 @@ public class TokenTag extends BodyTagSupport {
 		JspWriter out = this.pageContext.getOut();
 		try {
 			String tokenName = TokenHelper.generateGUID();
-			out.print(
-					"<input type='hidden' name='" + TokenHelper.TOKEN_NAME_FIELD
-							+ "' value='" + tokenName + "'/>");
-			String token = TokenHelper.setToken(
-					(HttpServletRequest) this.pageContext.getRequest(),
-					tokenName);
-			out.print("<input type='hidden' name='" + tokenName + "' value='"
-					+ token + "'/>");
+			out.print("<input type='hidden' name='" + TokenHelper.TOKEN_NAME_FIELD + "' value='" + tokenName + "'/>");
+			String token = TokenHelper.setToken((HttpServletRequest) this.pageContext.getRequest(), tokenName);
+			out.print("<input type='hidden' name='" + tokenName + "' value='" + token + "'/>");
 		} catch (IOException e) {
 			throw new JspException(e);
 		}

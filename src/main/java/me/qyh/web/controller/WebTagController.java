@@ -23,8 +23,7 @@ public class WebTagController extends BaseController {
 
 	@RequestMapping(value = "list/{currentPage}", method = RequestMethod.GET)
 	@ResponseBody
-	public Info list(@PathVariable("currentPage") int currentPage,
-			WebTagPageParam param) {
+	public Info list(@PathVariable("currentPage") int currentPage, WebTagPageParam param) {
 		param.setCurrentPage(currentPage);
 		param.setPageSize(pageSize);
 		param.validate();

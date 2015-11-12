@@ -15,11 +15,9 @@ public interface UserService {
 
 	void resetPasswordCheck(String code, Integer userId) throws LogicException;
 
-	void resetPassword(String code, String password, Integer userId)
-			throws LogicException;
+	void resetPassword(String code, String password, Integer userId) throws LogicException;
 
-	void changePassword(String oldPassword, String newPassword)
-			throws LogicException;
+	void changePassword(String oldPassword, String newPassword) throws LogicException;
 
 	void changeNickname(String nickname) throws LogicException;
 

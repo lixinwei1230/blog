@@ -43,8 +43,7 @@ public class WebFreemarkers {
 	 *            解析变量
 	 * @return 解析后的文本
 	 */
-	public String processTemplateIntoString(String temlatePath,
-			Map<String, Object> model) {
+	public String processTemplateIntoString(String temlatePath, Map<String, Object> model) {
 		String text = "";
 		Template tpl = null;
 		try {
@@ -53,12 +52,11 @@ public class WebFreemarkers {
 			/**
 			 * 将静态方法暴露给Freemarker
 			 */
-			if(!Validators.isEmptyOrNull(staticModels)){
+			if (!Validators.isEmptyOrNull(staticModels)) {
 				BeansWrapper wrapper = BeansWrapper.getDefaultInstance();
 				TemplateHashModel staticModels = wrapper.getStaticModels();
 				for (Map.Entry<String, String> m : this.staticModels.entrySet()) {
-					TemplateHashModel tsh = (TemplateHashModel) staticModels
-							.get(m.getValue());
+					TemplateHashModel tsh = (TemplateHashModel) staticModels.get(m.getValue());
 					_model.put(m.getKey(), tsh);
 				}
 			}
@@ -70,10 +68,8 @@ public class WebFreemarkers {
 				_model.putAll(model);
 			}
 
-			tpl = freeMarker.getConfiguration().getTemplate(temlatePath,
-					LocaleContextHolder.getLocale());
-			text = FreeMarkerTemplateUtils.processTemplateIntoString(tpl,
-					_model);
+			tpl = freeMarker.getConfiguration().getTemplate(temlatePath, LocaleContextHolder.getLocale());
+			text = FreeMarkerTemplateUtils.processTemplateIntoString(tpl, _model);
 		} catch (IOException | TemplateException e) {
 			throw new SystemException(e);
 		}

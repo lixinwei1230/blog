@@ -20,6 +20,5 @@ public interface CommentDao extends BaseDao<Comment, Integer> {
 
 	List<Comment> selectPage(CommentPageParam param);
 
-	int selectCountByDate(@Param("begin") Date begin, @Param("end") Date end,
-			@Param("user") User user);
+	int selectCountByDate(@Param("begin") Date begin, @Param("end") Date end, @Param("user") User user);
 }

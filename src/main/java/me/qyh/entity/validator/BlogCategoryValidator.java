@@ -32,15 +32,13 @@ public class BlogCategoryValidator implements Validator {
 			return;
 		}
 		if (name.length() > nameMaxLength) {
-			e.rejectValue("name", "validation.blog.category.name.toolong",
-					new Object[] { nameMaxLength },
+			e.rejectValue("name", "validation.blog.category.name.toolong", new Object[] { nameMaxLength },
 					"博客分类不能超过" + nameMaxLength + "个字符");
 			return;
 		}
 		int order = category.getOrder();
 		if (order < orderMin || order > orderMax) {
-			e.rejectValue("order", "validation.blog.category.order.invalid",
-					new Object[] { orderMin, orderMax },
+			e.rejectValue("order", "validation.blog.category.order.invalid", new Object[] { orderMin, orderMax },
 					"博客分类顺序在" + orderMin + "~" + orderMax + "之间");
 			return;
 		}

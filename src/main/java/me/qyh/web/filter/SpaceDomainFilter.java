@@ -22,22 +22,18 @@ import me.qyh.web.tag.url.UrlHelper;
 
 public class SpaceDomainFilter extends OncePerRequestFilter {
 
-	private static final String[] ignorePathPatterns = { "/avatar/*", "/my/**",
-			"/captcha/*", "/favicon.ico",// web
-											// ico
+	private static final String[] ignorePathPatterns = { "/avatar/*", "/my/**", "/captcha/*", "/favicon.ico",// web
+																												// ico
 	};
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request,
-			HttpServletResponse response, FilterChain chain)
-					throws ServletException, IOException {
-		String uri = getUriCleanedWithoutContextPath(request.getRequestURI(),
-				request.getContextPath());
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+			throws ServletException, IOException {
+		String uri = getUriCleanedWithoutContextPath(request.getRequestURI(), request.getContextPath());
 
 		PathMatcher pathMatcher = new AntPathMatcher();
 		// 静态资源和ajax请求直接放行
-		if (pathMatcher.match("/static/**", uri)
-				|| Webs.isAjaxRequest(request)) {
+		if (pathMatcher.match("/static/**", uri) || Webs.isAjaxRequest(request)) {
 			chain.doFilter(request, response);
 			return;
 		}
@@ -48,8 +44,7 @@ public class SpaceDomainFilter extends OncePerRequestFilter {
 
 		if (maybeSpaceUrl(uri)) {
 			String space = getSpaceFromUri(uri);
-			response.sendRedirect(request.getScheme() + "://"
-					+ buildSpaceUrlWithPort(helper, space));
+			response.sendRedirect(request.getScheme() + "://" + buildSpaceUrlWithPort(helper, space));
 			return;
 		}
 
@@ -65,8 +60,7 @@ public class SpaceDomainFilter extends OncePerRequestFilter {
 				Space _space = current.getSpace();
 				if (_space == null || !_space.getId().equals(space)) {
 					// 跳转到用户主页
-					String spaceUrl = request.getScheme() + "://"
-							+ helper.getUrlByUser(current, true) + "/index";
+					String spaceUrl = request.getScheme() + "://" + helper.getUrlByUser(current, true) + "/index";
 					response.sendRedirect(spaceUrl);
 					return;
 				}
@@ -74,8 +68,7 @@ public class SpaceDomainFilter extends OncePerRequestFilter {
 
 			// 链接需要转发
 			if (isForwardUri(pathMatcher, uri)) {
-				RequestDispatcher rd = request
-						.getRequestDispatcher("/space/" + space + uri);
+				RequestDispatcher rd = request.getRequestDispatcher("/space/" + space + uri);
 				rd.forward(request, response);
 				return;
 			}
@@ -119,8 +112,7 @@ public class SpaceDomainFilter extends OncePerRequestFilter {
 		int index = domain.indexOf('.');
 		if (index != -1) {
 			String _domain = domain.substring(index + 1);
-			return _domain.equalsIgnoreCase(configuredDomain)
-					|| ("www." + _domain).equalsIgnoreCase(configuredDomain);
+			return _domain.equalsIgnoreCase(configuredDomain) || ("www." + _domain).equalsIgnoreCase(configuredDomain);
 		}
 		return false;
 	}
@@ -142,8 +134,7 @@ public class SpaceDomainFilter extends OncePerRequestFilter {
 		return spaceDomain.substring(0, spaceDomain.indexOf('.'));
 	}
 
-	private String getUriCleanedWithoutContextPath(String uri,
-			String contextPath) {
+	private String getUriCleanedWithoutContextPath(String uri, String contextPath) {
 		String _uri = Strings.cleanPath(uri);
 		char chars[] = _uri.toCharArray();
 		StringBuilder sb = new StringBuilder();

@@ -17,27 +17,23 @@ public class DefaultOauthDetailsServiceImpl implements OauthDetailsService {
 	private UserDetailsService userDetailsService;
 
 	@Override
-	public UserDetails loadUserByOauthPrincipal(OauthPrincipal oauth2Principal)
-			throws UsernameNotFoundException {
+	public UserDetails loadUserByOauthPrincipal(OauthPrincipal oauth2Principal) throws UsernameNotFoundException {
 
 		if (validOauthPrincipal(oauth2Principal)) {
-			OauthUser user = oauth2Dao.selectByUserIdAndType(
-					oauth2Principal.getOauthUserId(),
+			OauthUser user = oauth2Dao.selectByUserIdAndType(oauth2Principal.getOauthUserId(),
 					oauth2Principal.getType());
 			if (user == null) {
 				throw new UsernameNotFoundException("");
 			}
 
-			return userDetailsService
-					.loadUserByUsername(user.getUser().getUsername());
+			return userDetailsService.loadUserByUsername(user.getUser().getUsername());
 		}
 
 		throw new UsernameNotFoundException("");
 	}
 
 	protected boolean validOauthPrincipal(OauthPrincipal oauth2Principal) {
-		return !(Validators.isEmptyOrNull(oauth2Principal.getOauthUserId())
-				|| oauth2Principal.getType() == null);
+		return !(Validators.isEmptyOrNull(oauth2Principal.getOauthUserId()) || oauth2Principal.getType() == null);
 	}
 
 }

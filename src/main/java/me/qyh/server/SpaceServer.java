@@ -8,11 +8,9 @@ import me.qyh.exception.SpaceDisabledException;
 
 public interface SpaceServer {
 
-	Space getSpaceById(String id)
-			throws DataNotFoundException, SpaceDisabledException;
+	Space getSpaceById(String id) throws DataNotFoundException, SpaceDisabledException;
 
-	Space getSpaceByUser(User user)
-			throws DataNotFoundException, SpaceDisabledException;
+	Space getSpaceByUser(User user) throws DataNotFoundException, SpaceDisabledException;
 
 	/**
 	 * 判断当前用户访问该空间的范围

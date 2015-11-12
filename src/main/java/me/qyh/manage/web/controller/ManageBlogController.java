@@ -29,8 +29,7 @@ public class ManageBlogController extends ManageBaseController {
 	private BlogManageService blogService;
 
 	@RequestMapping(value = "list/{currentPage}", method = RequestMethod.GET)
-	public String list(@PathVariable("currentPage") int currentPage,
-			ModelMap model, BlogPageParam param) {
+	public String list(@PathVariable("currentPage") int currentPage, ModelMap model, BlogPageParam param) {
 
 		param.setCurrentPage(currentPage);
 		param.setPageSize(pageSize);
@@ -44,19 +43,18 @@ public class ManageBlogController extends ManageBaseController {
 
 	@ResponseBody
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
-	public Info delete(@RequestBody @Validated TipMessage message,
-			@RequestParam("id") int id) throws LogicException {
+	public Info delete(@RequestBody @Validated TipMessage message, @RequestParam("id") int id) throws LogicException {
 		blogService.deleteBlog(id, message);
 
 		return new Info(true);
 	}
-	
+
 	@ResponseBody
 	@RequestMapping(value = "recommend", method = RequestMethod.POST)
-	public Info toggleRecommend(@RequestBody @Validated TipMessage message,
-			@RequestParam("id") int id)  throws LogicException {
+	public Info toggleRecommend(@RequestBody @Validated TipMessage message, @RequestParam("id") int id)
+			throws LogicException {
 		blogService.toggleBlogRecommand(id, message);
-		
+
 		return new Info(true);
 	}
 

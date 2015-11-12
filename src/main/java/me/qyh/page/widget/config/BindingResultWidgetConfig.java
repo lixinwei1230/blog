@@ -7,8 +7,7 @@ public class BindingResultWidgetConfig {
 	private BindingResult result;
 	private WidgetConfig config;
 
-	public BindingResultWidgetConfig(BindingResult result,
-			WidgetConfig config) {
+	public BindingResultWidgetConfig(BindingResult result, WidgetConfig config) {
 		super();
 		this.result = result;
 		this.config = config;

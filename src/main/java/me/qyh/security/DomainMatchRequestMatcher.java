@@ -37,8 +37,7 @@ public class DomainMatchRequestMatcher implements RequestMatcher {
 	private boolean matchDomain(HttpServletRequest request) {
 		String domain = urlHelper.getDomain();
 		return domain.equalsIgnoreCase(request.getServerName()) ? true
-				: (domain.equalsIgnoreCase("www." + request.getServerName()))
-						? true : false;
+				: (domain.equalsIgnoreCase("www." + request.getServerName())) ? true : false;
 	}
 
 	public DomainMatchRequestMatcher(String url) {

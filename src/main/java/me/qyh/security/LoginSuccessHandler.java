@@ -19,15 +19,13 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component("loginSuccessHandler")
-public class LoginSuccessHandler
-		extends SavedRequestAwareAuthenticationSuccessHandler {
+public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
 	private static final Logger logger = LoggerFactory.getLogger("login");
 
 	@Override
-	public void onAuthenticationSuccess(HttpServletRequest request,
-			HttpServletResponse response, Authentication authentication)
-					throws IOException, ServletException {
+	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+			Authentication authentication) throws IOException, ServletException {
 
 		logger.info("用户登录成功:{}", authentication.getPrincipal());
 

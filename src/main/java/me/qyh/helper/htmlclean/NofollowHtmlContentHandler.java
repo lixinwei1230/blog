@@ -12,8 +12,7 @@ import org.springframework.stereotype.Component;
 import me.qyh.web.tag.url.UrlHelper;
 
 @Component
-public class NofollowHtmlContentHandler
-		implements HtmlContentHandler, InitializingBean {
+public class NofollowHtmlContentHandler implements HtmlContentHandler, InitializingBean {
 
 	private static final String NOFOLLOW = "external nofollow";
 
@@ -31,8 +30,7 @@ public class NofollowHtmlContentHandler
 		for (Element ele : eles) {
 			String href = ele.attr("href");
 			// only abs url need to do
-			if (UrlUtils.isAbsoluteUrl(href)
-					&& href.indexOf(siteDomain) == -1) {
+			if (UrlUtils.isAbsoluteUrl(href) && href.indexOf(siteDomain) == -1) {
 				ele.attr("rel", NOFOLLOW);
 			}
 		}

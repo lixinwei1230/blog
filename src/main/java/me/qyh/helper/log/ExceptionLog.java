@@ -18,18 +18,15 @@ public class ExceptionLog {
 
 	private static final Logger logger = LoggerFactory.getLogger("errorLogger");
 
-	@AfterThrowing(throwing = "e",
-			value = "execution(* me.qyh.service.impl.*.*(..))")
+	@AfterThrowing(throwing = "e", value = "execution(* me.qyh.service.impl.*.*(..))")
 	public void afterThrowing(JoinPoint jp, Throwable e) {
 		if (needLog(e)) {
-			logger.error("当前用户： " + UserContext.getUser() + ",错误信息："
-					+ e.getMessage(), e);
+			logger.error("当前用户： " + UserContext.getUser() + ",错误信息：" + e.getMessage(), e);
 		}
 	}
 
 	private boolean needLog(Throwable e) {
-		return !(e instanceof BusinessException)
-				&& !(e instanceof BusinessAccessDeinedException)
+		return !(e instanceof BusinessException) && !(e instanceof BusinessAccessDeinedException)
 				&& !(e instanceof BusinessRuntimeException);
 	}
 

@@ -10,8 +10,7 @@ import me.qyh.entity.tag.WebTagCount;
 
 public interface WebTagCountDao extends BaseDao<WebTagCount, Integer> {
 
-	void updateCount(@Param("wt") WebTag wt, @Param("module") TagModule module,
-			@Param("count") int count);
+	void updateCount(@Param("wt") WebTag wt, @Param("module") TagModule module, @Param("count") int count);
 
 	List<WebTagCount> selectByTag(WebTag tag);
 }

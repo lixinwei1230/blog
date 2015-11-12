@@ -14,8 +14,7 @@ public class TokenHelper {
 	public static final String TOKEN_NAME_FIELD = "spring.token.name";
 	public static final Random random = new Random();
 
-	public static String setToken(HttpServletRequest request,
-			String tokenName) {
+	public static String setToken(HttpServletRequest request, String tokenName) {
 		String token = generateGUID();
 		request.getSession(true).setAttribute(tokenName, token);
 		return token;
@@ -39,8 +38,7 @@ public class TokenHelper {
 		return tokenNames[0];
 	}
 
-	public static String getToken(String tokenName,
-			HttpServletRequest request) {
+	public static String getToken(String tokenName, HttpServletRequest request) {
 		if (tokenName == null) {
 			return null;
 		}

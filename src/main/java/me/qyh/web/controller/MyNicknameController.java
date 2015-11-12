@@ -32,20 +32,15 @@ public class MyNicknameController extends BaseController {
 	}
 
 	@RequestMapping(value = "change", method = RequestMethod.POST)
-	public String change(
-			@RequestParam(value = "nickname",
-					defaultValue = "") String nickname,
-			ModelMap model, RedirectAttributes ra) {
+	public String change(@RequestParam(value = "nickname", defaultValue = "") String nickname, ModelMap model,
+			RedirectAttributes ra) {
 		if (!Jsoup.isValid(nickname, Whitelist.none())) {
-			model.addAttribute(ERROR,
-					new I18NMessage("validation.nickname.invalid"));
+			model.addAttribute(ERROR, new I18NMessage("validation.nickname.invalid"));
 			return "my/nickname/index";
 		}
-		if (nickname.trim().length() < minNicknameLength
-				|| nickname.length() > maxNicknameLength) {
+		if (nickname.trim().length() < minNicknameLength || nickname.length() > maxNicknameLength) {
 			model.addAttribute(ERROR,
-					new I18NMessage("validation.nickname.length.invalid",
-							minNicknameLength, maxNicknameLength));
+					new I18NMessage("validation.nickname.length.invalid", minNicknameLength, maxNicknameLength));
 			return "my/nickname/index";
 		}
 		try {
@@ -54,8 +49,7 @@ public class MyNicknameController extends BaseController {
 			model.addAttribute(ERROR, e.getI18nMessage());
 			return "my/nickname/index";
 		}
-		ra.addFlashAttribute(SUCCESS,
-				new I18NMessage("success.changeNickname"));
+		ra.addFlashAttribute(SUCCESS, new I18NMessage("success.changeNickname"));
 		return "redirect:/";
 	}
 

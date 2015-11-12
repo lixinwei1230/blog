@@ -68,34 +68,31 @@ public class QQOauth2Impl implements QQOauth2, InitializingBean {
 			sb.deleteCharAt(sb.length() - 1);
 			params.add("scope", sb.toString());
 		}
-		authorizationCodeUrl = UriComponentsBuilder
-				.fromHttpUrl(authorizationCodeUrl).queryParams(params)
-				.build(true).toUriString();
+		authorizationCodeUrl = UriComponentsBuilder.fromHttpUrl(authorizationCodeUrl).queryParams(params).build(true)
+				.toUriString();
 
 		params.clear();
 		params.add("grant_type", GRANT_TYPE);
 		params.add("client_id", appId);
 		params.add("client_secret", appKey);
 		params.add("redirect_uri", redirectUri);
-		authorizationUrl = UriComponentsBuilder.fromHttpUrl(authorizationUrl)
-				.queryParams(params).build(true).toUriString();
+		authorizationUrl = UriComponentsBuilder.fromHttpUrl(authorizationUrl).queryParams(params).build(true)
+				.toUriString();
 
 		params.clear();
 		params.add("oauth_consumer_key", appId);
 		params.add("format", "json");
-		userInfoUrl = UriComponentsBuilder.fromHttpUrl(userInfoUrl)
-				.queryParams(params).build(true).toString();
+		userInfoUrl = UriComponentsBuilder.fromHttpUrl(userInfoUrl).queryParams(params).build(true).toString();
 
 	}
 
 	@Override
 	public OpenId getOpenId(AccessToken token) {
-		String url = new String(openIdUrl).concat("?access_token=")
-				.concat(token.getToken());
+		String url = new String(openIdUrl).concat("?access_token=").concat(token.getToken());
 		QQHttpResult result = sendHttpsGet(url);
 		if (result.hasError) {
-			throw new Oauth2Exception(OauthType.QQ, String.format(
-					"获取openId时发生了一个错误，错误码为%s", result.error.getErrorCode()));
+			throw new Oauth2Exception(OauthType.QQ,
+					String.format("获取openId时发生了一个错误，错误码为%s", result.error.getErrorCode()));
 		}
 		return result.parseJsonObj(OpenId.class);
 	}
@@ -106,16 +103,14 @@ public class QQOauth2Impl implements QQOauth2, InitializingBean {
 		QQHttpResult result = sendHttpsGet(url);
 		if (result.hasError) {
 			throw new Oauth2Exception(OauthType.QQ,
-					String.format("获取AccessToken时发生了一个错误，错误码为%s",
-							result.error.getErrorCode()));
+					String.format("获取AccessToken时发生了一个错误，错误码为%s", result.error.getErrorCode()));
 		}
 
 		AccessToken token = new AccessToken();
 
 		token.setToken(result.getResult("access_token"));
 		if (Validators.isEmptyOrNull(token.getToken(), true)) {
-			throw new Oauth2InvalidAccessTokenException(OauthType.QQ,
-					"获取的token为空，可能取消了接入或者遭遇csrf攻击");
+			throw new Oauth2InvalidAccessTokenException(OauthType.QQ, "获取的token为空，可能取消了接入或者遭遇csrf攻击");
 		}
 		token.setExpireIn(Long.parseLong(result.getResult("expires_in")));
 		token.setRefreshToken(result.getResult("refresh_token"));
@@ -167,8 +162,7 @@ public class QQOauth2Impl implements QQOauth2, InitializingBean {
 			}
 			return response;
 		} catch (IOException e) {
-			throw new Oauth2ConnectionException(OauthType.QQ, e.getMessage(),
-					e);
+			throw new Oauth2ConnectionException(OauthType.QQ, e.getMessage(), e);
 		}
 	}
 
@@ -192,8 +186,7 @@ public class QQOauth2Impl implements QQOauth2, InitializingBean {
 
 		public QQHttpResult(String response) {
 			if (response.startsWith(JSON_PREFIX)) {
-				json = response.substring(response.indexOf('{'),
-						response.lastIndexOf('}') + 1);
+				json = response.substring(response.indexOf('{'), response.lastIndexOf('}') + 1);
 				hasError = json.contains("error");
 				error = parseJsonObj(QQOauth2Error.class);
 			} else if (response.indexOf("&") != -1) {
@@ -209,8 +202,7 @@ public class QQOauth2Impl implements QQOauth2, InitializingBean {
 					error.setErrorCode(results.get("code"));
 				}
 			} else {
-				throw new Oauth2Exception(OauthType.QQ,
-						String.format("无法解析%s", response));
+				throw new Oauth2Exception(OauthType.QQ, String.format("无法解析%s", response));
 			}
 		}
 
@@ -241,15 +233,14 @@ public class QQOauth2Impl implements QQOauth2, InitializingBean {
 	@Override
 	public OauthUser queryUserInfo(OauthPrincipal principal) {
 		String url = new String(userInfoUrl).concat("&access_token=")
-				.concat(((AccessToken) principal.getToken()).getToken())
-				.concat("&openid=").concat(principal.getOauthUserId());
+				.concat(((AccessToken) principal.getToken()).getToken()).concat("&openid=")
+				.concat(principal.getOauthUserId());
 		String response = _sendHttpsGet(url);
 		try {
 			JsonParser parser = reader.getFactory().createParser(response);
 			QQUser quser = reader.readValue(parser, QQUser.class);
 			if (!"0".equals(quser.getRet())) {
-				throw new Oauth2Exception(OauthType.QQ,
-						String.format("获取用户信息时发生了一个错误，错误码为%s", quser.getRet()));
+				throw new Oauth2Exception(OauthType.QQ, String.format("获取用户信息时发生了一个错误，错误码为%s", quser.getRet()));
 			}
 			OauthUser user = new OauthUser();
 			if (quser.getAvatar() != null) {
@@ -260,8 +251,7 @@ public class QQOauth2Impl implements QQOauth2, InitializingBean {
 			user.setNickname(quser.getNickname());
 			return user;
 		} catch (IOException e) {
-			throw new Oauth2Exception(OauthType.QQ, url + ":" + e.getMessage(),
-					e);
+			throw new Oauth2Exception(OauthType.QQ, url + ":" + e.getMessage(), e);
 		}
 	}
 

@@ -6,7 +6,6 @@ import me.qyh.entity.CommentScope;
 
 public interface CommentScopeDao extends BaseDao<CommentScope, Integer> {
 
-	CommentScope selectByScopeAndScopeId(@Param("scope") String scope,
-			@Param("scopeId") String scopeId);
+	CommentScope selectByScopeAndScopeId(@Param("scope") String scope, @Param("scopeId") String scopeId);
 
 }

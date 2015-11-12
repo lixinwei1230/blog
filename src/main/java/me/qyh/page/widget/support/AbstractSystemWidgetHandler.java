@@ -10,8 +10,7 @@ import me.qyh.page.widget.SystemWidget;
 import me.qyh.page.widget.SystemWidgetHandler;
 import me.qyh.server.UserServer;
 
-public abstract class AbstractSystemWidgetHandler
-		implements SystemWidgetHandler {
+public abstract class AbstractSystemWidgetHandler implements SystemWidgetHandler {
 
 	protected final String CODE_CONFIG_NOT_EXISTS = "error.widget.config.notexists";
 
@@ -32,14 +31,12 @@ public abstract class AbstractSystemWidgetHandler
 	}
 
 	@Override
-	public SystemWidget getWidget(LocationWidget widget, User owner,
-			User visitor) throws DataNotFoundException {
+	public SystemWidget getWidget(LocationWidget widget, User owner, User visitor) throws DataNotFoundException {
 		return getWidget(widget, freeMarkers, owner, visitor);
 	}
 
-	abstract SystemWidget getWidget(LocationWidget widget,
-			WebFreemarkers freeMarkers, User owner, User visitor)
-					throws DataNotFoundException;
+	abstract SystemWidget getWidget(LocationWidget widget, WebFreemarkers freeMarkers, User owner, User visitor)
+			throws DataNotFoundException;
 
 	@Override
 	public SystemWidget getSimpleWidget() {

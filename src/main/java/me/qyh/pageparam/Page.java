@@ -31,8 +31,7 @@ public class Page<T> {
 		this.offset = offset;
 		this.currentPage = offset / pageSize + 1;
 		this.totalRow = totalRow;
-		this.totalPage = totalRow % pageSize == 0 ? totalRow / pageSize
-				: totalRow / pageSize + 1;
+		this.totalPage = totalRow % pageSize == 0 ? totalRow / pageSize : totalRow / pageSize + 1;
 		countListbeginAndListend();
 		this.datas = datas;
 	}

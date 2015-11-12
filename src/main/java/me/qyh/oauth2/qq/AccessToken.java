@@ -32,8 +32,7 @@ public class AccessToken {
 
 	@Override
 	public String toString() {
-		return "AccessToken [token=" + token + ", expireIn=" + expireIn
-				+ ", refreshToken=" + refreshToken + "]";
+		return "AccessToken [token=" + token + ", expireIn=" + expireIn + ", refreshToken=" + refreshToken + "]";
 	}
 
 }

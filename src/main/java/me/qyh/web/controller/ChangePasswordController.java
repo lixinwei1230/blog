@@ -36,20 +36,15 @@ public class ChangePasswordController extends BaseController {
 
 	@Token
 	@RequestMapping(value = "change", method = RequestMethod.POST)
-	public String change(
-			@RequestParam(value = "oldPassword",
-					defaultValue = "") String oldPassword,
-			@RequestParam(value = "newPassword",
-					defaultValue = "") String newPassword,
-			HttpSession session, @RequestParam("validateCode") String code,
-			RedirectAttributes ra, ModelMap model) {
+	public String change(@RequestParam(value = "oldPassword", defaultValue = "") String oldPassword,
+			@RequestParam(value = "newPassword", defaultValue = "") String newPassword, HttpSession session,
+			@RequestParam("validateCode") String code, RedirectAttributes ra, ModelMap model) {
 		if (!Webs.matchValidateCode(session, code)) {
 			model.addAttribute(ERROR, new I18NMessage("error.validateCode"));
 			return "my/password/change";
 		}
 		if (!Validators.validate(PASSWORD_PATTERN, newPassword)) {
-			model.addAttribute(ERROR,
-					new I18NMessage("validation.password.invalid"));
+			model.addAttribute(ERROR, new I18NMessage("validation.password.invalid"));
 			return "my/password/change";
 		}
 
@@ -59,8 +54,7 @@ public class ChangePasswordController extends BaseController {
 			model.addAttribute(ERROR, e.getI18nMessage());
 			return "my/password/change";
 		}
-		ra.addFlashAttribute(SUCCESS,
-				new I18NMessage("page.password.change.success"));
+		ra.addFlashAttribute(SUCCESS, new I18NMessage("page.password.change.success"));
 		return "redirect:/";
 	}
 }

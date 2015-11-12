@@ -84,12 +84,9 @@ public class Oauth2ServiceImpl implements OauthService {
 	private PasswordEncoder passwordEncoder;
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
-	public User autoBind(OauthPrincipal principal, OauthUser oauthUser)
-			throws LogicException {
-		OauthUser db = oauth2Dao.selectByUserIdAndType(
-				principal.getOauthUserId(), principal.getType());
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public User autoBind(OauthPrincipal principal, OauthUser oauthUser) throws LogicException {
+		OauthUser db = oauth2Dao.selectByUserIdAndType(principal.getOauthUserId(), principal.getType());
 		if (db != null) {
 			throw new LogicException("error.oauth.bind");
 		}
@@ -100,8 +97,7 @@ public class Oauth2ServiceImpl implements OauthService {
 		if (validNickname(nickname)) {
 			random.setNickname(nickname);
 		} else {
-			random.setNickname(
-					random.getUsername().substring(0, maxNicknameLength));
+			random.setNickname(random.getUsername().substring(0, maxNicknameLength));
 		}
 
 		userDao.insert(random);
@@ -125,8 +121,7 @@ public class Oauth2ServiceImpl implements OauthService {
 	@Override
 	@Transactional(readOnly = true)
 	public User get(OauthPrincipal principal) {
-		OauthUser user = oauth2Dao.selectByUserIdAndType(
-				principal.getOauthUserId(), principal.getType());
+		OauthUser user = oauth2Dao.selectByUserIdAndType(principal.getOauthUserId(), principal.getType());
 		if (user != null) {
 			return userDao.selectById(user.getUser().getId());
 		}
@@ -134,10 +129,8 @@ public class Oauth2ServiceImpl implements OauthService {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
-	public void sendAuthorizeEmail(final String email, User user)
-			throws LogicException {
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public void sendAuthorizeEmail(final String email, User user) throws LogicException {
 		checkOauthRole(user);
 
 		User db = userDao.selectByEmail(email);
@@ -145,8 +138,7 @@ public class Oauth2ServiceImpl implements OauthService {
 			throw new LogicException("error.user.isExists", email);
 		}
 
-		UserCode userCode = userCodeDao.selectByUserAndType(user,
-				UserCodeType.OAUTH_AUTHORIZE_EMAIIL);
+		UserCode userCode = userCodeDao.selectByUserAndType(user, UserCodeType.OAUTH_AUTHORIZE_EMAIIL);
 		if (userCode != null) {
 			checkOauthMailFrequency(userCode);
 			userCode.setAlive(false);
@@ -157,42 +149,34 @@ public class Oauth2ServiceImpl implements OauthService {
 		final Map<String, Object> variables = new HashMap<String, Object>();
 		variables.put("code", randomCode);
 		variables.put("expire", oauthCodeLiveTime);
-		final String subject = messageSource.getMessage(
-				"mail.subject.oauth.completeUserInfo", new Object[] {},
+		final String subject = messageSource.getMessage("mail.subject.oauth.completeUserInfo", new Object[] {},
 				LocaleContextHolder.getLocale());
 		mailer.sendEmail(new MimeMessageHelperHandler() {
 
 			@Override
-			public void handle(MimeMessageHelper helper)
-					throws MessagingException {
+			public void handle(MimeMessageHelper helper) throws MessagingException {
 				helper.setTo(email);
 				helper.setSubject(subject);
-				helper.setText(freemarkers.processTemplateIntoString(
-						MAIL_OAUTH_EMAIL_AUTHORIZE, variables), true);
+				helper.setText(freemarkers.processTemplateIntoString(MAIL_OAUTH_EMAIL_AUTHORIZE, variables), true);
 			}
 		}, true);
 
 		userDao.updateFixedTerm(new User(user.getId(), email));
 
-		UserCode toSend = new UserCode(randomCode, user,
-				UserCodeType.OAUTH_AUTHORIZE_EMAIIL);
+		UserCode toSend = new UserCode(randomCode, user, UserCodeType.OAUTH_AUTHORIZE_EMAIIL);
 		userCodeDao.insert(toSend);
 
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
-	public void sendCompleteInfoEmail(String code, User user)
-			throws LogicException {
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public void sendCompleteInfoEmail(String code, User user) throws LogicException {
 		checkOauthRole(user);
 
-		UserCode dbCode = userCodeDao.selectByUserAndType(user,
-				UserCodeType.OAUTH_AUTHORIZE_EMAIIL);
+		UserCode dbCode = userCodeDao.selectByUserAndType(user, UserCodeType.OAUTH_AUTHORIZE_EMAIIL);
 		userCodeCheck(dbCode, code, oauthCodeLiveTime);
 
-		UserCode userCode = userCodeDao.selectByUserAndType(user,
-				UserCodeType.OAUTH_COMPLETE_USERINFO);
+		UserCode userCode = userCodeDao.selectByUserAndType(user, UserCodeType.OAUTH_COMPLETE_USERINFO);
 		if (userCode != null) {
 			checkOauthMailFrequency(userCode);
 			userCode.setAlive(false);
@@ -201,8 +185,7 @@ public class Oauth2ServiceImpl implements OauthService {
 
 		user = userServer.getUserById(user.getId());
 		final String email = user.getEmail();
-		final String subject = messageSource.getMessage(
-				"mail.subject.oauth.completeUserInfo", new Object[] {},
+		final String subject = messageSource.getMessage("mail.subject.oauth.completeUserInfo", new Object[] {},
 				LocaleContextHolder.getLocale());
 		String randomCode = Strings.uuid();
 		final Map<String, Object> variables = new HashMap<String, Object>();
@@ -212,40 +195,32 @@ public class Oauth2ServiceImpl implements OauthService {
 		mailer.sendEmail(new MimeMessageHelperHandler() {
 
 			@Override
-			public void handle(MimeMessageHelper helper)
-					throws MessagingException {
+			public void handle(MimeMessageHelper helper) throws MessagingException {
 				helper.setSubject(subject);
 				helper.setTo(email);
-				helper.setText(freemarkers.processTemplateIntoString(
-						MAIL_OAUTH_COMPLETE_USERINFO, variables), true);
+				helper.setText(freemarkers.processTemplateIntoString(MAIL_OAUTH_COMPLETE_USERINFO, variables), true);
 			}
 		}, true);
 
-		UserCode toSend = new UserCode(randomCode, user,
-				UserCodeType.OAUTH_COMPLETE_USERINFO);
+		UserCode toSend = new UserCode(randomCode, user, UserCodeType.OAUTH_COMPLETE_USERINFO);
 		userCodeDao.insert(toSend);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public void checkCompleteInfoEmail(String code, int userid)
-			throws LogicException {
+	public void checkCompleteInfoEmail(String code, int userid) throws LogicException {
 		User db = userServer.getUserById(userid);
-		if (!db.hasRole(RoleEnum.ROLE_OAUTH)
-				|| !Validators.validateEmail(db.getEmail())) {
+		if (!db.hasRole(RoleEnum.ROLE_OAUTH) || !Validators.validateEmail(db.getEmail())) {
 			throw new LogicException("error.oauth.invalidUser");
 		}
 
-		UserCode userCode = userCodeDao.selectByUserAndType(db,
-				UserCodeType.OAUTH_COMPLETE_USERINFO);
+		UserCode userCode = userCodeDao.selectByUserAndType(db, UserCodeType.OAUTH_COMPLETE_USERINFO);
 		userCodeCheck(userCode, code, oauthCodeLiveTime);
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
-	public void completeInfo(User user, int userid, String code)
-			throws LogicException {
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public void completeInfo(User user, int userid, String code) throws LogicException {
 		User db = userServer.getUserById(userid);
 		if (!db.hasRole(RoleEnum.ROLE_OAUTH)) {
 			throw new LogicException("error.oauth.invalidUser");
@@ -258,8 +233,7 @@ public class Oauth2ServiceImpl implements OauthService {
 			throw new LogicException("error.user.isExists", user.getUsername());
 		}
 
-		UserCode userCode = userCodeDao.selectByUserAndType(db,
-				UserCodeType.OAUTH_COMPLETE_USERINFO);
+		UserCode userCode = userCodeDao.selectByUserAndType(db, UserCodeType.OAUTH_COMPLETE_USERINFO);
 		userCodeCheck(userCode, code, oauthCodeLiveTime);
 		userCode.setAlive(false);
 		userCodeDao.update(userCode);
@@ -275,17 +249,14 @@ public class Oauth2ServiceImpl implements OauthService {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
-	public void sendBindEmail(OauthPrincipal principal, final String email)
-			throws LogicException {
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public void sendBindEmail(OauthPrincipal principal, final String email) throws LogicException {
 		User user = userServer.getUserByNameOrEmail(email);
 		if (user.hasRole(RoleEnum.ROLE_OAUTH)) {
 			throw new LogicException("error.oauth.invalidUser");
 		}
 
-		UserCode userCode = userCodeDao.selectByUserAndType(user,
-				UserCodeType.OAUTH_BIND);
+		UserCode userCode = userCodeDao.selectByUserAndType(user, UserCodeType.OAUTH_BIND);
 		if (userCode != null) {
 			checkOauthMailFrequency(userCode);
 			userCode.setAlive(false);
@@ -297,19 +268,16 @@ public class Oauth2ServiceImpl implements OauthService {
 		final Map<String, Object> variables = new HashMap<String, Object>();
 		variables.put("code", randomCode);
 		variables.put("expire", oauthCodeLiveTime);
-		final String subject = messageSource.getMessage(
-				"mail.subject.oauth.bind", new Object[] {},
+		final String subject = messageSource.getMessage("mail.subject.oauth.bind", new Object[] {},
 				LocaleContextHolder.getLocale());
 
 		mailer.sendEmail(new MimeMessageHelperHandler() {
 
 			@Override
-			public void handle(MimeMessageHelper helper)
-					throws MessagingException {
+			public void handle(MimeMessageHelper helper) throws MessagingException {
 				helper.setSubject(subject);
 				helper.setTo(email);
-				helper.setText(freemarkers
-						.processTemplateIntoString(MAIL_OAUTH_BIND, variables) , true);
+				helper.setText(freemarkers.processTemplateIntoString(MAIL_OAUTH_BIND, variables), true);
 			}
 		}, true);
 
@@ -324,8 +292,7 @@ public class Oauth2ServiceImpl implements OauthService {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public void unbind(User user, OauthType type) throws LogicException {
 		OauthUser db = oauth2Dao.selectByUserAndType(user, type);
 		if (db == null) {
@@ -335,10 +302,8 @@ public class Oauth2ServiceImpl implements OauthService {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
-	public User bind(OauthPrincipal principal, String code, String email,
-			OauthUser oauthUser) throws LogicException {
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public User bind(OauthPrincipal principal, String code, String email, OauthUser oauthUser) throws LogicException {
 		User user = userServer.getUserByNameOrEmail(email);
 
 		OauthUser db = oauth2Dao.selectByUserAndType(user, oauthUser.getType());
@@ -346,8 +311,7 @@ public class Oauth2ServiceImpl implements OauthService {
 			throw new LogicException("error.oauth.bind");
 		}
 
-		UserCode userCode = userCodeDao.selectByUserAndType(user,
-				UserCodeType.OAUTH_BIND);
+		UserCode userCode = userCodeDao.selectByUserAndType(user, UserCodeType.OAUTH_BIND);
 		userCodeCheck(userCode, code, oauthCodeLiveTime);
 
 		oauthUser.setUser(user);
@@ -370,25 +334,21 @@ public class Oauth2ServiceImpl implements OauthService {
 		userDao.deleteUserRole(user, dbRole);
 	}
 
-	protected void userCodeCheck(UserCode userCode, String code, long liveTime)
-			throws LogicException {
+	protected void userCodeCheck(UserCode userCode, String code, long liveTime) throws LogicException {
 		if (userCode == null) {
 			throw new LogicException("error.user.invalid");
 		}
 		if (!userCode.getCode().equals(code)) {
 			throw new LogicException("error.code.error");
 		}
-		if (!userCode.getAlive() || Times.getMinute(userCode.getCreateDate(),
-				new Date()) > liveTime) {
+		if (!userCode.getAlive() || Times.getMinute(userCode.getCreateDate(), new Date()) > liveTime) {
 			throw new LogicException("error.code.overdue");
 		}
 	}
 
 	protected boolean validNickname(String nickname) {
-		boolean valid = !(Validators.isEmptyOrNull(nickname, true)
-				|| nickname.trim().length() < minNicknameLength
-				|| nickname.length() > maxNicknameLength
-				|| !Jsoup.isValid(nickname, Whitelist.none()));
+		boolean valid = !(Validators.isEmptyOrNull(nickname, true) || nickname.trim().length() < minNicknameLength
+				|| nickname.length() > maxNicknameLength || !Jsoup.isValid(nickname, Whitelist.none()));
 
 		if (valid) {
 			try {
@@ -411,12 +371,10 @@ public class Oauth2ServiceImpl implements OauthService {
 		return user;
 	}
 
-	private void checkOauthMailFrequency(UserCode userCode)
-			throws LogicException {
+	private void checkOauthMailFrequency(UserCode userCode) throws LogicException {
 		double second = Times.getSecond(userCode.getCreateDate(), new Date());
 		if (second < mailFrequency) {
-			throw new LogicException("error.frequenceOperation",
-					mailFrequency - (int) second);
+			throw new LogicException("error.frequenceOperation", mailFrequency - (int) second);
 		}
 	}
 

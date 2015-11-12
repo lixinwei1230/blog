@@ -51,7 +51,6 @@ public final class Files {
 	public static String appendFilename(String name, String append) {
 		String filename = getFilename(name);
 		String extension = getFileExtension(name);
-		return filename + append + (Validators.isEmptyOrNull(extension, true)
-				? "" : "." + extension);
+		return filename + append + (Validators.isEmptyOrNull(extension, true) ? "" : "." + extension);
 	}
 }

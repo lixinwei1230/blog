@@ -42,8 +42,7 @@ public class BlogValidator implements Validator {
 			return;
 		}
 		String content = blog.getContent();
-		if (Validators.isEmptyOrNull(content, true)
-				|| !Validators.hasText(content)) {
+		if (Validators.isEmptyOrNull(content, true) || !Validators.hasText(content)) {
 			e.rejectValue("content", "validation.blog.content.blank");
 			return;
 		}
@@ -64,22 +63,19 @@ public class BlogValidator implements Validator {
 			return;
 		}
 		if (title.length() > titleMaxLength) {
-			e.rejectValue("title", "validation.blog.title.toolong",
-					new Object[] { titleMaxLength },
+			e.rejectValue("title", "validation.blog.title.toolong", new Object[] { titleMaxLength },
 					"博客标题不能超过" + titleMaxLength + "个字符");
 			return;
 		}
 		if (content.length() > contentMaxLength) {
-			e.rejectValue("content", "validation.blog.content.toolong",
-					new Object[] { contentMaxLength },
+			e.rejectValue("content", "validation.blog.content.toolong", new Object[] { contentMaxLength },
 					"博客内容不能超过" + contentMaxLength + "个字符");
 			return;
 		}
 		Set<WebTag> tags = new HashSet<WebTag>();
 		if (!tags.isEmpty()) {
 			if (tags.size() > tagsMaxSize) {
-				e.rejectValue("tags", "validation.blog.tags.oversize",
-						new Object[] { tagsMaxSize },
+				e.rejectValue("tags", "validation.blog.tags.oversize", new Object[] { tagsMaxSize },
 						"博客标签数不能超过" + tagsMaxSize + "个");
 				return;
 			}
@@ -90,8 +86,7 @@ public class BlogValidator implements Validator {
 					return;
 				}
 				if (name.length() > tagNameMaxLength) {
-					e.rejectValue("tags", "validation.blog.tags.name.toolong",
-							new Object[] { tagNameMaxLength },
+					e.rejectValue("tags", "validation.blog.tags.name.toolong", new Object[] { tagNameMaxLength },
 							"博客单个标签长度不能超过" + tagNameMaxLength + "个字符");
 					return;
 				}
@@ -103,8 +98,7 @@ public class BlogValidator implements Validator {
 			return;
 		}
 		if (level < minLevel || level > maxLevel) {
-			e.rejectValue("level", "validation.blog.level.invalid",
-					new Object[] { minLevel, maxLevel },
+			e.rejectValue("level", "validation.blog.level.invalid", new Object[] { minLevel, maxLevel },
 					"博客排序值在" + minLevel + "和" + maxLevel + "之间");
 			return;
 		}

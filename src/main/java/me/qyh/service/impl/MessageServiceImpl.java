@@ -36,8 +36,7 @@ import me.qyh.server.TipServer;
 import me.qyh.server.UserServer;
 import me.qyh.service.MessageService;
 
-public class MessageServiceImpl extends BaseServiceImpl
-		implements MessageService, TipServer {
+public class MessageServiceImpl extends BaseServiceImpl implements MessageService, TipServer {
 
 	@Autowired
 	private MessageSendDao messageSendDao;
@@ -54,8 +53,7 @@ public class MessageServiceImpl extends BaseServiceImpl
 	private Map<Integer, MessageSource> sources = new HashMap<Integer, MessageSource>();
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public int getToReadMessageCount(User user, Set<Integer> sourceIds) {
 		int unreadFromSources = handleMessageSources(user, sourceIds);
 
@@ -97,8 +95,7 @@ public class MessageServiceImpl extends BaseServiceImpl
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public void insertMessage(MessageSendDetail message) throws LogicException {
 		messageDetailDao.insert(message.getDetail());
 		messageSendDao.insert(message);
@@ -133,10 +130,8 @@ public class MessageServiceImpl extends BaseServiceImpl
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
-	public void updateIsRead(Set<Integer> receives, boolean isRead)
-			throws LogicException {
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public void updateIsRead(Set<Integer> receives, boolean isRead) throws LogicException {
 		for (Integer id : receives) {
 			MessageReceive receive = loadMessageReceive(id);
 			super.doAuthencation(UserContext.getUser(), receive.getReceiver());
@@ -159,10 +154,8 @@ public class MessageServiceImpl extends BaseServiceImpl
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
-	public void deleteMessageReceives(Set<Integer> receives)
-			throws LogicException {
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public void deleteMessageReceives(Set<Integer> receives) throws LogicException {
 		for (Integer id : receives) {
 			MessageReceive receive = loadMessageReceive(id);
 			super.doAuthencation(UserContext.getUser(), receive.getReceiver());
@@ -176,8 +169,7 @@ public class MessageServiceImpl extends BaseServiceImpl
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public void deleteMessageSends(Set<Integer> sends) throws LogicException {
 		for (Integer id : sends) {
 			MessageSend send = loadMessageSend(id);
@@ -188,10 +180,8 @@ public class MessageServiceImpl extends BaseServiceImpl
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
-	public void updateMessageRecieveStatus(Set<Integer> receives,
-			MessageStatus status) throws LogicException {
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public void updateMessageRecieveStatus(Set<Integer> receives, MessageStatus status) throws LogicException {
 		for (Integer id : receives) {
 			MessageReceive receive = loadMessageReceive(id);
 			super.doAuthencation(UserContext.getUser(), receive.getReceiver());
@@ -206,15 +196,12 @@ public class MessageServiceImpl extends BaseServiceImpl
 
 	@Override
 	@Transactional(readOnly = true)
-	public Page<MessageReceive> findMessageReceives(
-			MessageReceivePageParam param) {
+	public Page<MessageReceive> findMessageReceives(MessageReceivePageParam param) {
 
 		if (param.getSend() != null) {
-			MessageSend send = messageSendDao
-					.selectById(param.getSend().getId());
+			MessageSend send = messageSendDao.selectById(param.getSend().getId());
 			if (send == null) {
-				return new Page<MessageReceive>(param, 0,
-						new ArrayList<MessageReceive>());
+				return new Page<MessageReceive>(param, 0, new ArrayList<MessageReceive>());
 			}
 
 			super.doAuthencation(UserContext.getUser(), send.getSender());
@@ -227,8 +214,7 @@ public class MessageServiceImpl extends BaseServiceImpl
 
 	@Override
 	@Transactional(readOnly = true)
-	public MessageReceive getMessageReceive(Integer id)
-			throws DataNotFoundException {
+	public MessageReceive getMessageReceive(Integer id) throws DataNotFoundException {
 		MessageReceive receive = loadMessageReceive(id);
 		super.doAuthencation(UserContext.getUser(), receive.getReceiver());
 
@@ -242,15 +228,13 @@ public class MessageServiceImpl extends BaseServiceImpl
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.NESTED)
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.NESTED)
 	public void sendTip(TipMessage message) {
 		if (message.getSender().equals(message.getReceiver())) {
 			return;
 		}
 
-		MessageDetail detail = new MessageDetail(message.getTitle(),
-				message.getContent());
+		MessageDetail detail = new MessageDetail(message.getTitle(), message.getContent());
 		messageDetailDao.insert(detail);
 
 		MessageSend toSend = new MessageSend();
@@ -271,8 +255,7 @@ public class MessageServiceImpl extends BaseServiceImpl
 
 	}
 
-	private MessageReceive loadMessageReceive(Integer id)
-			throws DataNotFoundException {
+	private MessageReceive loadMessageReceive(Integer id) throws DataNotFoundException {
 		MessageReceive receive = messageReceiveDao.selectById(id);
 		if (receive == null) {
 			throw new DataNotFoundException("error.message.notFound");
@@ -281,8 +264,7 @@ public class MessageServiceImpl extends BaseServiceImpl
 		return receive;
 	}
 
-	private MessageSend loadMessageSend(Integer id)
-			throws DataNotFoundException {
+	private MessageSend loadMessageSend(Integer id) throws DataNotFoundException {
 		MessageSend send = messageSendDao.selectById(id);
 		if (send == null) {
 			throw new DataNotFoundException("error.message.notFound");

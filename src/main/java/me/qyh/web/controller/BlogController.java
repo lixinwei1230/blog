@@ -33,8 +33,8 @@ public class BlogController extends BaseController {
 	}
 
 	@RequestMapping(value = "list/{currentPage}")
-	public String list(@PathVariable("currentPage") int currentPage,
-			BlogPageParam param, ModelMap model) throws DataNotFoundException {
+	public String list(@PathVariable("currentPage") int currentPage, BlogPageParam param, ModelMap model)
+			throws DataNotFoundException {
 
 		param.setCurrentPage(currentPage);
 		param.setPageSize(pageSize);

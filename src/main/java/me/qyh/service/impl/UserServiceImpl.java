@@ -69,8 +69,7 @@ public class UserServiceImpl implements UserService, InitializingBean {
 	private static final String MAIL_REGISTER_SUCCESS_TPL_PATH = "mail/registerSuccess.ftl";
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public void register(User user) throws LogicException {
 		userNameChecker.check(user.getUsername());
 		User db = userDao.selectByName(user.getUsername());
@@ -87,14 +86,12 @@ public class UserServiceImpl implements UserService, InitializingBean {
 
 		userDao.insert(user);
 		String activateCode = UUID.randomUUID().toString();
-		userCodeDao.insert(
-				new UserCode(activateCode, user, UserCodeType.ACTIVATE));
+		userCodeDao.insert(new UserCode(activateCode, user, UserCodeType.ACTIVATE));
 		sendRegisterMail(user, activateCode);
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public void reactive(String name, String mail) throws LogicException {
 		User user = userDao.selectByName(name);
 		if (user == null || !user.getEmail().equals(mail)) {
@@ -104,8 +101,7 @@ public class UserServiceImpl implements UserService, InitializingBean {
 			throw new LogicException("error.user.activated");
 		}
 
-		UserCode userCode = userCodeDao.selectByUserAndType(user,
-				UserCodeType.ACTIVATE);
+		UserCode userCode = userCodeDao.selectByUserAndType(user, UserCodeType.ACTIVATE);
 		if (userCode != null) {
 			checkMailFrequency(userCode);
 			userCode.setAlive(false);
@@ -113,16 +109,13 @@ public class UserServiceImpl implements UserService, InitializingBean {
 		}
 
 		String activateCode = UUID.randomUUID().toString();
-		userCodeDao.insert(
-				new UserCode(activateCode, user, UserCodeType.ACTIVATE));
+		userCodeDao.insert(new UserCode(activateCode, user, UserCodeType.ACTIVATE));
 		sendRegisterMail(user, activateCode);
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
-	public void activate(Integer userId, String activateCode)
-			throws LogicException {
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public void activate(Integer userId, String activateCode) throws LogicException {
 		User user = userDao.selectById(userId);
 		if (user == null) {
 			throw new LogicException("error.user.notexists");
@@ -130,8 +123,7 @@ public class UserServiceImpl implements UserService, InitializingBean {
 		if (user.getActivate()) {
 			throw new LogicException("error.user.activated");
 		}
-		UserCode userCode = userCodeDao.selectByUserAndType(user,
-				UserCodeType.ACTIVATE);
+		UserCode userCode = userCodeDao.selectByUserAndType(user, UserCodeType.ACTIVATE);
 
 		userCodeCheck(userCode, activateCode, activateCodeLiveTime);
 
@@ -148,17 +140,14 @@ public class UserServiceImpl implements UserService, InitializingBean {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
-	public void forgetPassword(String name, String email)
-			throws LogicException {
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public void forgetPassword(String name, String email) throws LogicException {
 		User user = userServer.getUserByNameOrEmail(name);
 		if (!user.getEmail().equals(email)) {
 			throw new LogicException("error.user.notexists");
 		}
 
-		UserCode userCode = userCodeDao.selectByUserAndType(user,
-				UserCodeType.FORGETPASSWORD);
+		UserCode userCode = userCodeDao.selectByUserAndType(user, UserCodeType.FORGETPASSWORD);
 		if (userCode != null) {
 			checkMailFrequency(userCode);
 			userCode.setAlive(false);
@@ -166,45 +155,36 @@ public class UserServiceImpl implements UserService, InitializingBean {
 		}
 
 		String code = UUID.randomUUID().toString();
-		userCodeDao
-				.insert(new UserCode(code, user, UserCodeType.FORGETPASSWORD));
+		userCodeDao.insert(new UserCode(code, user, UserCodeType.FORGETPASSWORD));
 		sendFindPasswordMail(user, code);
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
-	public void resetPasswordCheck(String code, Integer userId)
-			throws LogicException {
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public void resetPasswordCheck(String code, Integer userId) throws LogicException {
 		User user = userServer.getUserById(userId);
-		UserCode userCode = userCodeDao.selectByUserAndType(user,
-				UserCodeType.FORGETPASSWORD);
+		UserCode userCode = userCodeDao.selectByUserAndType(user, UserCodeType.FORGETPASSWORD);
 
 		userCodeCheck(userCode, code, findPasswordCodeLiveTime);
 	}
 
-	protected void userCodeCheck(UserCode userCode, String code, long liveTime)
-			throws LogicException {
+	protected void userCodeCheck(UserCode userCode, String code, long liveTime) throws LogicException {
 		if (userCode == null) {
 			throw new LogicException("error.user.invalid");
 		}
 		if (!userCode.getCode().equals(code)) {
 			throw new LogicException("error.code.error");
 		}
-		if (!userCode.getAlive() || Times.getMinute(userCode.getCreateDate(),
-				new Date()) > liveTime) {
+		if (!userCode.getAlive() || Times.getMinute(userCode.getCreateDate(), new Date()) > liveTime) {
 			throw new LogicException("error.code.overdue");
 		}
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
-	public void resetPassword(String code, String password, Integer userId)
-			throws LogicException {
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public void resetPassword(String code, String password, Integer userId) throws LogicException {
 		User user = userServer.getUserById(userId);
-		UserCode userCode = userCodeDao.selectByUserAndType(user,
-				UserCodeType.FORGETPASSWORD);
+		UserCode userCode = userCodeDao.selectByUserAndType(user, UserCodeType.FORGETPASSWORD);
 
 		userCodeCheck(userCode, code, findPasswordCodeLiveTime);
 
@@ -217,10 +197,8 @@ public class UserServiceImpl implements UserService, InitializingBean {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
-	public void changePassword(String oldPassword, String newPassword)
-			throws LogicException {
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public void changePassword(String oldPassword, String newPassword) throws LogicException {
 		User db = userServer.getUserById(UserContext.getUser().getId());
 
 		String dbPassword = db.getPassword();
@@ -234,8 +212,7 @@ public class UserServiceImpl implements UserService, InitializingBean {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public void changeNickname(String nickname) throws LogicException {
 		userNameChecker.check(nickname);
 		User user = UserContext.getUser();
@@ -248,18 +225,15 @@ public class UserServiceImpl implements UserService, InitializingBean {
 		variables.put("user", user);
 		variables.put("activateCode", activateCode);
 
-		final String subject = messageSource.getMessage("mail.subject.register",
-				new Object[] { user.getUsername() },
+		final String subject = messageSource.getMessage("mail.subject.register", new Object[] { user.getUsername() },
 				LocaleContextHolder.getLocale());
 		mailer.sendEmail(new MimeMessageHelperHandler() {
 
 			@Override
-			public void handle(MimeMessageHelper helper)
-					throws MessagingException {
+			public void handle(MimeMessageHelper helper) throws MessagingException {
 				helper.setSubject(subject);
 				helper.setTo(user.getEmail());
-				helper.setText(freemarkers.processTemplateIntoString(
-						MAIL_ACTIVATE_TPL_PATH, variables), true);
+				helper.setText(freemarkers.processTemplateIntoString(MAIL_ACTIVATE_TPL_PATH, variables), true);
 
 			}
 		}, true);
@@ -270,18 +244,15 @@ public class UserServiceImpl implements UserService, InitializingBean {
 		variables.put("user", user);
 		variables.put("code", code);
 
-		final String subject = messageSource.getMessage(
-				"mail.subject.findPassword", new Object[] {},
+		final String subject = messageSource.getMessage("mail.subject.findPassword", new Object[] {},
 				LocaleContextHolder.getLocale());
 		mailer.sendEmail(new MimeMessageHelperHandler() {
 
 			@Override
-			public void handle(MimeMessageHelper helper)
-					throws MessagingException {
+			public void handle(MimeMessageHelper helper) throws MessagingException {
 				helper.setSubject(subject);
 				helper.setTo(user.getEmail());
-				helper.setText(freemarkers.processTemplateIntoString(
-						MAIL_FINDPASSWORD_TPL_PATH, variables), true);
+				helper.setText(freemarkers.processTemplateIntoString(MAIL_FINDPASSWORD_TPL_PATH, variables), true);
 
 			}
 		}, true);
@@ -291,20 +262,15 @@ public class UserServiceImpl implements UserService, InitializingBean {
 		final Map<String, Object> variables = new HashMap<String, Object>();
 		variables.put("user", user);
 
-		final String subject = messageSource.getMessage(
-				"mail.subject.register.success", new Object[] {},
+		final String subject = messageSource.getMessage("mail.subject.register.success", new Object[] {},
 				LocaleContextHolder.getLocale());
 		mailer.sendEmail(new MimeMessageHelperHandler() {
 
 			@Override
-			public void handle(MimeMessageHelper helper)
-					throws MessagingException {
+			public void handle(MimeMessageHelper helper) throws MessagingException {
 				helper.setSubject(subject);
 				helper.setTo(user.getEmail());
-				helper.setText(
-						freemarkers.processTemplateIntoString(
-								MAIL_REGISTER_SUCCESS_TPL_PATH, variables),
-						true);
+				helper.setText(freemarkers.processTemplateIntoString(MAIL_REGISTER_SUCCESS_TPL_PATH, variables), true);
 
 			}
 		}, true);
@@ -336,8 +302,7 @@ public class UserServiceImpl implements UserService, InitializingBean {
 	private void checkMailFrequency(UserCode userCode) throws LogicException {
 		double second = Times.getSecond(userCode.getCreateDate(), new Date());
 		if (second < mailFrequency) {
-			throw new LogicException("error.frequenceOperation",
-					mailFrequency - (int) second);
+			throw new LogicException("error.frequenceOperation", mailFrequency - (int) second);
 		}
 	}
 }

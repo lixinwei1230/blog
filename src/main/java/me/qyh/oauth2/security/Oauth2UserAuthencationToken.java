@@ -14,8 +14,7 @@ public class Oauth2UserAuthencationToken extends AbstractAuthenticationToken {
 
 	private final Object principal;
 
-	public Oauth2UserAuthencationToken(Object principal,
-			Collection<? extends GrantedAuthority> authorities) {
+	public Oauth2UserAuthencationToken(Object principal, Collection<? extends GrantedAuthority> authorities) {
 		super(authorities);
 		this.principal = principal;
 		setAuthenticated(true);

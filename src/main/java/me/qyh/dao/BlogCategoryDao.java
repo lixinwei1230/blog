@@ -11,8 +11,7 @@ public interface BlogCategoryDao extends BaseDao<BlogCategory, Integer> {
 
 	int selectCountBySpace(Space user);
 
-	BlogCategory selectBySpaceAndName(@Param("space") Space user,
-			@Param("name") String name);
+	BlogCategory selectBySpaceAndName(@Param("space") Space user, @Param("name") String name);
 
 	List<BlogCategory> selectBySpace(Space space);
 

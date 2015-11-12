@@ -23,8 +23,7 @@ public class ClearMessageJob {
 	public synchronized void doJob() {
 		try {
 			messageCache.clear();
-			messageReceiveDao.deleteByOverdaysAndStatus(overday,
-					MessageStatus.COMMON);
+			messageReceiveDao.deleteByOverdaysAndStatus(overday, MessageStatus.COMMON);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}

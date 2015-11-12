@@ -14,8 +14,7 @@ public class SpringContextHolder implements ApplicationContextAware {
 	private static ApplicationContext applicationContext;
 
 	@Override
-	public void setApplicationContext(ApplicationContext application)
-			throws BeansException {
+	public void setApplicationContext(ApplicationContext application) throws BeansException {
 		SpringContextHolder.applicationContext = application;
 	}
 

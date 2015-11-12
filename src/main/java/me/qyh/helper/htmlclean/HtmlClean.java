@@ -26,8 +26,7 @@ public class HtmlClean implements HtmlContentHandler {
 	private class ThisWhitelist extends Whitelist {
 
 		@Override
-		protected boolean isSafeAttribute(String tag, Element e,
-				Attribute att) {
+		protected boolean isSafeAttribute(String tag, Element e, Attribute att) {
 			if (!Jsoup.isValid(att.getValue(), Whitelist.none())) {
 				return false;
 			}
@@ -41,12 +40,9 @@ public class HtmlClean implements HtmlContentHandler {
 					for (SafeTagAttribute allowAtt : allowAttrs) {
 						String attName = allowAtt.getName();
 						if (attName.equals(att.getKey())) {
-							AttributeValueValidator validator = allowAtt
-									.getValidator();
+							AttributeValueValidator validator = allowAtt.getValidator();
 							return validator == null ? true
-									: "class".equalsIgnoreCase(att.getKey())
-											? validClasses(validator,
-													att.getValue())
+									: "class".equalsIgnoreCase(att.getKey()) ? validClasses(validator, att.getValue())
 											: validator.allow(att.getValue());
 						}
 					}
@@ -67,8 +63,7 @@ public class HtmlClean implements HtmlContentHandler {
 		}
 	}
 
-	private boolean validClasses(AttributeValueValidator validator,
-			String value) {
+	private boolean validClasses(AttributeValueValidator validator, String value) {
 		List<String> classes = parseValue(value);
 		for (String clazz : classes) {
 			if (!validator.allow(clazz)) {

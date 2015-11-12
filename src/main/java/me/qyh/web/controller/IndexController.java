@@ -19,15 +19,14 @@ public class IndexController extends BaseController {
 	private BlogService blogService;
 	@Value("${config.pagesize.blog}")
 	private int pageSize;
-	
-	@RequestMapping(value = "/" , method = RequestMethod.GET)
-	public String index(){
+
+	@RequestMapping(value = "/", method = RequestMethod.GET)
+	public String index() {
 		return "forward:blog/list/1";
 	}
 
-	@RequestMapping(value = "blog/list/{currentPage}" ,method = RequestMethod.GET)
-	public String index(@PathVariable("currentPage") int currentPage, BlogPageParam param,
-			ModelMap model) {
+	@RequestMapping(value = "blog/list/{currentPage}", method = RequestMethod.GET)
+	public String index(@PathVariable("currentPage") int currentPage, BlogPageParam param, ModelMap model) {
 		param.setCurrentPage(currentPage);
 		param.setPageSize(pageSize);
 		param.setStatus(BlogStatus.NORMAL);

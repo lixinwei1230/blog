@@ -21,8 +21,7 @@ import me.qyh.service.MyFileService;
 import me.qyh.utils.Times;
 
 @Service("myFileService")
-public class MyFileServiceImpl extends BaseServiceImpl
-		implements MyFileService {
+public class MyFileServiceImpl extends BaseServiceImpl implements MyFileService {
 
 	@Autowired
 	private FileDao fileDao;
@@ -30,8 +29,7 @@ public class MyFileServiceImpl extends BaseServiceImpl
 	@Override
 	@Transactional(readOnly = true)
 	public Page<MyFile> findMyFiles(MyFilePageParam param) {
-		return new Page<MyFile>(param, fileDao.selectCount(param),
-				fileDao.selectPage(param));
+		return new Page<MyFile>(param, fileDao.selectCount(param), fileDao.selectPage(param));
 	}
 
 	@Override
@@ -46,21 +44,20 @@ public class MyFileServiceImpl extends BaseServiceImpl
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED,
-			rollbackFor = Exception.class)
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public void deleteMyFile(Integer id) throws LogicException {
 		MyFile db = fileDao.selectById(id);
 		if (db == null || FileStatus.RECYCLER.equals(db.getStatus())) {
 			throw new LogicException("error.file.notexists");
 		}
 		super.doAuthencation(UserContext.getUser(), db.getUser());
-		
-		if(db.getIsCover()){
+
+		if (db.getIsCover()) {
 			throw new LogicException("error.file.canNotDeleteCover");
 		}
 		deleteMyFile(db);
 		MyFile cover = db.getCover();
-		if(cover != null){
+		if (cover != null) {
 			deleteMyFile(cover);
 		}
 	}

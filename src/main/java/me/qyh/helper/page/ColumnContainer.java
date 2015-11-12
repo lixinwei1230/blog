@@ -76,8 +76,7 @@ public class ColumnContainer implements Comparable<ColumnContainer> {
 		return index - o.index;
 	}
 
-	private class LocationWidgetComporator
-			implements Comparator<LocationWidget> {
+	private class LocationWidgetComporator implements Comparator<LocationWidget> {
 
 		@Override
 		public int compare(LocationWidget o1, LocationWidget o2) {

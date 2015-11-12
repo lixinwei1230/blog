@@ -8,8 +8,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 public final class CacheHelper {
 
-	public static StandardEvaluationContext getContext(Method method,
-			Object[] args) {
+	public static StandardEvaluationContext getContext(Method method, Object[] args) {
 		ParameterNameDiscoverer paramDiscoverer = new DefaultParameterNameDiscoverer();
 		StandardEvaluationContext context = new StandardEvaluationContext();
 		for (int i = 0; i < args.length; i++) {

@@ -39,8 +39,7 @@ public class UserServerImpl implements UserServer {
 	@Override
 	@Transactional(readOnly = true)
 	public User getUserByNameOrEmail(String nameOrEmail) throws LogicException {
-		User user = (nameOrEmail.indexOf('@') != -1)
-				? userDao.selectByEmail(nameOrEmail)
+		User user = (nameOrEmail.indexOf('@') != -1) ? userDao.selectByEmail(nameOrEmail)
 				: userDao.selectByName(nameOrEmail);
 		validUser(user);
 		user.setRoles(roleDao.selectByUser(user));
@@ -94,7 +93,7 @@ public class UserServerImpl implements UserServer {
 		user.setRoles(roleDao.selectByUser(user));
 		return user;
 	}
-	
+
 	private void validUser(User user) throws LogicException {
 		if (user == null || !user.getActivate()) {
 			throw new DataNotFoundException("error.user.notexists");
@@ -109,6 +108,5 @@ public class UserServerImpl implements UserServer {
 			throw new LogicException("error.account.disabled");
 		}
 	}
-
 
 }

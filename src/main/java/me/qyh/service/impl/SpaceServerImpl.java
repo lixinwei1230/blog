@@ -20,8 +20,7 @@ public class SpaceServerImpl implements SpaceServer {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Space getSpaceById(String id)
-			throws DataNotFoundException, SpaceDisabledException {
+	public Space getSpaceById(String id) throws DataNotFoundException, SpaceDisabledException {
 		Space space = spaceDao.selectById(id);
 		if (space == null) {
 			throw new DataNotFoundException("error.space.notexists");
@@ -33,8 +32,7 @@ public class SpaceServerImpl implements SpaceServer {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Space getSpaceByUser(User user)
-			throws DataNotFoundException, SpaceDisabledException {
+	public Space getSpaceByUser(User user) throws DataNotFoundException, SpaceDisabledException {
 		Space space = spaceDao.selectByUser(user);
 		if (space == null) {
 			throw new DataNotFoundException("error.space.notexists");

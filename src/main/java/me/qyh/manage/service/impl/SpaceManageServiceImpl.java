@@ -20,8 +20,7 @@ import me.qyh.server.TipServer;
 import me.qyh.service.impl.SpaceServiceImpl;
 
 @Service
-public class SpaceManageServiceImpl extends SpaceServiceImpl
-		implements SpaceManageService {
+public class SpaceManageServiceImpl extends SpaceServiceImpl implements SpaceManageService {
 
 	@Autowired
 	private SpaceDao spaceDao;
@@ -33,10 +32,8 @@ public class SpaceManageServiceImpl extends SpaceServiceImpl
 	private TipServer tipServer;
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
-	public void toggleSpaceAbled(String id, TipMessage message)
-			throws LogicException {
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public void toggleSpaceAbled(String id, TipMessage message) throws LogicException {
 		Space space = spaceDao.selectById(id);
 		if (space == null) {
 			throw new LogicException("error.space.notexists");
@@ -65,8 +62,7 @@ public class SpaceManageServiceImpl extends SpaceServiceImpl
 	private boolean isOptionalSpace(Space space) {
 		User user = userDao.selectById(space.getUser().getId());
 		user.setRoles(roleDao.selectByUser(user));
-		if (user.hasRole(RoleEnum.ROLE_SUPERVISOR)
-				|| user.hasRole(RoleEnum.ROLE_MESSAGER)
+		if (user.hasRole(RoleEnum.ROLE_SUPERVISOR) || user.hasRole(RoleEnum.ROLE_MESSAGER)
 				|| user.equals(UserContext.getUser())) {
 			return false;
 		}

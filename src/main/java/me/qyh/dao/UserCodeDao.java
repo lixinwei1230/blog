@@ -8,7 +8,6 @@ import me.qyh.entity.UserCodeType;
 
 public interface UserCodeDao extends BaseDao<UserCode, Integer> {
 
-	UserCode selectByUserAndType(@Param(value = "user") User user,
-			@Param(value = "type") UserCodeType type);
+	UserCode selectByUserAndType(@Param(value = "user") User user, @Param(value = "type") UserCodeType type);
 
 }

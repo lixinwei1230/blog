@@ -28,8 +28,7 @@ public class Sign implements java.io.Serializable {
 	}
 
 	public boolean cache() {
-		return (getLastHitTime() - periods.get(0)) / 1000 <= periodSec
-				&& periods.size() >= hits;
+		return (getLastHitTime() - periods.get(0)) / 1000 <= periodSec && periods.size() >= hits;
 	}
 
 	public Sign(int periodSec, int hits) {

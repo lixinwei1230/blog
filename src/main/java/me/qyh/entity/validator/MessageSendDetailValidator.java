@@ -31,50 +31,40 @@ public class MessageSendDetailValidator implements Validator {
 		MessageSendDetail send = (MessageSendDetail) o;
 		MessageDetail detail = send.getDetail();
 		if (detail == null) {
-			e.rejectValue("detail",
-					"validation.messageSendDetail.detail.empty");
+			e.rejectValue("detail", "validation.messageSendDetail.detail.empty");
 			return;
 		}
 		String title = detail.getTitle();
 
 		if (Validators.isEmptyOrNull(title, true)) {
-			e.rejectValue("detail",
-					"validation.messageSendDetail.detail.title.empty");
+			e.rejectValue("detail", "validation.messageSendDetail.detail.title.empty");
 			return;
 		}
 
 		if (title.length() > titleMaxLength) {
-			e.rejectValue("detail",
-					"validation.messageSendDetail.detail.title.toolong",
-					new Object[] { titleMaxLength },
-					"信息标题长度不 能超过" + titleMaxLength + "个字符");
+			e.rejectValue("detail", "validation.messageSendDetail.detail.title.toolong",
+					new Object[] { titleMaxLength }, "信息标题长度不 能超过" + titleMaxLength + "个字符");
 			return;
 		}
 
 		String content = detail.getContent();
 		if (Validators.isEmptyOrNull(content, true)) {
-			e.rejectValue("detail",
-					"validation.messageSendDetail.detail.content.empty");
+			e.rejectValue("detail", "validation.messageSendDetail.detail.content.empty");
 			return;
 		}
 		if (content.length() > contentMaxLength) {
-			e.rejectValue("detail",
-					"validation.messageSendDetail.detail.content.toolong",
-					new Object[] { contentMaxLength },
-					"信息内容长度不 能超过" + contentMaxLength + "个字符");
+			e.rejectValue("detail", "validation.messageSendDetail.detail.content.toolong",
+					new Object[] { contentMaxLength }, "信息内容长度不 能超过" + contentMaxLength + "个字符");
 		}
 
 		Set<String> receivers = send.getReceivers();
 		if (receivers.isEmpty()) {
-			e.rejectValue("receivers",
-					"validation.messageSendDetail.receivers.empty");
+			e.rejectValue("receivers", "validation.messageSendDetail.receivers.empty");
 			return;
 		}
 		if (receivers.size() > receiversMaxSize) {
-			e.rejectValue("receivers",
-					"validation.messageSendDetail.receivers.oversize",
-					new Object[] { receiversMaxSize },
-					"接收人不能超过" + receiversMaxSize + "个");
+			e.rejectValue("receivers", "validation.messageSendDetail.receivers.oversize",
+					new Object[] { receiversMaxSize }, "接收人不能超过" + receiversMaxSize + "个");
 		}
 	}
 

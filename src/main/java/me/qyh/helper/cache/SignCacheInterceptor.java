@@ -28,32 +28,26 @@ public class SignCacheInterceptor implements MethodInterceptor {
 	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		Method method = invocation.getMethod();
-		SignCache signCache = AnnotationUtils.getAnnotation(method,
-				SignCache.class);
+		SignCache signCache = AnnotationUtils.getAnnotation(method, SignCache.class);
 		Cache cache = cacheManager.getCache(signCache.cacheName());
 		if (cache != null) {
-			StandardEvaluationContext context = CacheHelper.getContext(method,
-					invocation.getArguments());
+			StandardEvaluationContext context = CacheHelper.getContext(method, invocation.getArguments());
 			SpelExpressionParser parser = new SpelExpressionParser();
-			Object cacheKey = parser.parseExpression(signCache.cacheKey())
-					.getValue(context);
+			Object cacheKey = parser.parseExpression(signCache.cacheKey()).getValue(context);
 			ValueWrapper cached = cache.get(cacheKey);
 			if (cached != null) {
 				return cached.get();
 			}
 			Object result = invocation.proceed();
 			context.setVariable("result", result);
-			Object condition = parser.parseExpression(signCache.condition())
-					.getValue(context);
+			Object condition = parser.parseExpression(signCache.condition()).getValue(context);
 			if (condition == null || !(condition instanceof Boolean)) {
-				throw new SystemException(
-						"SignCache Annotation中的condition表达式不能为空，并且必须是布尔表达式");
+				throw new SystemException("SignCache Annotation中的condition表达式不能为空，并且必须是布尔表达式");
 			}
 			if (result != null && (Boolean) condition) {
 				Sign sign = signCacheStore.getSign(cacheKey);
 				if (sign == null) {
-					signCacheStore.addSign(cacheKey,
-							new Sign(signCache.periodSec(), signCache.hits()));
+					signCacheStore.addSign(cacheKey, new Sign(signCache.periodSec(), signCache.hits()));
 				} else {
 					long now = new Date().getTime();
 					if (!sign.addHit(now)) {

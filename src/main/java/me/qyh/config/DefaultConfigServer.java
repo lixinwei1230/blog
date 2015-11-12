@@ -112,7 +112,7 @@ public class DefaultConfigServer implements ConfigServer {
 		}
 		config.addWidgetCountLimits(PageType.HOMEPAGE, maxWidgetsAtHomePage);
 		config.setUserWidgetLimit(userWidgetLimit);
-		
+
 		if (user.hasRole(RoleEnum.ROLE_SUPERVISOR)) {
 			config.setClean(fullWidgetHtmlClean);
 		} else {
@@ -123,8 +123,7 @@ public class DefaultConfigServer implements ConfigServer {
 
 	@Override
 	public _ImageConfig getAvatarConfig(User user) {
-		return new _ImageConfig(new DefaultSizeLimit(avatar_maxSize),
-				avatar_allowFileTypes, 1, avatar_imageMaxWidth,
+		return new _ImageConfig(new DefaultSizeLimit(avatar_maxSize), avatar_allowFileTypes, 1, avatar_imageMaxWidth,
 				avatar_imageMaxHeight);
 	}
 
@@ -147,11 +146,9 @@ public class DefaultConfigServer implements ConfigServer {
 
 	@Override
 	public FileUploadConfig getFileUploadConfig(User user) {
-		_Config config = new _Config(new DefaultSizeLimit(
-				attachment_maxSizeOfOneFile), attachment_allowFileTypes,
+		_Config config = new _Config(new DefaultSizeLimit(attachment_maxSizeOfOneFile), attachment_allowFileTypes,
 				attachment_maxSizeOfQueue);
-		_ImageConfig imConfig = new _ImageConfig(new DefaultSizeLimit(
-				image_maxSizeOfOneFile), image_allowFileTypes,
+		_ImageConfig imConfig = new _ImageConfig(new DefaultSizeLimit(image_maxSizeOfOneFile), image_allowFileTypes,
 				image_maxSizeOfQueue, imageMaxWidth, imageMaxHeight);
 		return new FileUploadConfig(maxSizeOfUser, config, imConfig);
 	}
@@ -165,8 +162,7 @@ public class DefaultConfigServer implements ConfigServer {
 
 	@Override
 	public FileWriteConfig getAvatarWriteConfig() {
-		FileWriteConfig config = new FileWriteConfig(fileWriteMatcher,
-				new DefaultImageZoomMatcher(avatar_allowSizes));
+		FileWriteConfig config = new FileWriteConfig(fileWriteMatcher, new DefaultImageZoomMatcher(avatar_allowSizes));
 		return config;
 	}
 

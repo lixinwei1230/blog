@@ -28,8 +28,7 @@ public class SpaceBlogRssFeedView extends AbstractRssFeedView {
 	private UrlHelper helper;
 
 	@Override
-	protected void buildFeedMetadata(Map<String, Object> model, Channel feed,
-			HttpServletRequest request) {
+	protected void buildFeedMetadata(Map<String, Object> model, Channel feed, HttpServletRequest request) {
 		Space space = (Space) model.get("space");
 
 		feed.setTitle(space.getId());
@@ -40,9 +39,8 @@ public class SpaceBlogRssFeedView extends AbstractRssFeedView {
 	}
 
 	@Override
-	protected List<Item> buildFeedItems(Map<String, Object> model,
-			HttpServletRequest request, HttpServletResponse response)
-					throws Exception {
+	protected List<Item> buildFeedItems(Map<String, Object> model, HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
 		@SuppressWarnings("unchecked")
 		List<Blog> blogs = (List<Blog>) model.get(BLOGS);
 
@@ -61,8 +59,7 @@ public class SpaceBlogRssFeedView extends AbstractRssFeedView {
 			item.setContent(content);
 
 			item.setTitle(blog.getTitle());
-			item.setLink(request.getScheme() + "://"
-					+ helper.getUrlBySpace(space) + "/blog/" + blog.getId());
+			item.setLink(request.getScheme() + "://" + helper.getUrlBySpace(space) + "/blog/" + blog.getId());
 			item.setPubDate(blog.getWriteDate());
 
 			items.add(item);

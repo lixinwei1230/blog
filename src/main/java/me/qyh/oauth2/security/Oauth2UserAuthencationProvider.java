@@ -24,14 +24,11 @@ public class Oauth2UserAuthencationProvider implements AuthenticationProvider {
 	private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
 
 	@Override
-	public Authentication authenticate(Authentication authentication)
-			throws AuthenticationException {
+	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		Oauth2UserAuthencationToken token = (Oauth2UserAuthencationToken) authentication;
 		if (!(token.getPrincipal() instanceof OauthPrincipal)) {
-			throw new SystemException(
-					token.getPrincipal() == null ? "认证过程中principal为null"
-							: "认证过程中principal为" + token + "不是"
-									+ OauthPrincipal.class.getName());
+			throw new SystemException(token.getPrincipal() == null ? "认证过程中principal为null"
+					: "认证过程中principal为" + token + "不是" + OauthPrincipal.class.getName());
 		}
 		OauthPrincipal principal = (OauthPrincipal) token.getPrincipal();
 		UserDetails user = null;
@@ -43,8 +40,7 @@ public class Oauth2UserAuthencationProvider implements AuthenticationProvider {
 		preAuthenticationChecks.check(user);
 		postAuthenticationChecks.check(user);
 
-		return new Oauth2UserAuthencationToken(user,
-				authoritiesMapper.mapAuthorities(user.getAuthorities()));
+		return new Oauth2UserAuthencationToken(user, authoritiesMapper.mapAuthorities(user.getAuthorities()));
 	}
 
 	@Override
@@ -52,8 +48,7 @@ public class Oauth2UserAuthencationProvider implements AuthenticationProvider {
 		return Oauth2UserAuthencationToken.class.equals(authentication);
 	}
 
-	public void setAuthoritiesMapper(
-			GrantedAuthoritiesMapper authoritiesMapper) {
+	public void setAuthoritiesMapper(GrantedAuthoritiesMapper authoritiesMapper) {
 		this.authoritiesMapper = authoritiesMapper;
 	}
 

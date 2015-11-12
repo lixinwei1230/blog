@@ -58,8 +58,7 @@ public class MyBlogController extends BaseController {
 		if (tBlog == null) {
 			model.addAttribute(UPLOAD_URL, fileServer.getStore().uploadUrl());
 		}
-		return tBlog == null ? "my/blog/write"
-				: "forward:temporary/" + tBlog.getId();
+		return tBlog == null ? "my/blog/write" : "forward:temporary/" + tBlog.getId();
 	}
 
 	@RequestMapping(value = "write", method = RequestMethod.POST)
@@ -77,16 +76,14 @@ public class MyBlogController extends BaseController {
 
 	@RequestMapping(value = "logicDelete", method = RequestMethod.POST)
 	@ResponseBody
-	public Info deleteBlogLogic(@RequestParam("id") int id)
-			throws LogicException {
+	public Info deleteBlogLogic(@RequestParam("id") int id) throws LogicException {
 
 		blogService.deleteBlogLogic(id);
 		return new Info(true);
 	}
 
 	@RequestMapping(value = "list/{currentPage}", method = RequestMethod.GET)
-	public String list(@PathVariable("currentPage") int currentPage,
-			ModelMap model, BlogPageParam param) {
+	public String list(@PathVariable("currentPage") int currentPage, ModelMap model, BlogPageParam param) {
 		Space current = UserContext.getSpace();
 
 		param.setCurrentPage(currentPage);
@@ -101,10 +98,8 @@ public class MyBlogController extends BaseController {
 		return "my/blog/list";
 	}
 
-	@RequestMapping(value = "recycler/list/{currentPage}",
-			method = RequestMethod.GET)
-	public String recycler(@PathVariable("currentPage") int currentPage,
-			ModelMap model) {
+	@RequestMapping(value = "recycler/list/{currentPage}", method = RequestMethod.GET)
+	public String recycler(@PathVariable("currentPage") int currentPage, ModelMap model) {
 		BlogPageParam param = new BlogPageParam();
 		param.setCurrentPage(currentPage);
 		param.setPageSize(pageSize);
@@ -130,8 +125,7 @@ public class MyBlogController extends BaseController {
 	}
 
 	@RequestMapping(value = "update/{id}", method = RequestMethod.GET)
-	public String update(@PathVariable("id") int id, ModelMap model)
-			throws LogicException {
+	public String update(@PathVariable("id") int id, ModelMap model) throws LogicException {
 		Blog blog = blogService.getBlog(id);
 		model.addAttribute(BLOG, blog);
 		model.addAttribute(UPLOAD_URL, fileServer.getStore().uploadUrl());
@@ -144,8 +138,7 @@ public class MyBlogController extends BaseController {
 
 	@RequestMapping(value = "update", method = RequestMethod.POST)
 	@ResponseBody
-	public Info update(@RequestBody @Validated Blog blog)
-			throws LogicException {
+	public Info update(@RequestBody @Validated Blog blog) throws LogicException {
 		blog.setLastModifyDate(new Date());
 		blog.setSpace(UserContext.getSpace());
 		blogService.updateBlog(blog);

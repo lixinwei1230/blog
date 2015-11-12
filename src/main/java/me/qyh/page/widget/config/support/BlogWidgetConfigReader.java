@@ -19,8 +19,7 @@ public class BlogWidgetConfigReader extends AbstractWidgetConfigReader {
 	public void validate(WidgetConfig o, Errors e) {
 		BlogWidgetConfig config = (BlogWidgetConfig) o;
 		if (config.getMode() == null) {
-			e.rejectValue("mode",
-					"validation.widget.config.blogWidgetConfig.mode.blank");
+			e.rejectValue("mode", "validation.widget.config.blogWidgetConfig.mode.blank");
 			return;
 		}
 	}

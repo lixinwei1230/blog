@@ -20,8 +20,7 @@ public final class Oauths {
 			con.setRequestProperty("User-Agent", USER_AGENT);
 			con.setRequestProperty("Accept-Charset", "utf-8");
 			con.setRequestProperty("contentType", "utf-8");
-			in = new BufferedReader(
-					new InputStreamReader(con.getInputStream(), "utf-8"));
+			in = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
 			String inputLine;
 			StringBuffer response = new StringBuffer();
 			while ((inputLine = in.readLine()) != null) {

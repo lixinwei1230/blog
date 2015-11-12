@@ -33,10 +33,8 @@ public final class Strings extends StringUtils {
 		}
 	}
 
-	public static boolean inArray(String str, String[] array,
-			boolean ignoreCase) {
-		if (Validators.isEmptyOrNull(array)
-				|| Validators.isEmptyOrNull(str, false)) {
+	public static boolean inArray(String str, String[] array, boolean ignoreCase) {
+		if (Validators.isEmptyOrNull(array) || Validators.isEmptyOrNull(str, false)) {
 			return false;
 		}
 		for (String arr : array) {

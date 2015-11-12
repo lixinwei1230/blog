@@ -32,20 +32,16 @@ public class MyLogoutSuccessHandler implements LogoutSuccessHandler {
 	}
 
 	@Override
-	public void onLogoutSuccess(HttpServletRequest request,
-			HttpServletResponse response, Authentication authencation)
-					throws IOException, ServletException {
+	public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authencation)
+			throws IOException, ServletException {
 
 		if (Webs.isAjaxRequest(request)) {
-			response.setHeader("Content-Type",
-					"application/json;charset=UTF-8");
-			JsonGenerator jsonGenerator = objectWriter.getFactory()
-					.createGenerator(response.getOutputStream(),
-							JsonEncoding.UTF8);
+			response.setHeader("Content-Type", "application/json;charset=UTF-8");
+			JsonGenerator jsonGenerator = objectWriter.getFactory().createGenerator(response.getOutputStream(),
+					JsonEncoding.UTF8);
 			objectWriter.writeValue(jsonGenerator, new Info(true));
 		} else {
-			response.sendRedirect(request.getScheme() + "://"
-					+ urlHelper.getUrl() + logoutPath);
+			response.sendRedirect(request.getScheme() + "://" + urlHelper.getUrl() + logoutPath);
 		}
 	}
 

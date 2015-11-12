@@ -26,8 +26,7 @@ import me.qyh.service.impl.UserServiceImpl;
 import me.qyh.utils.Validators;
 
 @Service
-public class UserManageServiceImpl extends UserServiceImpl
-		implements UserManageService {
+public class UserManageServiceImpl extends UserServiceImpl implements UserManageService {
 
 	@Autowired
 	private UserDao userDao;
@@ -45,10 +44,8 @@ public class UserManageServiceImpl extends UserServiceImpl
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
-	public void toggleUserAbled(int id, final TipMessage message)
-			throws LogicException {
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public void toggleUserAbled(int id, final TipMessage message) throws LogicException {
 		final User user = userDao.selectById(id);
 		if (user == null || !user.getActivate()) {
 			throw new LogicException("error.user.notexists");
@@ -63,8 +60,7 @@ public class UserManageServiceImpl extends UserServiceImpl
 			mailer.sendEmail(new MimeMessageHelperHandler() {
 
 				@Override
-				public void handle(MimeMessageHelper helper)
-						throws MessagingException {
+				public void handle(MimeMessageHelper helper) throws MessagingException {
 					helper.setTo(user.getEmail());
 					helper.setSubject(message.getTitle());
 					helper.setText(message.getContent(), true);
@@ -75,8 +71,7 @@ public class UserManageServiceImpl extends UserServiceImpl
 
 	private boolean isOptionalUser(User user) {
 		user.setRoles(roleDao.selectByUser(user));
-		if (user.hasRole(RoleEnum.ROLE_SUPERVISOR)
-				|| user.hasRole(RoleEnum.ROLE_MESSAGER)
+		if (user.hasRole(RoleEnum.ROLE_SUPERVISOR) || user.hasRole(RoleEnum.ROLE_MESSAGER)
 				|| user.equals(UserContext.getUser())) {
 			return false;
 		}

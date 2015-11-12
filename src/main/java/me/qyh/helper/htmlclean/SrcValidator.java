@@ -9,8 +9,7 @@ public class SrcValidator implements AttributeValueValidator {
 	@Override
 	public boolean allow(String value) {
 		return (!Validators.validateUrl(value)
-				|| (allowRelativePath && !Validators
-						.validateUrl("http://www.example.com".concat(value))));
+				|| (allowRelativePath && !Validators.validateUrl("http://www.example.com".concat(value))));
 	}
 
 	public void setAllowRelativePath(boolean allowRelativePath) {

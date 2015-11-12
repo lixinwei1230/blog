@@ -15,8 +15,7 @@ import me.qyh.server.TipServer;
 import me.qyh.service.impl.BlogServiceImpl;
 
 @Service
-public class BlogManageServiceImpl extends BlogServiceImpl
-		implements BlogManageService {
+public class BlogManageServiceImpl extends BlogServiceImpl implements BlogManageService {
 
 	@Autowired
 	private SpaceDao spaceDao;
@@ -24,43 +23,38 @@ public class BlogManageServiceImpl extends BlogServiceImpl
 	private TipServer tipServer;
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public void deleteBlog(int id, TipMessage message) throws LogicException {
 		Blog blog = load(id);
 
 		deleteBlogFromDb(blog);
 
 		message.setSender(UserContext.getUser());
-		message.setReceiver(
-				spaceDao.selectById(blog.getSpace().getId()).getUser());
+		message.setReceiver(spaceDao.selectById(blog.getSpace().getId()).getUser());
 
 		tipServer.sendTip(message);
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-		propagation = Propagation.REQUIRED)
-	public void toggleBlogRecommand(int id, TipMessage message)
-			throws LogicException {
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public void toggleBlogRecommand(int id, TipMessage message) throws LogicException {
 		Blog blog = load(id);
-		
+
 		blog.setRecommend(!blog.isRecommend());
 		blogDao.updateRecommend(blog);
-		
+
 		message.setSender(UserContext.getUser());
-		message.setReceiver(
-				spaceDao.selectById(blog.getSpace().getId()).getUser());
+		message.setReceiver(spaceDao.selectById(blog.getSpace().getId()).getUser());
 
 		tipServer.sendTip(message);
 	}
-	
+
 	private Blog load(int id) throws LogicException {
 		Blog blog = loadBlog(id);
 		if (blog.getIsPrivate()) {
 			throw new LogicException("error.blog.unvisible");
 		}
-		
+
 		return blog;
 	}
 

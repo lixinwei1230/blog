@@ -23,13 +23,11 @@ public interface WidgetService {
 
 	void removeWidget(Integer id) throws LogicException;
 
-	Widget getPreviewWidget(Integer id, WidgetType type)
-			throws DataNotFoundException;
+	Widget getPreviewWidget(Integer id, WidgetType type) throws DataNotFoundException;
 
 	Page getPage(PageType type, User user) throws LogicException;
 
-	WidgetConfig getConfig(Integer locationWidgetId)
-			throws DataNotFoundException;
+	WidgetConfig getConfig(Integer locationWidgetId) throws DataNotFoundException;
 
 	void updateConfig(WidgetConfig config) throws LogicException;
 
@@ -37,8 +35,7 @@ public interface WidgetService {
 
 	void insertUserWidget(UserWidget userWidget) throws LogicException;
 
-	void updateLocationWidget(LocationWidget widget, boolean wrap)
-			throws LogicException;
+	void updateLocationWidget(LocationWidget widget, boolean wrap) throws LogicException;
 
 	UserWidget getUserWidget(Integer id) throws DataNotFoundException;
 

@@ -32,8 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-public class WidgetServiceImpl extends BaseServiceImpl
-		implements WidgetService {
+public class WidgetServiceImpl extends BaseServiceImpl implements WidgetService {
 
 	private List<SystemWidgetHandler> systemWidgetHandlers = new ArrayList<SystemWidgetHandler>();
 	@Autowired
@@ -53,8 +52,7 @@ public class WidgetServiceImpl extends BaseServiceImpl
 
 	@Override
 	@Transactional(readOnly = true)
-	public Widget getPreviewWidget(Integer id, WidgetType type)
-			throws DataNotFoundException {
+	public Widget getPreviewWidget(Integer id, WidgetType type) throws DataNotFoundException {
 		User current = UserContext.getUser();
 		switch (type) {
 		case SYSTEM:
@@ -68,10 +66,10 @@ public class WidgetServiceImpl extends BaseServiceImpl
 		case USER:
 			UserWidget uw = loadUserWidget(id);
 			super.doAuthencation(current, uw.getUser());
-			
+
 			PageConfig config = configServer.getPageConfig(current);
 			HtmlContentHandler clean = config.getClean();
-			if(clean != null){
+			if (clean != null) {
 				uw.setHtml(clean.handle(uw.getHtml()));
 			}
 
@@ -95,8 +93,7 @@ public class WidgetServiceImpl extends BaseServiceImpl
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED,
-			rollbackFor = Exception.class)
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public void putWidget(LocationWidget lw) throws LogicException {
 		Page page = pageDao.selectById(lw.getPage().getId());
 
@@ -111,12 +108,10 @@ public class WidgetServiceImpl extends BaseServiceImpl
 		PageConfig pageConfig = configServer.getPageConfig(current);
 
 		if (count >= pageConfig.getWidgetCountLimit(page.getType())) {
-			throw new LogicException("error.page.widgets.oversize",
-					pageConfig.getWidgetCountLimit(page.getType()));
+			throw new LogicException("error.page.widgets.oversize", pageConfig.getWidgetCountLimit(page.getType()));
 		}
 
-		if (locationWidgetDao.selectByIndex(lw.getR(), lw.getX(), lw.getY(),
-				page) != null) {
+		if (locationWidgetDao.selectByIndex(lw.getR(), lw.getX(), lw.getY(), page) != null) {
 			throw new LogicException("error.page.location.exists");
 		}
 
@@ -150,8 +145,7 @@ public class WidgetServiceImpl extends BaseServiceImpl
 
 	@Override
 	@Transactional(readOnly = true)
-	public WidgetConfig getConfig(Integer locationWidgetId)
-			throws DataNotFoundException {
+	public WidgetConfig getConfig(Integer locationWidgetId) throws DataNotFoundException {
 		LocationWidget lw = loadLocationWidget(locationWidgetId);
 
 		Page page = pageDao.selectById(lw.getPage().getId());
@@ -171,8 +165,7 @@ public class WidgetServiceImpl extends BaseServiceImpl
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED,
-			rollbackFor = Exception.class)
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public void removeWidget(Integer id) throws LogicException {
 		LocationWidget lw = loadLocationWidget(id);
 		Page page = pageDao.selectById(lw.getPage().getId());
@@ -214,20 +207,18 @@ public class WidgetServiceImpl extends BaseServiceImpl
 			Widget widget = lw.getWidget();
 			switch (widget.getType()) {
 			case SYSTEM:
-				SystemWidget sw = getHandler(widget.getId()).getWidget(lw, user,
-						UserContext.getUser());
+				SystemWidget sw = getHandler(widget.getId()).getWidget(lw, user, UserContext.getUser());
 				sw.setHtml(fullWidgetHtmlClean.handle(sw.getHtml()));
 				lw.setWidget(sw);
 				break;
 			case USER:
 				UserWidget userWidget = loadUserWidget(widget.getId());
-				userWidget.setConfig(
-						userWidgetConfigDao.selectByLocationWidget(lw));
-				if(config == null){
+				userWidget.setConfig(userWidgetConfigDao.selectByLocationWidget(lw));
+				if (config == null) {
 					config = configServer.getPageConfig(user);
 					clean = config.getClean();
 				}
-				if(clean != null){
+				if (clean != null) {
 					userWidget.setHtml(clean.handle(userWidget.getHtml()));
 				}
 				lw.setWidget(userWidget);
@@ -235,15 +226,13 @@ public class WidgetServiceImpl extends BaseServiceImpl
 			}
 		}
 
-		page.addLocationWidgets(
-				widgets.toArray(new LocationWidget[widgets.size()]));
+		page.addLocationWidgets(widgets.toArray(new LocationWidget[widgets.size()]));
 
 		return page;
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED,
-			rollbackFor = Exception.class)
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public void updateConfig(WidgetConfig config) throws LogicException {
 		LocationWidget lw = loadLocationWidget(config.getWidget().getId());
 		Page page = pageDao.selectById(lw.getPage().getId());
@@ -261,15 +250,14 @@ public class WidgetServiceImpl extends BaseServiceImpl
 		case USER:
 			db = userWidgetConfigDao.selectById(config.getId());
 			if (db == null) {
-				throw new DataNotFoundException(
-						"error.widget.config.notexists");
+				throw new DataNotFoundException("error.widget.config.notexists");
 			}
 			break;
 		}
 
 		if (!config.getClass().equals(db.getClass())) {
-			throw new SystemException("当前挂件配置类型" + config.getClass()
-					+ "和需要配置类型不匹配，" + "需要配置类型为" + db.getClass().getName());
+			throw new SystemException(
+					"当前挂件配置类型" + config.getClass() + "和需要配置类型不匹配，" + "需要配置类型为" + db.getClass().getName());
 		}
 
 		LocationWidget _lw = loadLocationWidget(db.getWidget().getId());
@@ -293,8 +281,7 @@ public class WidgetServiceImpl extends BaseServiceImpl
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED,
-			rollbackFor = Exception.class)
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public void deleteUserWidget(Integer id) throws LogicException {
 		UserWidget uw = loadUserWidget(id);
 
@@ -310,14 +297,12 @@ public class WidgetServiceImpl extends BaseServiceImpl
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED,
-			rollbackFor = Exception.class)
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public void insertUserWidget(UserWidget userWidget) throws LogicException {
 		int count = userWidgetDao.selectCountByUser(userWidget.getUser());
 		PageConfig config = configServer.getPageConfig(userWidget.getUser());
 		if (count >= config.getUserWidgetLimit()) {
-			throw new LogicException("error.userWidget.limit",
-					config.getUserWidgetLimit());
+			throw new LogicException("error.userWidget.limit", config.getUserWidgetLimit());
 		}
 		userWidgetDao.insert(userWidget);
 	}
@@ -329,17 +314,15 @@ public class WidgetServiceImpl extends BaseServiceImpl
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED,
-			rollbackFor = Exception.class)
-	public void updateLocationWidget(LocationWidget widget, boolean wrap)
-			throws LogicException {
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+	public void updateLocationWidget(LocationWidget widget, boolean wrap) throws LogicException {
 		LocationWidget db = loadLocationWidget(widget.getId());
 		Page page = pageDao.selectById(db.getPage().getId());
 		super.doAuthencation(UserContext.getUser(), page.getUser());
 
 		// 寻找需要交换的挂件
-		LocationWidget targetLocationWidget = locationWidgetDao.selectByIndex(
-				widget.getR(), widget.getX(), widget.getY(), page);
+		LocationWidget targetLocationWidget = locationWidgetDao.selectByIndex(widget.getR(), widget.getX(),
+				widget.getY(), page);
 		// 如果需要交换
 		if (wrap) {
 			if (targetLocationWidget != null) {
@@ -350,8 +333,7 @@ public class WidgetServiceImpl extends BaseServiceImpl
 				widget.setWidth(targetLocationWidget.getWidth());
 			}
 		} else {
-			if (!db.equals(targetLocationWidget)
-					&& targetLocationWidget != null) {
+			if (!db.equals(targetLocationWidget) && targetLocationWidget != null) {
 				throw new LogicException("error.page.location.exists");
 			}
 		}
@@ -359,8 +341,7 @@ public class WidgetServiceImpl extends BaseServiceImpl
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED,
-			rollbackFor = Exception.class)
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public void updateUserWidget(UserWidget uw) throws LogicException {
 		UserWidget db = loadUserWidget(uw.getId());
 		super.doAuthencation(UserContext.getUser(), db.getUser());
@@ -378,8 +359,7 @@ public class WidgetServiceImpl extends BaseServiceImpl
 		return widget;
 	}
 
-	private LocationWidget loadLocationWidget(Integer id)
-			throws DataNotFoundException {
+	private LocationWidget loadLocationWidget(Integer id) throws DataNotFoundException {
 		LocationWidget lw = locationWidgetDao.selectById(id);
 		if (lw == null) {
 			throw new DataNotFoundException("error.widget.notexists");
@@ -388,8 +368,7 @@ public class WidgetServiceImpl extends BaseServiceImpl
 		return lw;
 	}
 
-	private SystemWidgetHandler getHandler(Integer id)
-			throws DataNotFoundException {
+	private SystemWidgetHandler getHandler(Integer id) throws DataNotFoundException {
 		for (SystemWidgetHandler handler : systemWidgetHandlers) {
 			if (id.equals(handler.getSimpleWidget().getId())) {
 
@@ -399,9 +378,7 @@ public class WidgetServiceImpl extends BaseServiceImpl
 		throw new DataNotFoundException("error.widget.notexists");
 	}
 
-
-	public void setSystemWidgetHandlers(
-			List<SystemWidgetHandler> systemWidgetHandlers) {
+	public void setSystemWidgetHandlers(List<SystemWidgetHandler> systemWidgetHandlers) {
 		this.systemWidgetHandlers = systemWidgetHandlers;
 	}
 }

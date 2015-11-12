@@ -11,8 +11,7 @@ import me.qyh.pageparam.MessageSendPageParam;
 
 public interface MessageSendDao extends BaseDao<MessageSend, Integer> {
 
-	List<MessageSend> selectUnSendMessageByTypeAndUser(
-			@Param("type") MessageType type, @Param("user") User user,
+	List<MessageSend> selectUnSendMessageByTypeAndUser(@Param("type") MessageType type, @Param("user") User user,
 			@Param("maxCount") int maxCount);
 
 	List<MessageSend> selectPage(MessageSendPageParam param);

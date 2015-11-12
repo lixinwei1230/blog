@@ -26,22 +26,17 @@ public class SignCacheEvitInterceptor implements MethodInterceptor {
 	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		Method method = invocation.getMethod();
-		SignCacheEvit evit = AnnotationUtils.getAnnotation(method,
-				SignCacheEvit.class);
+		SignCacheEvit evit = AnnotationUtils.getAnnotation(method, SignCacheEvit.class);
 		Cache cache = cacheManager.getCache(evit.cacheName());
 		if (cache != null) {
-			StandardEvaluationContext context = CacheHelper.getContext(method,
-					invocation.getArguments());
+			StandardEvaluationContext context = CacheHelper.getContext(method, invocation.getArguments());
 			SpelExpressionParser parser = new SpelExpressionParser();
-			Object condition = parser.parseExpression(evit.condition())
-					.getValue(context);
+			Object condition = parser.parseExpression(evit.condition()).getValue(context);
 			if (condition == null || !(condition instanceof Boolean)) {
-				throw new SystemException(
-						"SignCache Annotation中的condition表达式不能为空，并且必须是布尔表达式");
+				throw new SystemException("SignCache Annotation中的condition表达式不能为空，并且必须是布尔表达式");
 			}
 			if ((Boolean) condition) {
-				Object cacheKey = parser.parseExpression(evit.cacheKey())
-						.getValue(context);
+				Object cacheKey = parser.parseExpression(evit.cacheKey()).getValue(context);
 				cache.evict(cacheKey);
 				signCacheStore.remove(cacheKey);
 			}

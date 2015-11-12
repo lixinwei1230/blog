@@ -23,8 +23,7 @@ public class FileWriteConfig {
 		this.zoomMatcher = zoomMatcher;
 	}
 
-	FileWriteConfig(RequestMatcher requestMatcher,
-			ImageZoomMatcher zoomMatcher) {
+	FileWriteConfig(RequestMatcher requestMatcher, ImageZoomMatcher zoomMatcher) {
 		super();
 		this.requestMatcher = requestMatcher;
 		this.zoomMatcher = zoomMatcher;

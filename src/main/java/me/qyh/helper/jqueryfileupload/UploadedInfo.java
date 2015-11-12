@@ -19,12 +19,10 @@ public class UploadedInfo extends Info {
 	private String error;
 	private List<UploadedFile> files = new ArrayList<UploadedFile>();
 
-	public UploadedInfo(UploadedResult result, MessageSource messageSource,
-			Locale locale) {
+	public UploadedInfo(UploadedResult result, MessageSource messageSource, Locale locale) {
 		I18NMessage error = result.getError();
 		if (error != null) {
-			this.error = messageSource.getMessage(error.getCode(),
-					error.getParams(), locale);
+			this.error = messageSource.getMessage(error.getCode(), error.getParams(), locale);
 		}
 		for (UploadedFile file : result.getFiles()) {
 			if (file.getSuccess()) {
@@ -34,8 +32,7 @@ public class UploadedInfo extends Info {
 				I18NMessage _error = _file.getError();
 				FailedUploadFile ff = new FailedUploadFile();
 				if (_error != null) {
-					ff.setError(messageSource.getMessage(_error.getCode(),
-							_error.getParams(), locale));
+					ff.setError(messageSource.getMessage(_error.getCode(), _error.getParams(), locale));
 				}
 				files.add(ff);
 			}

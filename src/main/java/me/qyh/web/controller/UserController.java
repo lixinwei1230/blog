@@ -49,8 +49,7 @@ public class UserController extends BaseController {
 	@Value("${config.image.thumb.cachedir}")
 	private String imageCacheDir;
 
-	@RequestMapping(value = "user/info", method = RequestMethod.GET,
-			params = { "spaces" })
+	@RequestMapping(value = "user/info", method = RequestMethod.GET, params = { "spaces" })
 	@ResponseBody
 	public Info getUserInfo(@RequestParam("spaces") Set<String> spaces) {
 		if (spaces.isEmpty() || spaces.size() > maxSpaceSize) {
@@ -59,8 +58,7 @@ public class UserController extends BaseController {
 		return new Info(true, userServer.findUserBySpaces(spaces));
 	}
 
-	@RequestMapping(value = "user/info", method = RequestMethod.GET,
-			params = { "ids" })
+	@RequestMapping(value = "user/info", method = RequestMethod.GET, params = { "ids" })
 	@ResponseBody
 	public Info getUserInfoByIds(@RequestParam("ids") Set<Integer> ids) {
 		if (ids.isEmpty() || ids.size() > maxSpaceSize) {
@@ -70,11 +68,9 @@ public class UserController extends BaseController {
 	}
 
 	@RequestMapping(value = "avatar", method = RequestMethod.GET)
-	public void avatar(
-			@RequestParam(value = "path", defaultValue = "") String path,
-			@RequestParam(value = "size", required = false) Integer size,
-			ServletWebRequest request, HttpServletResponse response)
-					throws MyFileNotFoundException {
+	public void avatar(@RequestParam(value = "path", defaultValue = "") String path,
+			@RequestParam(value = "size", required = false) Integer size, ServletWebRequest request,
+			HttpServletResponse response) throws MyFileNotFoundException {
 		FileWriteConfig config = configServer.getAvatarWriteConfig();
 		RequestMatcher matcher = config.getRequestMatcher();
 		if (matcher != null && !matcher.matches(request.getRequest())) {
@@ -89,26 +85,22 @@ public class UserController extends BaseController {
 		if (request.checkNotModified(etag)) {
 			return;
 		}
-		response.setContentType(
-				URLConnection.guessContentTypeFromName(file.getName()));
+		response.setContentType(URLConnection.guessContentTypeFromName(file.getName()));
 		ImageZoomMatcher zm = config.getZoomMatcher();
-		if (zm != null && zm.zoom(size , file)) {
+		if (zm != null && zm.zoom(size, file)) {
 			String relativePath = getRelativePath(file);
 			File dest = new File(
-					imageCacheDir + relativePath + File.separator
-							+ Files.appendFilename(file.getName(), "_" + size));
+					imageCacheDir + relativePath + File.separator + Files.appendFilename(file.getName(), "_" + size));
 			if (dest.exists()) {
 				file = dest;
 			} else {
 				File folder = new File(imageCacheDir, relativePath);
 				if (!folder.exists() && !folder.mkdirs()) {
-					throw new SystemException(String.format("%s:创建文件夹%s失败",
-							this.getClass().getName(),
-							folder.getAbsolutePath()));
+					throw new SystemException(
+							String.format("%s:创建文件夹%s失败", this.getClass().getName(), folder.getAbsolutePath()));
 				}
 				try {
-					file = zoomImage(file.getAbsolutePath(),
-							dest.getAbsolutePath(), size, false);
+					file = zoomImage(file.getAbsolutePath(), dest.getAbsolutePath(), size, false);
 				} catch (Exception e) {
 					throw new SystemException(e);
 				}
@@ -126,8 +118,7 @@ public class UserController extends BaseController {
 		return absPath.substring(absPath.indexOf(File.separatorChar));
 	}
 
-	private File zoomImage(String absPath, String destPath, int size,
-			boolean force) throws Exception {
+	private File zoomImage(String absPath, String destPath, int size, boolean force) throws Exception {
 		if (!force) {
 			File zoom = new File(absPath);
 			ImageInfo info = im4javas.getImageInfo(absPath);

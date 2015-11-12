@@ -37,8 +37,7 @@ public class FrequencyLimit {
 	@Override
 	public String toString() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		return "FrequencyLimit [begin=" + sdf.format(begin) + ", end="
-				+ sdf.format(end) + ", limit=" + limit + "]";
+		return "FrequencyLimit [begin=" + sdf.format(begin) + ", end=" + sdf.format(end) + ", limit=" + limit + "]";
 	}
 
 }

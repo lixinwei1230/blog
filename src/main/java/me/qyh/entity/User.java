@@ -22,11 +22,9 @@ import me.qyh.utils.Validators;
  * @author henry.qian
  *
  */
-@JsonIgnoreProperties(value = { "password", "email", "activateDate", "activate",
-		"registerDate", "authorities", "enabled", "accountNonExpired", "roles",
-		"accountNonLocked", "credentialsNonExpired" })
-public class User extends Id
-		implements UserDetails, CredentialsContainer, Cloneable {
+@JsonIgnoreProperties(value = { "password", "email", "activateDate", "activate", "registerDate", "authorities",
+		"enabled", "accountNonExpired", "roles", "accountNonLocked", "credentialsNonExpired" })
+public class User extends Id implements UserDetails, CredentialsContainer, Cloneable {
 
 	/**
 	 * 
@@ -191,8 +189,7 @@ public class User extends Id
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 		for (Role role : roles) {
-			authorities.add(
-					new RoleGrantedAuthority(role.getRole(), role.getId()));
+			authorities.add(new RoleGrantedAuthority(role.getRole(), role.getId()));
 		}
 		return authorities;
 	}
@@ -251,8 +248,8 @@ public class User extends Id
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((getId() == null) ? 0 : getId().hashCode())
-				+ username == null ? 0 : username.hashCode();
+		result = prime * result + ((getId() == null) ? 0 : getId().hashCode()) + username == null ? 0
+				: username.hashCode();
 		return result;
 	}
 
@@ -263,8 +260,7 @@ public class User extends Id
 
 	@Override
 	public String toString() {
-		return "User [id=" + getId() + " ,username=" + username + ", space="
-				+ space + "]";
+		return "User [id=" + getId() + " ,username=" + username + ", space=" + space + "]";
 	}
 
 	@Override

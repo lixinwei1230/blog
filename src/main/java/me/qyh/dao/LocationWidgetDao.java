@@ -10,14 +10,12 @@ import me.qyh.page.widget.Widget;
 
 public interface LocationWidgetDao extends BaseDao<LocationWidget, Integer> {
 
-	LocationWidget selectByIndex(@Param("rowIndex") int rowIndex,
-			@Param("columnIndex") int columnIndex, @Param("index") int index,
-			@Param("page") Page page);
+	LocationWidget selectByIndex(@Param("rowIndex") int rowIndex, @Param("columnIndex") int columnIndex,
+			@Param("index") int index, @Param("page") Page page);
 
 	List<LocationWidget> selectByPage(Page page);
 
-	LocationWidget selectByWidgetAndPage(@Param("widget") Widget widget,
-			@Param("page") Page page);
+	LocationWidget selectByWidgetAndPage(@Param("widget") Widget widget, @Param("page") Page page);
 
 	List<LocationWidget> selectByWidget(Widget widget);
 

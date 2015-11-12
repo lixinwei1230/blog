@@ -10,8 +10,7 @@ public class UglyUrlHelper implements UrlHelper {
 	private String contextPath;
 	private String domain;
 
-	public UglyUrlHelper(String domainAndPort, boolean enableSpaceDomain,
-			String contextPath) {
+	public UglyUrlHelper(String domainAndPort, boolean enableSpaceDomain, String contextPath) {
 		super();
 		this.domainAndPort = domainAndPort;
 		this.enableSpaceDomain = enableSpaceDomain;
@@ -51,8 +50,7 @@ public class UglyUrlHelper implements UrlHelper {
 		String url = "";
 		if (enableSpaceDomain) {
 			if (domainAndPort.startsWith("www.")) {
-				url = space.getId()
-						+ domainAndPort.substring(domainAndPort.indexOf("."));
+				url = space.getId() + domainAndPort.substring(domainAndPort.indexOf("."));
 			} else {
 				url = space.getId() + "." + domainAndPort;
 			}

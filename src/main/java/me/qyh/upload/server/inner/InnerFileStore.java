@@ -25,8 +25,7 @@ public class InnerFileStore implements FileStore {
 
 	@Override
 	public String seekPrefix() {
-		return protocal + "://" + urlHelper.getDomainAndPort() + "/"
-				+ writeRequestUrl;
+		return protocal + "://" + urlHelper.getDomainAndPort() + "/" + writeRequestUrl;
 	}
 
 	@Override

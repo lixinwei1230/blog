@@ -10,15 +10,13 @@ import org.springframework.stereotype.Component;
 @Component("postAuthenticationChecks")
 public class UserPostAuthenticationCheckers implements UserDetailsChecker {
 
-	protected MessageSourceAccessor messages = SpringSecurityMessageSource
-			.getAccessor();
+	protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
 
 	public void check(UserDetails user) {
 		if (!user.isCredentialsNonExpired()) {
 
 			throw new CredentialsExpiredException(messages.getMessage(
-					"AbstractUserDetailsAuthenticationProvider.credentialsExpired",
-					"User credentials have expired"));
+					"AbstractUserDetailsAuthenticationProvider.credentialsExpired", "User credentials have expired"));
 		}
 	}
 }

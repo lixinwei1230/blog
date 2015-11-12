@@ -5,7 +5,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 public interface OauthDetailsService {
 
-	UserDetails loadUserByOauthPrincipal(OauthPrincipal oauth2Principal)
-			throws UsernameNotFoundException;
+	UserDetails loadUserByOauthPrincipal(OauthPrincipal oauth2Principal) throws UsernameNotFoundException;
 
 }

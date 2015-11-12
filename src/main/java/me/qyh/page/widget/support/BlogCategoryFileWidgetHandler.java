@@ -18,8 +18,7 @@ import me.qyh.page.widget.config.WidgetConfig;
  * @author henry.qian
  *
  */
-public class BlogCategoryFileWidgetHandler
-		extends AbstractSimpleSystemWidgetHandler {
+public class BlogCategoryFileWidgetHandler extends AbstractSimpleSystemWidgetHandler {
 
 	@Autowired
 	private BlogDao blogDao;
@@ -44,13 +43,11 @@ public class BlogCategoryFileWidgetHandler
 	}
 
 	@Override
-	String getWidgetHtml(WidgetConfig config, User owner, User visitor,
-			WebFreemarkers freeMarkers) {
+	String getWidgetHtml(WidgetConfig config, User owner, User visitor, WebFreemarkers freeMarkers) {
 		return parseHtml(owner, visitor, freeMarkers);
 	}
 
-	protected String parseHtml(User user, User visitor,
-			WebFreemarkers freeMarkers) {
+	protected String parseHtml(User user, User visitor, WebFreemarkers freeMarkers) {
 		BlogFilesQueryBean bean = new BlogFilesQueryBean();
 		bean.setSpace(user.getSpace());
 		bean.setScopes(userServer.userRelationship(user, visitor));
@@ -60,8 +57,7 @@ public class BlogCategoryFileWidgetHandler
 		map.put("widget", super.getSimpleWidget());
 		map.put("user", user);
 
-		return freeMarkers.processTemplateIntoString(
-				"page/widget/widget_blog_file_category.ftl", map);
+		return freeMarkers.processTemplateIntoString("page/widget/widget_blog_file_category.ftl", map);
 	}
 
 }

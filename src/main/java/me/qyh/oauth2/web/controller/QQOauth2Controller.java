@@ -39,8 +39,7 @@ public class QQOauth2Controller extends BaseOauthController {
 	private Oauth2AutoLogin autoLogin;
 
 	@RequestMapping(value = "login", method = RequestMethod.GET)
-	public String login(HttpServletRequest request,
-			HttpServletResponse response) throws Oauth2ConnectionException {
+	public String login(HttpServletRequest request, HttpServletResponse response) throws Oauth2ConnectionException {
 		String state = Strings.uuid();
 		HttpSession session = request.getSession();
 		session.setAttribute(STATE, state);
@@ -48,13 +47,11 @@ public class QQOauth2Controller extends BaseOauthController {
 	}
 
 	@RequestMapping(value = "success")
-	public String success(HttpServletRequest request,
-			HttpServletResponse response, RedirectAttributes ra)
-					throws Oauth2Exception, LogicException {
+	public String success(HttpServletRequest request, HttpServletResponse response, RedirectAttributes ra)
+			throws Oauth2Exception, LogicException {
 		String errorCode = request.getParameter("error");
 		if (errorCode != null) {
-			throw new Oauth2Exception(OauthType.QQ,
-					String.format("返回redire_uri时包含错误code%s", errorCode));
+			throw new Oauth2Exception(OauthType.QQ, String.format("返回redire_uri时包含错误code%s", errorCode));
 		}
 
 		checkState(request, OauthType.QQ);
@@ -65,8 +62,7 @@ public class QQOauth2Controller extends BaseOauthController {
 		}
 		AccessToken token = qqOauth2.getAccessToken(code);
 		OpenId openId = qqOauth2.getOpenId(token);
-		OauthPrincipal principal = new OauthPrincipal(openId.getOpenId(),
-				OauthType.QQ);
+		OauthPrincipal principal = new OauthPrincipal(openId.getOpenId(), OauthType.QQ);
 		principal.setToken(token);
 
 		User user = oauthService.get(principal);
@@ -78,14 +74,12 @@ public class QQOauth2Controller extends BaseOauthController {
 
 		// 已经绑定账号则自动登录
 		autoLogin.autoLogin(principal, request, response);
-		ra.addFlashAttribute(SUCCESS,
-				new I18NMessage("success.oauth", user.getNickname()));
+		ra.addFlashAttribute(SUCCESS, new I18NMessage("success.oauth", user.getNickname()));
 
 		return "redirect:/";
 	}
 
-	protected void putInfo(HttpSession session, OauthUser user,
-			OauthPrincipal principal) {
+	protected void putInfo(HttpSession session, OauthUser user, OauthPrincipal principal) {
 		String securityKey = Strings.uuid();
 		session.setAttribute(SECRET_KEY, securityKey);
 		session.setAttribute(securityKey, principal);

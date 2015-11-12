@@ -39,13 +39,11 @@ public class BindController extends BaseOauthController {
 	private MessageSource messageSource;
 
 	@RequestMapping("index")
-	public String index(HttpServletRequest request, ModelMap model,
-			RedirectAttributes ra) {
+	public String index(HttpServletRequest request, ModelMap model, RedirectAttributes ra) {
 		HttpSession session = request.getSession(false);
 		OauthPrincipal principal = getPrincipal(session, null);
 		if (principal == null) {
-			ra.addFlashAttribute(ERROR,
-					new I18NMessage("error.oauth.needPrincipal"));
+			ra.addFlashAttribute(ERROR, new I18NMessage("error.oauth.needPrincipal"));
 			return "redirect:/login";
 		}
 		return "oauth_bind";
@@ -53,55 +51,43 @@ public class BindController extends BaseOauthController {
 
 	@Token
 	@RequestMapping(value = "auto", method = RequestMethod.POST)
-	public String autoBind(
-			@RequestParam(value = "secretKey",
-					defaultValue = "") String secretKey,
-			HttpServletRequest request, RedirectAttributes ra,
-			HttpServletResponse response) throws LogicException {
+	public String autoBind(@RequestParam(value = "secretKey", defaultValue = "") String secretKey,
+			HttpServletRequest request, RedirectAttributes ra, HttpServletResponse response) throws LogicException {
 		HttpSession session = request.getSession(false);
 		OauthPrincipal principal = getPrincipal(session, secretKey);
 		if (principal == null) {
-			ra.addFlashAttribute(ERROR,
-					new I18NMessage("error.oauth.needPrincipal"));
+			ra.addFlashAttribute(ERROR, new I18NMessage("error.oauth.needPrincipal"));
 			return "redirect:/login";
 		}
-		User user = oauthService.autoBind(principal,
-				(OauthUser) session.getAttribute(OAUTH_USER));
+		User user = oauthService.autoBind(principal, (OauthUser) session.getAttribute(OAUTH_USER));
 		session.invalidate();
 		oauthAutoLogin.autoLogin(principal, request, response);
 
-		ra.addFlashAttribute(SUCCESS,
-				new I18NMessage("success.oauth", user.getNickname()));
+		ra.addFlashAttribute(SUCCESS, new I18NMessage("success.oauth", user.getNickname()));
 		return "redirect:/";
 	}
 
 	@Token
 	@RequestMapping(value = "specified", method = RequestMethod.POST)
-	public String bind(
-			@RequestParam(value = "secretKey",
-					defaultValue = "") String secretKey,
+	public String bind(@RequestParam(value = "secretKey", defaultValue = "") String secretKey,
 			@RequestParam(value = "email", defaultValue = "") String email,
-			@RequestParam(value = "code", defaultValue = "") String code,
-			HttpServletRequest request, HttpServletResponse response,
-			RedirectAttributes ra, ModelMap model) {
+			@RequestParam(value = "code", defaultValue = "") String code, HttpServletRequest request,
+			HttpServletResponse response, RedirectAttributes ra, ModelMap model) {
 		HttpSession session = request.getSession(false);
 		OauthPrincipal principal = getPrincipal(session, secretKey);
 		if (principal == null) {
-			ra.addFlashAttribute(ERROR,
-					new I18NMessage("error.oauth.needPrincipal"));
+			ra.addFlashAttribute(ERROR, new I18NMessage("error.oauth.needPrincipal"));
 			return "redirect:/login";
 		}
 
 		User user;
 		try {
-			user = oauthService.bind(principal, code, email,
-					(OauthUser) session.getAttribute(OAUTH_USER));
+			user = oauthService.bind(principal, code, email, (OauthUser) session.getAttribute(OAUTH_USER));
 			// 登录前注销session
 			session.invalidate();
 			oauthAutoLogin.autoLogin(principal, request, response);
 
-			ra.addFlashAttribute(SUCCESS,
-					new I18NMessage("success.oauth", user.getNickname()));
+			ra.addFlashAttribute(SUCCESS, new I18NMessage("success.oauth", user.getNickname()));
 			return "redirect:/";
 		} catch (LogicException e) {
 			model.addAttribute(ERROR, e.getI18nMessage());
@@ -112,14 +98,11 @@ public class BindController extends BaseOauthController {
 
 	@ResponseBody
 	@RequestMapping(value = "sendCode", method = RequestMethod.POST)
-	public Info sendBindEmail(
-			@RequestParam(value = "secretKey",
-					defaultValue = "") String secretKey,
-			@RequestParam(value = "email", defaultValue = "") String email,
-			HttpServletRequest request, Locale locale) throws LogicException {
+	public Info sendBindEmail(@RequestParam(value = "secretKey", defaultValue = "") String secretKey,
+			@RequestParam(value = "email", defaultValue = "") String email, HttpServletRequest request, Locale locale)
+					throws LogicException {
 		if (!Validators.validateEmail(email)) {
-			return new Info(false, messageSource
-					.getMessage("validation.email.invalid", null, locale));
+			return new Info(false, messageSource.getMessage("validation.email.invalid", null, locale));
 		}
 		HttpSession session = request.getSession(false);
 		OauthPrincipal principal = getPrincipal(session, secretKey);
@@ -135,8 +118,7 @@ public class BindController extends BaseOauthController {
 		if (session == null) {
 			return null;
 		} else {
-			String _key = (key == null)
-					? (String) session.getAttribute(SECRET_KEY) : key;
+			String _key = (key == null) ? (String) session.getAttribute(SECRET_KEY) : key;
 			return (OauthPrincipal) session.getAttribute(_key);
 		}
 	}

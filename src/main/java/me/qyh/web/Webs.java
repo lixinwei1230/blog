@@ -41,8 +41,7 @@ public final class Webs {
 	public static String getClientIpAddress(HttpServletRequest request) {
 		for (String header : HEADERS_TO_TRY) {
 			String ip = request.getHeader(header);
-			if (!Validators.isEmptyOrNull(ip, true)
-					&& !"unknown".equalsIgnoreCase(ip)) {
+			if (!Validators.isEmptyOrNull(ip, true) && !"unknown".equalsIgnoreCase(ip)) {
 				return ip;
 			}
 		}
@@ -50,10 +49,8 @@ public final class Webs {
 	}
 
 	public static boolean matchValidateCode(HttpSession session, String code) {
-		String _validateCode = (String) session
-				.getAttribute(Constants.KAPTCHA_SESSION_KEY);
-		if (Validators.isEmptyOrNull(_validateCode, true)
-				|| Validators.isEmptyOrNull(code, true)
+		String _validateCode = (String) session.getAttribute(Constants.KAPTCHA_SESSION_KEY);
+		if (Validators.isEmptyOrNull(_validateCode, true) || Validators.isEmptyOrNull(code, true)
 				|| !_validateCode.equalsIgnoreCase(code)) {
 			return false;
 		}
@@ -64,11 +61,11 @@ public final class Webs {
 		return UrlUtils.buildFullRequestUrl(request);
 	}
 
-	public static void writeInfo(HttpServletResponse response,
-			ObjectWriter objectWriter, Info info) throws IOException {
+	public static void writeInfo(HttpServletResponse response, ObjectWriter objectWriter, Info info)
+			throws IOException {
 		response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-		JsonGenerator jsonGenerator = objectWriter.getFactory()
-				.createGenerator(response.getOutputStream(), JsonEncoding.UTF8);
+		JsonGenerator jsonGenerator = objectWriter.getFactory().createGenerator(response.getOutputStream(),
+				JsonEncoding.UTF8);
 		objectWriter.writeValue(jsonGenerator, info);
 	}
 
@@ -78,16 +75,14 @@ public final class Webs {
 
 	public static String generatorETag(Object o) {
 		StringBuilder builder = new StringBuilder("\"0");
-		DigestUtils.appendMd5DigestAsHex(SerializationUtils.serialize(o),
-				builder);
+		DigestUtils.appendMd5DigestAsHex(SerializationUtils.serialize(o), builder);
 		builder.append('"');
 		return builder.toString();
 	}
-	
+
 	public static boolean isWebImage(String filename) {
 		if (!Validators.isEmptyOrNull(filename, false)) {
-			String contentType = URLConnection
-					.guessContentTypeFromName(filename);
+			String contentType = URLConnection.guessContentTypeFromName(filename);
 			if (contentType != null && contentType.startsWith("image")) {
 				return true;
 			}

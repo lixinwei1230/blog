@@ -32,8 +32,8 @@ public class MessageReceiveController extends BaseController {
 	private int pageSize;
 
 	@RequestMapping(value = "list/{currentPage}", method = RequestMethod.GET)
-	public String list(@PathVariable(value = "currentPage") int currentPage,
-			MessageReceivePageParam param, ModelMap model) {
+	public String list(@PathVariable(value = "currentPage") int currentPage, MessageReceivePageParam param,
+			ModelMap model) {
 		param.setCurrentPage(currentPage);
 		param.setPageSize(pageSize);
 		param.setReceiver(UserContext.getUser());
@@ -46,16 +46,13 @@ public class MessageReceiveController extends BaseController {
 
 	@RequestMapping(value = "getToReadMessageCount", method = RequestMethod.GET)
 	@ResponseBody
-	public Info getToReadMessageCount(
-			@RequestParam("sources") Set<Integer> sourceIds) {
-		int count = messageService.getToReadMessageCount(UserContext.getUser(),
-				sourceIds);
+	public Info getToReadMessageCount(@RequestParam("sources") Set<Integer> sourceIds) {
+		int count = messageService.getToReadMessageCount(UserContext.getUser(), sourceIds);
 		return new Info(true, count);
 	}
 
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
-	public String getMessage(@PathVariable(value = "id") int id, ModelMap model)
-			throws DataNotFoundException {
+	public String getMessage(@PathVariable(value = "id") int id, ModelMap model) throws DataNotFoundException {
 		MessageReceive receive = messageService.getMessageReceive(id);
 		model.addAttribute("receive", receive);
 		return "my/message/receiveDetail";
@@ -63,8 +60,7 @@ public class MessageReceiveController extends BaseController {
 
 	@RequestMapping(value = "read", method = RequestMethod.POST)
 	@ResponseBody
-	public Info read(@RequestParam(value = "ids") Set<Integer> ids)
-			throws LogicException {
+	public Info read(@RequestParam(value = "ids") Set<Integer> ids) throws LogicException {
 		validIds(ids);
 		messageService.updateIsRead(ids, true);
 		return new Info(true);
@@ -72,8 +68,7 @@ public class MessageReceiveController extends BaseController {
 
 	@RequestMapping(value = "unread", method = RequestMethod.POST)
 	@ResponseBody
-	public Info unread(@RequestParam(value = "ids") Set<Integer> ids)
-			throws LogicException {
+	public Info unread(@RequestParam(value = "ids") Set<Integer> ids) throws LogicException {
 		validIds(ids);
 		messageService.updateIsRead(ids, false);
 		return new Info(true);
@@ -82,9 +77,7 @@ public class MessageReceiveController extends BaseController {
 	@RequestMapping(value = "status/change", method = RequestMethod.POST)
 	@ResponseBody
 	public Info changeStatus(@RequestParam(value = "ids") Set<Integer> ids,
-			@RequestParam(value = "status",
-					defaultValue = "COMMON") MessageStatus status)
-							throws LogicException {
+			@RequestParam(value = "status", defaultValue = "COMMON") MessageStatus status) throws LogicException {
 		validIds(ids);
 		messageService.updateMessageRecieveStatus(ids, status);
 		return new Info(true);
@@ -92,8 +85,7 @@ public class MessageReceiveController extends BaseController {
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	@ResponseBody
-	public Info delete(@RequestParam("ids") Set<Integer> ids)
-			throws LogicException {
+	public Info delete(@RequestParam("ids") Set<Integer> ids) throws LogicException {
 		validIds(ids);
 		messageService.deleteMessageReceives(ids);
 		return new Info(true);

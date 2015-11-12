@@ -4,8 +4,7 @@ import java.io.Serializable;
 
 import me.qyh.page.LocationWidget;
 
-public interface BaseWidgetConfigDao<E, PK extends Serializable>
-		extends BaseDao<E, PK> {
+public interface BaseWidgetConfigDao<E, PK extends Serializable> extends BaseDao<E, PK> {
 
 	E selectByLocationWidget(LocationWidget widget);
 

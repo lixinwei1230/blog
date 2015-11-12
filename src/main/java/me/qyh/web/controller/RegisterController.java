@@ -46,8 +46,8 @@ public class RegisterController extends BaseController {
 	@Token
 	@RequestMapping(value = "register", method = RequestMethod.POST)
 	public String register(@Validated User user, BindingResult result,
-			@RequestParam(value = "validateCode") String code,
-			HttpSession session, ModelMap model, RedirectAttributes ra) {
+			@RequestParam(value = "validateCode") String code, HttpSession session, ModelMap model,
+			RedirectAttributes ra) {
 		if (!Webs.matchValidateCode(session, code)) {
 			model.addAttribute(ERROR, new I18NMessage("error.validateCode"));
 			return "register";
@@ -67,19 +67,15 @@ public class RegisterController extends BaseController {
 	}
 
 	@RequestMapping(value = "activate", method = RequestMethod.GET)
-	public String activate(
-			@RequestParam(value = "activateCode",
-					defaultValue = "") String activateCode,
-			@RequestParam(value = "userid") int userId, ModelMap model,
-			RedirectAttributes redirectAttributes) {
+	public String activate(@RequestParam(value = "activateCode", defaultValue = "") String activateCode,
+			@RequestParam(value = "userid") int userId, ModelMap model, RedirectAttributes redirectAttributes) {
 		try {
 			userService.activate(userId, activateCode);
 		} catch (LogicException e) {
 			model.addAttribute(ERROR, e.getI18nMessage());
 			return "reactivate";
 		}
-		redirectAttributes.addFlashAttribute(SUCCESS,
-				new I18NMessage("success.activate"));
+		redirectAttributes.addFlashAttribute(SUCCESS, new I18NMessage("success.activate"));
 		return "redirect:/";
 	}
 
@@ -90,18 +86,16 @@ public class RegisterController extends BaseController {
 
 	@Token
 	@RequestMapping(value = "reactivate", method = RequestMethod.POST)
-	public String reactivate(
-			@RequestParam(value = "name", defaultValue = "") String name,
+	public String reactivate(@RequestParam(value = "name", defaultValue = "") String name,
 			@RequestParam(value = "email", defaultValue = "") String email,
-			@RequestParam(value = "validateCode") String code,
-			RedirectAttributes ra, HttpSession session, ModelMap model) {
+			@RequestParam(value = "validateCode") String code, RedirectAttributes ra, HttpSession session,
+			ModelMap model) {
 		if (!Webs.matchValidateCode(session, code)) {
 			model.addAttribute(ERROR, new I18NMessage("error.validateCode"));
 			return "reactivate";
 		}
 		if (!Validators.validateEmail(email)) {
-			model.addAttribute(ERROR,
-					new I18NMessage("validation.email.invalid"));
+			model.addAttribute(ERROR, new I18NMessage("validation.email.invalid"));
 			return "reactivate";
 		}
 		try {
@@ -110,8 +104,7 @@ public class RegisterController extends BaseController {
 			model.addAttribute(ERROR, e.getI18nMessage());
 			return "reactivate";
 		}
-		ra.addFlashAttribute(SUCCESS,
-				new I18NMessage("page.reactivate.success"));
+		ra.addFlashAttribute(SUCCESS, new I18NMessage("page.reactivate.success"));
 		return "redirect:/reactivate";
 	}
 

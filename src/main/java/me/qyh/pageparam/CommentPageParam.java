@@ -43,8 +43,7 @@ public class CommentPageParam extends PageParam {
 	@Override
 	public void validate() throws InvalidParamException {
 		super.validate();
-		if (scope == null || scope.getScopeId() == null
-				|| scope.getScope() == null) {
+		if (scope == null || scope.getScopeId() == null || scope.getScope() == null) {
 			throw new InvalidParamException();
 		}
 	}

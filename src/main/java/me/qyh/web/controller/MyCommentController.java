@@ -37,8 +37,7 @@ public class MyCommentController extends BaseController {
 
 	@RequestMapping(value = "add", method = RequestMethod.POST)
 	@ResponseBody
-	public Info send(@Validated @RequestBody Comment comment)
-			throws CommentAuthencationException, LogicException {
+	public Info send(@Validated @RequestBody Comment comment) throws CommentAuthencationException, LogicException {
 		comment.setUser(UserContext.getUser());
 		comment.setCommentDate(new Date());
 		return new Info(true, commentService.insertComment(comment));

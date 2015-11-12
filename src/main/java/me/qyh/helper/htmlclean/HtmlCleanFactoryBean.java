@@ -21,7 +21,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.io.Resource;
 
-public class HtmlCleanFactoryBean implements FactoryBean<HtmlClean>,ApplicationContextAware {
+public class HtmlCleanFactoryBean implements FactoryBean<HtmlClean>, ApplicationContextAware {
 
 	private String html;
 	private String location;
@@ -43,13 +43,11 @@ public class HtmlCleanFactoryBean implements FactoryBean<HtmlClean>,ApplicationC
 				for (Attribute att : element.attributes()) {
 					String key = att.getKey();
 					if ("class".equalsIgnoreCase(key)) {
-						tag.addAttrbute(new TagAttribute("class",
-								element.classNames()));
+						tag.addAttrbute(new TagAttribute("class", element.classNames()));
 					} else {
 						String value = att.getValue();
 						tag.addAttrbute("".equals(value) ? new TagAttribute(key)
-								: new TagAttribute(key,
-										parseValue(att.getValue())));
+								: new TagAttribute(key, parseValue(att.getValue())));
 					}
 				}
 				addTag(tag);
@@ -61,8 +59,7 @@ public class HtmlCleanFactoryBean implements FactoryBean<HtmlClean>,ApplicationC
 			List<SafeTagAttribute> stAtts = new ArrayList<SafeTagAttribute>();
 			for (TagAttribute att : tag.atts) {
 				SafeTagAttribute stAtt = new SafeTagAttribute(att.name);
-				AttributeValueValidator validator = seekeValidatorFromSpeicifiedValidators(
-						tag.name, att.name);
+				AttributeValueValidator validator = seekeValidatorFromSpeicifiedValidators(tag.name, att.name);
 				if (validator != null) {
 					stAtt.setValidator(validator);
 				} else if (!att.allows.isEmpty()) {
@@ -91,29 +88,28 @@ public class HtmlCleanFactoryBean implements FactoryBean<HtmlClean>,ApplicationC
 	public void setHtml(String html) {
 		this.html = html;
 	}
-	
+
 	public void setLocation(String location) {
 		this.location = location;
 	}
-	
-	public String getHtml(){
-		if(html != null){
+
+	public String getHtml() {
+		if (html != null) {
 			return html;
 		}
 		Resource resource = ctx.getResource(location);
 		InputStream is = null;
-		try{
+		try {
 			is = resource.getInputStream();
 			return IOUtils.toString(is);
-		}catch (IOException e) {
+		} catch (IOException e) {
 			throw new SystemException(e);
 		} finally {
 			IOUtils.closeQuietly(is);
 		}
 	}
 
-	public void setSpecifiedValidators(
-			List<SpecifiedValidator> specifiedValidators) {
+	public void setSpecifiedValidators(List<SpecifiedValidator> specifiedValidators) {
 		this.specifiedValidators = specifiedValidators;
 	}
 
@@ -142,15 +138,13 @@ public class HtmlCleanFactoryBean implements FactoryBean<HtmlClean>,ApplicationC
 		return _values;
 	}
 
-	private AttributeValueValidator seekeValidatorFromSpeicifiedValidators(
-			String tagName, String attName) {
+	private AttributeValueValidator seekeValidatorFromSpeicifiedValidators(String tagName, String attName) {
 		if (!specifiedValidators.isEmpty()) {
 			for (SpecifiedValidator sv : specifiedValidators) {
 				String _tagName = sv.getTagName();
 				Set<String> _attNames = sv.getAttNames();
 				if (_tagName != null) {
-					if (tagName.equalsIgnoreCase(_tagName)
-							&& _attNames.contains(attName)) {
+					if (tagName.equalsIgnoreCase(_tagName) && _attNames.contains(attName)) {
 						return sv.getValidator();
 					}
 				} else {
@@ -262,12 +256,11 @@ public class HtmlCleanFactoryBean implements FactoryBean<HtmlClean>,ApplicationC
 			this.allows = allows;
 		}
 	}
-	
+
 	private ApplicationContext ctx;
-	
+
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		ctx = applicationContext;
 	}
 

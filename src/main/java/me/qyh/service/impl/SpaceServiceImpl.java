@@ -31,8 +31,7 @@ public class SpaceServiceImpl extends BaseServiceImpl implements SpaceService {
 	private SpaceNameChecker spaceNameChecker = new SafeSpaceNameChecker();
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public void openSpace(Space space) throws LogicException {
 		// 检查用户，如果用户被禁用，无法开通
 		userServer.getUserById(space.getUser().getId());

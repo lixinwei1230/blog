@@ -8,11 +8,9 @@ import me.qyh.pageparam.Page;
 
 public interface CommentService {
 
-	Comment insertComment(Comment comment)
-			throws CommentAuthencationException, LogicException;
+	Comment insertComment(Comment comment) throws CommentAuthencationException, LogicException;
 
-	Page<Comment> findComments(CommentPageParam param)
-			throws CommentAuthencationException, LogicException;
+	Page<Comment> findComments(CommentPageParam param) throws CommentAuthencationException, LogicException;
 
 	void deleteComment(Integer id) throws LogicException;
 

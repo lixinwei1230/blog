@@ -19,13 +19,11 @@ import org.springframework.stereotype.Component;
 public class Im4javas implements InitializingBean {
 
 	private static final String IMAGEPREFIX = "image/";
-	private static final boolean windows = (System.getProperty("os.name")
-			.toLowerCase().indexOf("win") != -1);
+	private static final boolean windows = (System.getProperty("os.name").toLowerCase().indexOf("win") != -1);
 	@Value("${config.magick.path}")
 	private String magickPath;
 
-	public void zoom(String absPath, String destPath, int size)
-			throws Exception {
+	public void zoom(String absPath, String destPath, int size) throws Exception {
 		IMOperation op = new IMOperation();
 		op.thumbnail(size);
 		op.addImage();
@@ -33,8 +31,7 @@ public class Im4javas implements InitializingBean {
 		getConvertCmd().run(op, absPath, destPath);
 	}
 
-	public void crop(String absPath, String destPath, int x, int y, int width,
-			int height) throws Exception {
+	public void crop(String absPath, String destPath, int x, int y, int width, int height) throws Exception {
 		IMOperation op = new IMOperation();
 		op.addImage();
 		op.crop(width, height, x, y);
@@ -42,8 +39,7 @@ public class Im4javas implements InitializingBean {
 		getConvertCmd().run(op, absPath, destPath);
 	}
 
-	public void writeFirstFrameOfGif(String absPath, String destPath)
-			throws Exception {
+	public void writeFirstFrameOfGif(String absPath, String destPath) throws Exception {
 		IMOperation op = new IMOperation();
 		op.addImage();
 		op.addImage();
@@ -61,19 +57,18 @@ public class Im4javas implements InitializingBean {
 		}
 		ArrayListOutputConsumer localArrayListOutputConsumer = new ArrayListOutputConsumer();
 		localIdentifyCmd.setOutputConsumer(localArrayListOutputConsumer);
-		try{
+		try {
 			localIdentifyCmd.run(localIMOperation, absPath + "[0]");
 			List<String> atts = localArrayListOutputConsumer.getOutput();
 			Iterator<String> it = atts.iterator();
 			return new ImageInfo(Integer.parseInt(it.next()), Integer.parseInt(it.next()), it.next());
-		}catch (Exception e) {
+		} catch (Exception e) {
 			throw new BadImageException(e);
 		}
 	}
-	
+
 	public static boolean maybeImage(String contentType) {
-		return Validators.isEmptyOrNull(contentType, true) ? false
-				: contentType.startsWith(IMAGEPREFIX);
+		return Validators.isEmptyOrNull(contentType, true) ? false : contentType.startsWith(IMAGEPREFIX);
 	}
 
 	public class ImageInfo {
@@ -101,8 +96,7 @@ public class Im4javas implements InitializingBean {
 
 		@Override
 		public String toString() {
-			return "ImageInfo [width=" + width + ", height=" + height
-					+ ", type=" + type + "]";
+			return "ImageInfo [width=" + width + ", height=" + height + ", type=" + type + "]";
 		}
 	}
 

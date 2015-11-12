@@ -18,14 +18,13 @@ public class TokenInterceptor extends HandlerInterceptorAdapter {
 	private String duplicateSubmissionPage;
 
 	@Override
-	public boolean preHandle(HttpServletRequest request,
-			HttpServletResponse response, Object handler) throws Exception {
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+			throws Exception {
 
 		if (handler instanceof HandlerMethod) {
 			HandlerMethod handlerMethod = (HandlerMethod) handler;
 
-			Token token = AnnotationUtils
-					.getAnnotation(handlerMethod.getMethod(), Token.class);
+			Token token = AnnotationUtils.getAnnotation(handlerMethod.getMethod(), Token.class);
 
 			if (token != null) {
 				HttpSession session = request.getSession(true);
@@ -42,11 +41,10 @@ public class TokenInterceptor extends HandlerInterceptorAdapter {
 
 	}
 
-	protected void handleInvalidToken(HttpServletRequest request,
-			HttpServletResponse response) throws IOException, ServletException {
+	protected void handleInvalidToken(HttpServletRequest request, HttpServletResponse response)
+			throws IOException, ServletException {
 		if (!response.isCommitted()) {
-			request.getRequestDispatcher(duplicateSubmissionPage)
-					.forward(request, response);
+			request.getRequestDispatcher(duplicateSubmissionPage).forward(request, response);
 		}
 	}
 

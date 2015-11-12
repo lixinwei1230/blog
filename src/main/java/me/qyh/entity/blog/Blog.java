@@ -53,7 +53,7 @@ public class Blog extends Id {
 	private int comments;// 博客评论数
 	private Scope commentScope;// 博客评论范围
 	private Integer level;// 博客级别，级别越高将越靠前显示
-	private boolean recommend;//推荐才能上首页
+	private boolean recommend;// 推荐才能上首页
 
 	public Blog() {
 
@@ -67,8 +67,7 @@ public class Blog extends Id {
 	 * @return {@code TemporaryBlog}
 	 * @throws JsonProcessingException
 	 */
-	public TemporaryBlog getTemporaryBlog(ObjectWriter writer)
-			throws JsonProcessingException {
+	public TemporaryBlog getTemporaryBlog(ObjectWriter writer) throws JsonProcessingException {
 		TemporaryBlog tBlog = new TemporaryBlog();
 		tBlog.setContent(content);
 		tBlog.setTitle(title);
@@ -77,13 +76,10 @@ public class Blog extends Id {
 		// 将博客其他属性转化成json字符串
 		FilterProvider filters = new SimpleFilterProvider()
 				.addFilter("blogFilter",
-						SimpleBeanPropertyFilter.filterOutAllExcept("category",
-								"scope", "tags", "from", "commentScope",
+						SimpleBeanPropertyFilter.filterOutAllExcept("category", "scope", "tags", "from", "commentScope",
 								"level"))
-				.addFilter("blogCategoryFilter",
-						SimpleBeanPropertyFilter.filterOutAllExcept("id"))
-				.addFilter("webTagFilter",
-						SimpleBeanPropertyFilter.filterOutAllExcept("name"));
+				.addFilter("blogCategoryFilter", SimpleBeanPropertyFilter.filterOutAllExcept("id"))
+				.addFilter("webTagFilter", SimpleBeanPropertyFilter.filterOutAllExcept("name"));
 		tBlog.setJson(writer.with(filters).writeValueAsString(this));
 		return tBlog;
 	}

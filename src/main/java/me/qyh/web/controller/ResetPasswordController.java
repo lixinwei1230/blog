@@ -36,18 +36,16 @@ public class ResetPasswordController extends BaseController {
 
 	@Token
 	@RequestMapping(value = "forget", method = RequestMethod.POST)
-	public String forget(
-			@RequestParam(value = "name", defaultValue = "") String name,
+	public String forget(@RequestParam(value = "name", defaultValue = "") String name,
 			@RequestParam(value = "email", defaultValue = "") String email,
-			@RequestParam(value = "validateCode") String code,
-			HttpSession session, ModelMap model, RedirectAttributes ra) {
+			@RequestParam(value = "validateCode") String code, HttpSession session, ModelMap model,
+			RedirectAttributes ra) {
 		if (!Webs.matchValidateCode(session, code)) {
 			model.addAttribute(ERROR, new I18NMessage("error.validateCode"));
 			return "my/password/forget";
 		}
 		if (!Validators.validateEmail(email)) {
-			model.addAttribute(ERROR,
-					new I18NMessage("validation.email.invalid"));
+			model.addAttribute(ERROR, new I18NMessage("validation.email.invalid"));
 			return "my/password/forget";
 		}
 		try {
@@ -56,17 +54,13 @@ public class ResetPasswordController extends BaseController {
 			model.addAttribute(ERROR, e.getI18nMessage());
 			return "my/password/forget";
 		}
-		ra.addFlashAttribute(SUCCESS,
-				new I18NMessage("success.forgetPassword"));
+		ra.addFlashAttribute(SUCCESS, new I18NMessage("success.forgetPassword"));
 		return "redirect:/";
 	}
 
-	@RequestMapping(value = "reset", method = RequestMethod.GET,
-			params = { "code", "userid" })
-	public String reset(
-			@RequestParam(value = "code", defaultValue = "") String code,
-			@RequestParam(value = "userid") int userId, ModelMap model,
-			RedirectAttributes ra) {
+	@RequestMapping(value = "reset", method = RequestMethod.GET, params = { "code", "userid" })
+	public String reset(@RequestParam(value = "code", defaultValue = "") String code,
+			@RequestParam(value = "userid") int userId, ModelMap model, RedirectAttributes ra) {
 		try {
 			userService.resetPasswordCheck(code, userId);
 		} catch (LogicException e) {
@@ -85,17 +79,13 @@ public class ResetPasswordController extends BaseController {
 
 	@Token
 	@RequestMapping(value = "reset", method = RequestMethod.POST)
-	public String reset(
-			@RequestParam(value = "newPassword",
-					defaultValue = "") String newPassword,
-			@RequestParam(value = "userId") int userId,
-			@RequestParam(value = "code", defaultValue = "") String code,
+	public String reset(@RequestParam(value = "newPassword", defaultValue = "") String newPassword,
+			@RequestParam(value = "userId") int userId, @RequestParam(value = "code", defaultValue = "") String code,
 			HttpSession session, ModelMap model, RedirectAttributes ra) {
 		if (!Validators.validate(PASSWORD_PATTERN, newPassword)) {
 			model.addAttribute("userId", userId);
 			model.addAttribute("code", code);
-			model.addAttribute(ERROR,
-					new I18NMessage("validation.password.invalid"));
+			model.addAttribute(ERROR, new I18NMessage("validation.password.invalid"));
 			return "my/password/reset";
 		}
 		try {

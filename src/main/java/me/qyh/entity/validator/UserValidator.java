@@ -20,8 +20,7 @@ public class UserValidator implements Validator {
 	@Value("${config.validation.user.emailMaxLength}")
 	private int emailMaxLength;
 
-	public static final Pattern PASSWORD_PATTERN = Pattern
-			.compile("^[a-zA-Z0-9]{6,16}$");
+	public static final Pattern PASSWORD_PATTERN = Pattern.compile("^[a-zA-Z0-9]{6,16}$");
 
 	@Override
 	public boolean supports(Class<?> clazz) {
@@ -56,8 +55,7 @@ public class UserValidator implements Validator {
 			e.rejectValue("password", "validation.email.blank");
 			return;
 		}
-		if (!Validators.validateEmail(email)
-				|| email.length() > emailMaxLength) {
+		if (!Validators.validateEmail(email) || email.length() > emailMaxLength) {
 			e.rejectValue("email", "validation.email.invalid");
 			return;
 		}

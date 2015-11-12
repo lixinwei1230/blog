@@ -20,8 +20,7 @@ public interface UserDao extends BaseDao<User, Integer> {
 
 	User selectBySpace(Space space);
 
-	int insertUserRole(@Param(value = "user") User user,
-			@Param(value = "role") Role role);
+	int insertUserRole(@Param(value = "user") User user, @Param(value = "role") Role role);
 
 	User selectById(Integer id);
 
@@ -49,7 +48,6 @@ public interface UserDao extends BaseDao<User, Integer> {
 	 */
 	int updateFixedTerm(User user);
 
-	void deleteUserRole(@Param(value = "user") User user,
-			@Param(value = "role") Role role);
+	void deleteUserRole(@Param(value = "user") User user, @Param(value = "role") Role role);
 
 }

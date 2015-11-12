@@ -27,13 +27,11 @@ public interface MessageService {
 
 	MessageReceive getMessageReceive(Integer id) throws DataNotFoundException;
 
-	void updateIsRead(Set<Integer> receives, boolean isRead)
-			throws LogicException;
+	void updateIsRead(Set<Integer> receives, boolean isRead) throws LogicException;
 
 	void deleteMessageReceives(Set<Integer> receives) throws LogicException;
 
-	void updateMessageRecieveStatus(Set<Integer> receives, MessageStatus status)
-			throws LogicException;
+	void updateMessageRecieveStatus(Set<Integer> receives, MessageStatus status) throws LogicException;
 
 	void deleteMessageSends(Set<Integer> sends) throws LogicException;
 

@@ -114,11 +114,9 @@ public class Comment extends Id {
 
 	@Override
 	public String toString() {
-		return "Comment [scope=" + scope + ", title=" + title + ", content="
-				+ content + ", user=" + user + ", isAnonymous=" + isAnonymous
-				+ ", commentDate=" + commentDate + ", parent=" + parent
-				+ ", replyTo=" + replyTo + ", reply=" + reply + ", page=" + page
-				+ "]";
+		return "Comment [scope=" + scope + ", title=" + title + ", content=" + content + ", user=" + user
+				+ ", isAnonymous=" + isAnonymous + ", commentDate=" + commentDate + ", parent=" + parent + ", replyTo="
+				+ replyTo + ", reply=" + reply + ", page=" + page + "]";
 	}
 
 }

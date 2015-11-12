@@ -47,9 +47,9 @@ public interface ConfigServer {
 	_ImageConfig getAvatarConfig(User user);
 
 	BlogConfig getBlogConfig(User user);
-	
+
 	FileWriteConfig getFileWriteConfig();
-	
+
 	FileWriteConfig getAvatarWriteConfig();
 
 }

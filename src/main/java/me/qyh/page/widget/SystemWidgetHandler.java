@@ -21,8 +21,7 @@ public interface SystemWidgetHandler {
 	 * @return
 	 * @throws DataNotFoundException
 	 */
-	SystemWidget getWidget(LocationWidget widget, User owner, User visitor)
-			throws DataNotFoundException;
+	SystemWidget getWidget(LocationWidget widget, User owner, User visitor) throws DataNotFoundException;
 
 	/**
 	 * 得到当前widget可供配置项

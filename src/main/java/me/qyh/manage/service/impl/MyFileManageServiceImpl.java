@@ -14,17 +14,14 @@ import me.qyh.server.TipServer;
 import me.qyh.service.impl.MyFileServiceImpl;
 
 @Service
-public class MyFileManageServiceImpl extends MyFileServiceImpl
-		implements MyFileManageService {
+public class MyFileManageServiceImpl extends MyFileServiceImpl implements MyFileManageService {
 
 	@Autowired
 	private TipServer tipServer;
 
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED,
-			rollbackFor = Exception.class)
-	public void deleteMyFile(Integer id, TipMessage tipMessage)
-			throws LogicException {
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+	public void deleteMyFile(Integer id, TipMessage tipMessage) throws LogicException {
 		MyFile db = getMyFile(id);
 
 		tipMessage.setReceiver(db.getUser());

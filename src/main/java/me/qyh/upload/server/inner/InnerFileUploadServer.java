@@ -59,8 +59,7 @@ public class InnerFileUploadServer {
 		FileUploadConfig config = configServer.getFileUploadConfig(user);
 
 		if (allFileSize + totalSize > config.getMaxSizeOfUser()) {
-			info.setError(new I18NMessage("error.upload.user.oversize",
-					config.getMaxSizeOfUser(),
+			info.setError(new I18NMessage("error.upload.user.oversize", config.getMaxSizeOfUser(),
 					allFileSize + totalSize - config.getMaxSizeOfUser()));
 			return info;
 		}
@@ -68,30 +67,24 @@ public class InnerFileUploadServer {
 		for (MultipartFile file : files) {
 			String originalFilename = file.getOriginalFilename();
 			if (file.getSize() == 0) {
-				info.addError(originalFilename,
-						new I18NMessage("error.upload.emptyFile"));
+				info.addError(originalFilename, new I18NMessage("error.upload.emptyFile"));
 				continue;
 			}
 			boolean image = maybeImage(file.getContentType());
-			FileUploadConfig._Config _config = image ? config.getImageConfig()
-					: config.getConfig();
+			FileUploadConfig._Config _config = image ? config.getImageConfig() : config.getConfig();
 			SizeLimit sl = _config.getSizeLimit();
 			if (sl != null) {
 				Result result = sl.allow(file);
 				if (!result.isAllow()) {
 					info.addError(originalFilename,
-							new I18NMessage("error.upload.singlefile.oversize",
-									result.getMaxAllowSize()));
+							new I18NMessage("error.upload.singlefile.oversize", result.getMaxAllowSize()));
 					continue;
 				}
 			}
-			String extension = Files
-					.getFileExtension(file.getOriginalFilename());
+			String extension = Files.getFileExtension(file.getOriginalFilename());
 
-			if (!image && !Strings.inArray(extension,
-					_config.getAllowFileTypes(), true)) {
-				info.addError(originalFilename, new I18NMessage(
-						"error.upload.invalidExtension", extension));
+			if (!image && !Strings.inArray(extension, _config.getAllowFileTypes(), true)) {
+				info.addError(originalFilename, new I18NMessage("error.upload.invalidExtension", extension));
 				continue;
 			}
 
@@ -100,8 +93,7 @@ public class InnerFileUploadServer {
 
 			File folder = new File(absPath + relativePath);
 			if (!folder.exists() && !folder.mkdirs()) {
-				throw new SystemException(this.getClass().getName() + ":无法创建目录:"
-						+ folder.getPath());
+				throw new SystemException(this.getClass().getName() + ":无法创建目录:" + folder.getPath());
 			}
 			File _file = new File(folder, newFilename);
 			try {
@@ -112,42 +104,32 @@ public class InnerFileUploadServer {
 			String contentType = file.getContentType();
 			if (image) {
 				try {
-					ImageInfo ii = im4javas
-							.getImageInfo(_file.getAbsolutePath());
-					if (!Strings.inArray(ii.getType(),
-							_config.getAllowFileTypes(), true)) {
-						info.addError(originalFilename, new I18NMessage(
-								"error.upload.invalidExtension", ii.getType()));
+					ImageInfo ii = im4javas.getImageInfo(_file.getAbsolutePath());
+					if (!Strings.inArray(ii.getType(), _config.getAllowFileTypes(), true)) {
+						info.addError(originalFilename, new I18NMessage("error.upload.invalidExtension", ii.getType()));
 						continue;
 					}
 					FileUploadConfig._ImageConfig imConfig = (FileUploadConfig._ImageConfig) _config;
 					if (ii.getWidth() > imConfig.getMaxWidth()) {
 						info.addError(originalFilename,
-								new I18NMessage(
-										"error.upload.image.width.invalid",
-										imConfig.getMaxWidth()));
+								new I18NMessage("error.upload.image.width.invalid", imConfig.getMaxWidth()));
 						continue;
 					}
 					if (ii.getHeight() > imConfig.getMaxHeight()) {
 						info.addError(originalFilename,
-								new I18NMessage(
-										"error.upload.image.height.invalid",
-										imConfig.getMaxWidth()));
+								new I18NMessage("error.upload.image.height.invalid", imConfig.getMaxWidth()));
 						continue;
 					}
 					File rename = new File(_file.getParent(),
-							Files.getFilename(_file.getName()) + "."
-									+ ii.getType().toLowerCase());
+							Files.getFilename(_file.getName()) + "." + ii.getType().toLowerCase());
 					if (!_file.renameTo(rename)) {
-						throw new SystemException(String.format(
-								"将文件%s修改为%s后缀失败", _file.getAbsolutePath(),
-								ii.getType().toLowerCase()));
+						throw new SystemException(
+								String.format("将文件%s修改为%s后缀失败", _file.getAbsolutePath(), ii.getType().toLowerCase()));
 					}
 					_file = rename;
 					contentType = IMAGEPREFIX + ii.getType().toLowerCase();
 				} catch (BadImageException e) {
-					info.addError(originalFilename,
-							new I18NMessage("error.upload.badImage"));
+					info.addError(originalFilename, new I18NMessage("error.upload.badImage"));
 					continue;
 				}
 			}
@@ -158,20 +140,16 @@ public class InnerFileUploadServer {
 				String coverName = Files.getFilename(newFilename) + "." + JPEG;
 				File _cover = new File(folder, coverName);
 				try {
-					im4javas.writeFirstFrameOfGif(_file.getAbsolutePath(),
-							_cover.getAbsolutePath());
+					im4javas.writeFirstFrameOfGif(_file.getAbsolutePath(), _cover.getAbsolutePath());
 				} catch (Exception e) {
 					throw new SystemException(e);
 				}
-				cover = new MyFile(user, _cover.length(), JPEG, coverName, now,
-						innerFileStore, FileStatus.NORMAL, relativePath,
-						file.getOriginalFilename(), true);
+				cover = new MyFile(user, _cover.length(), JPEG, coverName, now, innerFileStore, FileStatus.NORMAL,
+						relativePath, file.getOriginalFilename(), true);
 				fileDao.insert(cover);
 			}
-			MyFile mf = new MyFile(user, _file.length(),
-					Files.getFileExtension(_file.getName()), _file.getName(),
-					now, innerFileStore, FileStatus.NORMAL, relativePath,
-					file.getOriginalFilename(), false);
+			MyFile mf = new MyFile(user, _file.length(), Files.getFileExtension(_file.getName()), _file.getName(), now,
+					innerFileStore, FileStatus.NORMAL, relativePath, file.getOriginalFilename(), false);
 			if (needCover) {
 				mf.setCover(cover);
 			}

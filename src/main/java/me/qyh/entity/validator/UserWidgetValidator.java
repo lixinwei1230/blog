@@ -30,8 +30,7 @@ public class UserWidgetValidator implements Validator {
 			return;
 		}
 		if (name.length() > nameMaxLength) {
-			e.rejectValue("name", "validation.userWidget.name.toolong",
-					new Object[] { nameMaxLength },
+			e.rejectValue("name", "validation.userWidget.name.toolong", new Object[] { nameMaxLength },
 					"挂件名不能超过" + nameMaxLength + "个字符");
 			return;
 		}
@@ -41,8 +40,7 @@ public class UserWidgetValidator implements Validator {
 			return;
 		}
 		if (html.length() > htmlMaxLength) {
-			e.rejectValue("html", "validation.userWidget.html.toolong",
-					new Object[] { htmlMaxLength },
+			e.rejectValue("html", "validation.userWidget.html.toolong", new Object[] { htmlMaxLength },
 					"挂件内容不能超过" + htmlMaxLength + "个字符");
 			return;
 		}

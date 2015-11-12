@@ -13,8 +13,7 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 import me.qyh.web.Webs;
 import me.qyh.web.tag.url.UrlHelper;
 
-public class MyAuthenticationEntryPoint
-		extends LoginUrlAuthenticationEntryPoint {
+public class MyAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint {
 
 	@Autowired
 	private UrlHelper urlHelper;
@@ -24,9 +23,8 @@ public class MyAuthenticationEntryPoint
 	}
 
 	@Override
-	public void commence(HttpServletRequest request,
-			HttpServletResponse response, AuthenticationException exception)
-					throws IOException, ServletException {
+	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
+			throws IOException, ServletException {
 		if (Webs.isAjaxRequest(request)) {
 			response.sendError(403);
 		} else {
@@ -35,11 +33,9 @@ public class MyAuthenticationEntryPoint
 	}
 
 	@Override
-	protected String buildRedirectUrlToLoginPage(HttpServletRequest request,
-			HttpServletResponse response,
+	protected String buildRedirectUrlToLoginPage(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException authException) {
-		return request.getScheme() + "://" + urlHelper.getUrl()
-				+ getLoginFormUrl();
+		return request.getScheme() + "://" + urlHelper.getUrl() + getLoginFormUrl();
 	}
 
 }

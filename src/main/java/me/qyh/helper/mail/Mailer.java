@@ -32,13 +32,11 @@ public class Mailer {
 	 * @param handler
 	 * @param multi
 	 */
-	public void sendEmail(final MimeMessageHelperHandler handler,
-			final boolean multi) {
+	public void sendEmail(final MimeMessageHelperHandler handler, final boolean multi) {
 		MimeMessagePreparator preparator = new MimeMessagePreparator() {
 			@Override
 			public void prepare(MimeMessage mimeMessage) throws Exception {
-				handler.handle(
-						new MimeMessageHelper(mimeMessage, multi, charset));
+				handler.handle(new MimeMessageHelper(mimeMessage, multi, charset));
 				mimeMessage.setFrom();
 			}
 		};

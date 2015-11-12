@@ -39,17 +39,13 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
 	}
 
 	@Override
-	public void onAuthenticationFailure(HttpServletRequest request,
-			HttpServletResponse response, AuthenticationException exception)
-					throws IOException, ServletException {
-		String msg = messageSource.getMessage("error.loginFailed",
-				new Object[] {}, request.getLocale());
+	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
+			AuthenticationException exception) throws IOException, ServletException {
+		String msg = messageSource.getMessage("error.loginFailed", new Object[] {}, request.getLocale());
 		if (Webs.isAjaxRequest(request)) {
 			Webs.writeInfo(response, objectWriter, new Info(false, msg));
 		}
-		request.getSession()
-				.setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION, msg);
-		response.sendRedirect(request.getScheme() + "://" + urlHelper.getUrl()
-				+ defaultFailureUrl);
+		request.getSession().setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION, msg);
+		response.sendRedirect(request.getScheme() + "://" + urlHelper.getUrl() + defaultFailureUrl);
 	}
 }

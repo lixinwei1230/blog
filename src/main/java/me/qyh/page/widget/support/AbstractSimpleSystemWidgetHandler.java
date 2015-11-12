@@ -11,8 +11,7 @@ import me.qyh.page.LocationWidget;
 import me.qyh.page.widget.SystemWidget;
 import me.qyh.page.widget.config.WidgetConfig;
 
-public abstract class AbstractSimpleSystemWidgetHandler
-		extends AbstractSystemWidgetHandler {
+public abstract class AbstractSimpleSystemWidgetHandler extends AbstractSystemWidgetHandler {
 
 	@Autowired
 	protected UserWidgetConfigDao userWidgetConfigDao;
@@ -24,8 +23,7 @@ public abstract class AbstractSimpleSystemWidgetHandler
 	@Override
 	public WidgetConfig getConfig(LocationWidget widget) {
 
-		WidgetConfig config = userWidgetConfigDao
-				.selectByLocationWidget(widget);
+		WidgetConfig config = userWidgetConfigDao.selectByLocationWidget(widget);
 
 		if (config == null) {
 			config = new WidgetConfig();
@@ -40,8 +38,7 @@ public abstract class AbstractSimpleSystemWidgetHandler
 	}
 
 	@Override
-	public void deleteWidgetConfig(LocationWidget widget)
-			throws LogicException {
+	public void deleteWidgetConfig(LocationWidget widget) throws LogicException {
 		userWidgetConfigDao.deleteByLocationWidget(widget);
 	}
 
@@ -60,10 +57,9 @@ public abstract class AbstractSimpleSystemWidgetHandler
 	}
 
 	@Override
-	SystemWidget getWidget(LocationWidget widget, WebFreemarkers freeMarkers,
-			User owner, User visitor) throws DataNotFoundException {
-		WidgetConfig config = userWidgetConfigDao
-				.selectByLocationWidget(widget);
+	SystemWidget getWidget(LocationWidget widget, WebFreemarkers freeMarkers, User owner, User visitor)
+			throws DataNotFoundException {
+		WidgetConfig config = userWidgetConfigDao.selectByLocationWidget(widget);
 
 		if (config == null) {
 			throw new DataNotFoundException(CODE_CONFIG_NOT_EXISTS);
@@ -78,7 +74,6 @@ public abstract class AbstractSimpleSystemWidgetHandler
 		return sw;
 	}
 
-	abstract String getWidgetHtml(WidgetConfig config, User owner, User visitor,
-			WebFreemarkers freeMarkers);
+	abstract String getWidgetHtml(WidgetConfig config, User owner, User visitor, WebFreemarkers freeMarkers);
 
 }

@@ -21,11 +21,8 @@ public class Mlogger {
 		long start = System.currentTimeMillis();
 		Object result = point.proceed();
 		User current = UserContext.getUser();
-		logger.info("#执行方法：{}(参数:{}): 结果：{}， 耗时： {}s，当前登录用户:{}",
-				new Object[] { point.getSignature(), point.getArgs(),
-						result == null ? "" : result,
-						System.currentTimeMillis() - start,
-						current == null ? "" : current });
+		logger.info("#执行方法：{}(参数:{}): 结果：{}， 耗时： {}s，当前登录用户:{}", new Object[] { point.getSignature(), point.getArgs(),
+				result == null ? "" : result, System.currentTimeMillis() - start, current == null ? "" : current });
 		return result;
 
 	}

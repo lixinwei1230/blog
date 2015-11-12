@@ -41,8 +41,7 @@ public class MyWidgetController extends BaseController {
 
 	@RequestMapping(value = "index", method = RequestMethod.GET)
 	public String index(ModelMap model) {
-		model.addAttribute(WIDGETS,
-				widgetService.findUserWidgets(UserContext.getUser()));
+		model.addAttribute(WIDGETS, widgetService.findUserWidgets(UserContext.getUser()));
 		return "my/page/widget/index";
 	}
 
@@ -55,8 +54,7 @@ public class MyWidgetController extends BaseController {
 
 	@RequestMapping(value = "add", method = RequestMethod.POST)
 	@ResponseBody
-	public Info add(@RequestBody @Validated UserWidget widget)
-			throws LogicException {
+	public Info add(@RequestBody @Validated UserWidget widget) throws LogicException {
 		widget.setCreateDate(new Date());
 		widget.setUser(UserContext.getUser());
 		widgetService.insertUserWidget(widget);
@@ -72,8 +70,7 @@ public class MyWidgetController extends BaseController {
 
 	@RequestMapping(value = "update", method = RequestMethod.POST)
 	@ResponseBody
-	public Info update(@RequestBody @Validated UserWidget widget)
-			throws LogicException {
+	public Info update(@RequestBody @Validated UserWidget widget) throws LogicException {
 		widgetService.updateUserWidget(widget);
 
 		return new Info(true);

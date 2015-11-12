@@ -24,8 +24,7 @@ public class CommentController extends BaseController {
 
 	@RequestMapping(value = "list/{currentPage}", method = RequestMethod.GET)
 	@ResponseBody
-	public Info list(@PathVariable("currentPage") int currentPage,
-			CommentPageParam param) throws LogicException {
+	public Info list(@PathVariable("currentPage") int currentPage, CommentPageParam param) throws LogicException {
 		param.setCurrentPage(currentPage);
 		param.setPageSize(pageSize);
 		param.validate();

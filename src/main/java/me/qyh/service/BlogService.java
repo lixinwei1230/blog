@@ -17,8 +17,7 @@ public interface BlogService {
 
 	void deleteBlog(Integer id) throws LogicException;
 
-	BlogCategory insertOrUpdateBlogCategory(BlogCategory category)
-			throws LogicException;
+	BlogCategory insertOrUpdateBlogCategory(BlogCategory category) throws LogicException;
 
 	List<BlogCategory> findBlogCategorys(Space space);
 

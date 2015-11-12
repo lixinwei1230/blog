@@ -49,8 +49,7 @@ public class AvatarUploadServer {
 	@Value("${config.tempdir}")
 	private String tempdir;
 
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public void crop(Crop crop) throws LogicException {
 		User user = UserContext.getUser();
 		File file = crop.getFile();
@@ -60,22 +59,19 @@ public class AvatarUploadServer {
 		String relativePath = Files.ymd();
 		File folder = new File(this.absPath + relativePath);
 		if (!folder.exists() && !folder.mkdirs()) {
-			throw new SystemException(String.format("%s:创建文件夹:%s失败",
-					this.getClass().getName(), folder.getAbsolutePath()));
+			throw new SystemException(
+					String.format("%s:创建文件夹:%s失败", this.getClass().getName(), folder.getAbsolutePath()));
 		}
-		String absPath = folder.getAbsolutePath() + File.separator
-				+ file.getName();
+		String absPath = folder.getAbsolutePath() + File.separator + file.getName();
 		try {
-			im4javas.crop(file.getAbsolutePath(), absPath, crop.getX(),
-					crop.getY(), crop.getW(), crop.getH());
+			im4javas.crop(file.getAbsolutePath(), absPath, crop.getX(), crop.getY(), crop.getW(), crop.getH());
 		} catch (Exception e) {
 			throw new LogicException("error.avatar.badCrop");
 		}
 		File croped = new File(absPath);
 
-		MyFile avatar = new MyFile(UserContext.getUser(), croped.length(),
-				Files.getFileExtension(file.getName()), file.getName(), new Date(),
-				avatarStore, FileStatus.NORMAL, relativePath, file.getName(),false);
+		MyFile avatar = new MyFile(UserContext.getUser(), croped.length(), Files.getFileExtension(file.getName()),
+				file.getName(), new Date(), avatarStore, FileStatus.NORMAL, relativePath, file.getName(), false);
 		fileDao.insert(avatar);
 		userDao.deleteAvatarFile(user);
 		user.setAvatar(avatar);
@@ -86,24 +82,21 @@ public class AvatarUploadServer {
 		if (file.isEmpty()) {
 			throw new LogicException("error.upload.emptyFile");
 		}
-		_ImageConfig config = configServer
-				.getAvatarConfig(UserContext.getUser());
+		_ImageConfig config = configServer.getAvatarConfig(UserContext.getUser());
 		SizeLimit sl = config.getSizeLimit();
-		if (sl != null ) {
+		if (sl != null) {
 			Result result = sl.allow(file);
-			if(!result.isAllow()){
-				throw new LogicException("error.upload.singlefile.oversize",
-						new Object[] { result.getMaxAllowSize() });
+			if (!result.isAllow()) {
+				throw new LogicException("error.upload.singlefile.oversize", new Object[] { result.getMaxAllowSize() });
 			}
 		}
 		String extension = Files.getFileExtension(file.getOriginalFilename());
 		File folder = new File(tempdir, Files.ymd());
 		if (!folder.exists() && !folder.mkdirs()) {
-			throw new SystemException(String.format("%s:目录%s不存在并且创建失败",
-					this.getClass().getName(), folder.getAbsolutePath()));
+			throw new SystemException(
+					String.format("%s:目录%s不存在并且创建失败", this.getClass().getName(), folder.getAbsolutePath()));
 		}
-		File dest = new File(folder, Strings.uuid() + "."
-				+ extension);
+		File dest = new File(folder, Strings.uuid() + "." + extension);
 		try {
 			file.transferTo(dest);
 		} catch (Exception e) {
@@ -115,24 +108,20 @@ public class AvatarUploadServer {
 		} catch (BadImageException e) {
 			throw new LogicException("error.upload.badImage");
 		}
-		if(!Strings.inArray(info.getType(), config.getAllowFileTypes(), true)){
-			throw new LogicException("error.upload.invalidExtension",
-					new Object[] { info.getType() });
+		if (!Strings.inArray(info.getType(), config.getAllowFileTypes(), true)) {
+			throw new LogicException("error.upload.invalidExtension", new Object[] { info.getType() });
 		}
 		if (info.getWidth() > config.getMaxWidth()) {
-			throw new LogicException("error.upload.image.width.invalid",
-					config.getMaxWidth());
+			throw new LogicException("error.upload.image.width.invalid", config.getMaxWidth());
 		}
 		if (info.getHeight() > config.getMaxHeight()) {
-			throw new LogicException("error.upload.image.height.invalid",
-					config.getMaxHeight());
+			throw new LogicException("error.upload.image.height.invalid", config.getMaxHeight());
 		}
-		File rename =  new File(dest.getParent(), Files.getFilename(dest.getName()) +"." + info.getType()
-				.toLowerCase());
+		File rename = new File(dest.getParent(),
+				Files.getFilename(dest.getName()) + "." + info.getType().toLowerCase());
 		if (!dest.renameTo(rename)) {
-			throw new SystemException(String.format(
-					"将文件%s修改为%s后缀失败", dest.getAbsolutePath(), info
-							.getType().toLowerCase()));
+			throw new SystemException(
+					String.format("将文件%s修改为%s后缀失败", dest.getAbsolutePath(), info.getType().toLowerCase()));
 		}
 		return rename;
 	}

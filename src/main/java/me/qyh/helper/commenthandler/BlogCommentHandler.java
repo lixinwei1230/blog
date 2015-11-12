@@ -55,9 +55,7 @@ public class BlogCommentHandler implements CommentHandler {
 		try {
 			return Integer.parseInt(target.getScopeId());
 		} catch (NumberFormatException e) {
-			throw new SystemException(
-					this.getClass().getName() + "-getBlogId:" + e.getMessage(),
-					e);
+			throw new SystemException(this.getClass().getName() + "-getBlogId:" + e.getMessage(), e);
 		}
 	}
 
@@ -67,43 +65,34 @@ public class BlogCommentHandler implements CommentHandler {
 	}
 
 	@Override
-	public void doAuthencationBeforeInsert(Comment comment)
-			throws CommentAuthencationException, LogicException {
+	public void doAuthencationBeforeInsert(Comment comment) throws CommentAuthencationException, LogicException {
 		Integer blogId = getBlogId(comment.getScope());
 		Blog blog = blogDao.selectById(blogId);
 		if (blog == null || BlogStatus.RECYCLER.equals(blog.getStatus())) {
 			throw new LogicException("error.blog.notexists");
 		}
-		if (Scope.PRIVATE.equals(blog.getScope())
-				&& !blog.getSpace().equals(UserContext.getSpace())) {
-			throw new CommentAuthencationException(
-					"error.blogCommentHandler.noAuthencation");
+		if (Scope.PRIVATE.equals(blog.getScope()) && !blog.getSpace().equals(UserContext.getSpace())) {
+			throw new CommentAuthencationException("error.blogCommentHandler.noAuthencation");
 		}
-		if (Scope.PRIVATE.equals(blog.getCommentScope())
-				&& !blog.getSpace().equals(UserContext.getSpace())) {
-			throw new CommentAuthencationException(
-					"error.blogCommentHandler.notAllowComment");
+		if (Scope.PRIVATE.equals(blog.getCommentScope()) && !blog.getSpace().equals(UserContext.getSpace())) {
+			throw new CommentAuthencationException("error.blogCommentHandler.notAllowComment");
 		}
 	}
 
 	@Override
-	public void doAuthencationBeforeQuery(CommentScope target)
-			throws CommentAuthencationException, LogicException {
+	public void doAuthencationBeforeQuery(CommentScope target) throws CommentAuthencationException, LogicException {
 		Integer blogId = getBlogId(target);
 		Blog blog = blogDao.selectById(blogId);
 		if (blog == null || blog.getStatus().equals(BlogStatus.RECYCLER)) {
 			throw new LogicException("error.blog.notexists");
 		}
-		if (Scope.PRIVATE.equals(blog.getScope())
-				&& !blog.getSpace().equals(UserContext.getSpace())) {
-			throw new CommentAuthencationException(
-					"error.blogCommentHandler.noAuthencation");
+		if (Scope.PRIVATE.equals(blog.getScope()) && !blog.getSpace().equals(UserContext.getSpace())) {
+			throw new CommentAuthencationException("error.blogCommentHandler.noAuthencation");
 		}
 	}
 
 	@Override
-	public void tip(User scopeUser, Comment comment, TipServer tipService)
-			throws LogicException {
+	public void tip(User scopeUser, Comment comment, TipServer tipService) throws LogicException {
 		String title = "";
 		User receiver = null;
 		Comment reply = comment.getReply();
@@ -121,19 +110,15 @@ public class BlogCommentHandler implements CommentHandler {
 		Locale locale = LocaleContextHolder.getLocale();
 		if (reply != null) {
 			if (comment.getIsAnonymous()) {
-				title = messageSource.getMessage(
-						"commentHandler.anonymous.reply", new Object[] {},
-						locale);
+				title = messageSource.getMessage("commentHandler.anonymous.reply", new Object[] {}, locale);
 			} else {
-				title = messageSource.getMessage("commentHandler.user.reply",
-						new Object[] { commenter.getNickname() }, locale);
+				title = messageSource.getMessage("commentHandler.user.reply", new Object[] { commenter.getNickname() },
+						locale);
 			}
 			receiver = reply.getUser();
 		} else {
 			if (comment.getIsAnonymous()) {
-				title = messageSource.getMessage(
-						"commentHandler.anonymous.comment", new Object[] {},
-						locale);
+				title = messageSource.getMessage("commentHandler.anonymous.comment", new Object[] {}, locale);
 			} else {
 				title = messageSource.getMessage("commentHandler.user.comment",
 						new Object[] { commenter.getNickname() }, locale);
@@ -149,8 +134,7 @@ public class BlogCommentHandler implements CommentHandler {
 			space = spaceServer.getSpaceByUser(scopeUser);
 		}
 		model.put("space", space);
-		String content = freeMarkers
-				.processTemplateIntoString("tip/comment_blog.ftl", model);
+		String content = freeMarkers.processTemplateIntoString("tip/comment_blog.ftl", model);
 
 		TipMessage message = new TipMessage();
 		message.setTitle(title);

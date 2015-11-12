@@ -14,8 +14,7 @@ public final class UserContext {
 		SecurityContext context = SecurityContextHolder.getContext();
 		if (context != null) {
 			Authentication auth = context.getAuthentication();
-			if (auth != null
-					&& !(auth instanceof AnonymousAuthenticationToken)) {
+			if (auth != null && !(auth instanceof AnonymousAuthenticationToken)) {
 				return (User) auth.getPrincipal();
 			}
 		}

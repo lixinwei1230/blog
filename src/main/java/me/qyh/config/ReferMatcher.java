@@ -30,13 +30,13 @@ public class ReferMatcher implements RequestMatcher, InitializingBean {
 	@Override
 	public boolean matches(HttpServletRequest request) {
 		String referer = request.getHeader(REFERER);
-		if(referer == null){
+		if (referer == null) {
 			return enableNull;
 		}
-		if(referer.trim().equals("")){
+		if (referer.trim().equals("")) {
 			return false;
 		}
-		try{
+		try {
 			UriComponentsBuilder uri = UriComponentsBuilder.fromHttpUrl(referer);
 			referer = uri.build().getHost();
 			if (isLocal(referer)) {
@@ -45,21 +45,19 @@ public class ReferMatcher implements RequestMatcher, InitializingBean {
 			if (!Validators.validateIp(referer) && !(rootDomain == null)) {
 				return matchDomain(referer);
 			}
-		}catch (Exception e) {
+		} catch (Exception e) {
 			return false;
 		}
 		return false;
 	}
 
 	private boolean isLocal(String referer) {
-		return LOCALHOST.equalsIgnoreCase(referer)
-				|| LOCALIP.equals(referer);
+		return LOCALHOST.equalsIgnoreCase(referer) || LOCALIP.equals(referer);
 	}
 
 	private boolean matchDomain(String referer) {
 		AntPathMatcher matcher = new AntPathMatcher();
-		if (rootDomain.equals(referer)
-				|| matcher.match("*." + rootDomain, referer)) {
+		if (rootDomain.equals(referer) || matcher.match("*." + rootDomain, referer)) {
 			return true;
 		}
 		if (!Validators.isEmptyOrNull(allowDomains)) {
@@ -75,9 +73,9 @@ public class ReferMatcher implements RequestMatcher, InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		String domain = urlHelper.getDomain();
-		if(domain.indexOf(".") == -1){
+		if (domain.indexOf(".") == -1) {
 			this.rootDomain = null;
-		}else{
+		} else {
 			String[] chunks = domain.split("\\.");
 			int length = chunks.length;
 			if (length < 2) {
@@ -87,7 +85,7 @@ public class ReferMatcher implements RequestMatcher, InitializingBean {
 			}
 		}
 	}
-	
+
 	public void setAllowDomains(String[] allowDomains) {
 		this.allowDomains = allowDomains;
 	}

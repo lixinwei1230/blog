@@ -48,34 +48,30 @@ public class MyAvatarController extends BaseController {
 
 	@RequestMapping(value = "upload", method = RequestMethod.POST)
 	@ResponseBody
-	public Info upload(@RequestParam(value = "file") MultipartFile file,
-			HttpSession session, Locale locale) throws LogicException {
+	public Info upload(@RequestParam(value = "file") MultipartFile file, HttpSession session, Locale locale)
+			throws LogicException {
 		session.setAttribute(AVATAR, uploadServer.upload(file));
 		return new Info(true);
 	}
 
 	@RequestMapping(value = "confirm", method = RequestMethod.POST)
 	@ResponseBody
-	public Info confirm(@RequestBody Crop crop, HttpSession session,
-			Locale locale) throws LogicException {
+	public Info confirm(@RequestBody Crop crop, HttpSession session, Locale locale) throws LogicException {
 		crop.setFile((File) session.getAttribute(AVATAR));
 		uploadServer.crop(crop);
 		return new Info(true);
 	}
 
 	@RequestMapping(value = "drew", method = RequestMethod.GET)
-	public ResponseEntity<FileSystemResource> drew(HttpSession session)
-			throws MyFileNotFoundException {
+	public ResponseEntity<FileSystemResource> drew(HttpSession session) throws MyFileNotFoundException {
 		File file = (File) session.getAttribute(AVATAR);
 		if (file == null || !file.exists()) {
 			throw new MyFileNotFoundException();
 		}
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(
-				MediaType.valueOf("image/" + Files.getFileExtension(file)));
+		headers.setContentType(MediaType.valueOf("image/" + Files.getFileExtension(file)));
 		headers.setContentLength(file.length());
 		FileSystemResource res = new FileSystemResource(file);
-		return new ResponseEntity<FileSystemResource>(res, headers,
-				HttpStatus.CREATED);
+		return new ResponseEntity<FileSystemResource>(res, headers, HttpStatus.CREATED);
 	}
 }

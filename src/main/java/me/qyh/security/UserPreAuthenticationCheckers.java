@@ -12,25 +12,21 @@ import org.springframework.stereotype.Component;
 @Component("preAuthenticationChecks")
 public class UserPreAuthenticationCheckers implements UserDetailsChecker {
 
-	protected MessageSourceAccessor messages = SpringSecurityMessageSource
-			.getAccessor();
+	protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
 
 	public void check(UserDetails user) {
 		if (!user.isAccountNonLocked()) {
-			throw new LockedException(messages.getMessage(
-					"AbstractUserDetailsAuthenticationProvider.locked",
-					"User account is locked"));
+			throw new LockedException(
+					messages.getMessage("AbstractUserDetailsAuthenticationProvider.locked", "User account is locked"));
 		}
 
 		if (!user.isEnabled()) {
-			throw new DisabledException(messages.getMessage(
-					"AbstractUserDetailsAuthenticationProvider.disabled",
-					"User is disabled"));
+			throw new DisabledException(
+					messages.getMessage("AbstractUserDetailsAuthenticationProvider.disabled", "User is disabled"));
 		}
 
 		if (!user.isAccountNonExpired()) {
-			throw new AccountExpiredException(messages.getMessage(
-					"AbstractUserDetailsAuthenticationProvider.expired",
+			throw new AccountExpiredException(messages.getMessage("AbstractUserDetailsAuthenticationProvider.expired",
 					"User account has expired"));
 		}
 	}

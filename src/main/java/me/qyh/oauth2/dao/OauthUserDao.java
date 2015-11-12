@@ -11,11 +11,9 @@ import me.qyh.oauth2.entity.OauthUser;
 
 public interface OauthUserDao extends BaseDao<OauthUser, Integer> {
 
-	OauthUser selectByUserIdAndType(@Param("userid") String userid,
-			@Param("type") OauthType type);
+	OauthUser selectByUserIdAndType(@Param("userid") String userid, @Param("type") OauthType type);
 
-	OauthUser selectByUserAndType(@Param("user") User user,
-			@Param("type") OauthType type);
+	OauthUser selectByUserAndType(@Param("user") User user, @Param("type") OauthType type);
 
 	List<OauthUser> selectByUser(User user);
 

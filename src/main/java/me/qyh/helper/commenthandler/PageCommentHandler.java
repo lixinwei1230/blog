@@ -36,8 +36,7 @@ public class PageCommentHandler implements CommentHandler {
 	}
 
 	@Override
-	public void doAuthencationBeforeQuery(CommentScope target)
-			throws CommentAuthencationException {
+	public void doAuthencationBeforeQuery(CommentScope target) throws CommentAuthencationException {
 	}
 
 	@Override
@@ -46,14 +45,12 @@ public class PageCommentHandler implements CommentHandler {
 	}
 
 	@Override
-	public void doAuthencationBeforeInsert(Comment comment)
-			throws CommentAuthencationException, LogicException {
+	public void doAuthencationBeforeInsert(Comment comment) throws CommentAuthencationException, LogicException {
 
 	}
 
 	@Override
-	public void tip(User scopeUser, Comment comment, TipServer tipService)
-			throws LogicException {
+	public void tip(User scopeUser, Comment comment, TipServer tipService) throws LogicException {
 		String title = "";
 		Comment reply = comment.getReply();
 		// 这里无需回复页面拥有着
@@ -68,18 +65,15 @@ public class PageCommentHandler implements CommentHandler {
 
 			Locale locale = LocaleContextHolder.getLocale();
 			if (comment.getIsAnonymous()) {
-				title = messageSource.getMessage(
-						"commentHandler.anonymous.reply", new Object[] {},
-						locale);
+				title = messageSource.getMessage("commentHandler.anonymous.reply", new Object[] {}, locale);
 			} else {
-				title = messageSource.getMessage("commentHandler.user.reply",
-						new Object[] { commenter.getNickname() }, locale);
+				title = messageSource.getMessage("commentHandler.user.reply", new Object[] { commenter.getNickname() },
+						locale);
 			}
 			Map<String, Object> model = new HashMap<String, Object>();
 			model.put("title", title);
 			model.put("comment", comment);
-			String content = freeMarkers
-					.processTemplateIntoString("tip/comment_page.ftl", model);
+			String content = freeMarkers.processTemplateIntoString("tip/comment_page.ftl", model);
 
 			TipMessage message = new TipMessage();
 			message.setTitle(title);

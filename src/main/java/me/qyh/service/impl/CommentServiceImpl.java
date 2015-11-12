@@ -30,8 +30,7 @@ import me.qyh.server.TipServer;
 import me.qyh.service.CommentHandler;
 import me.qyh.service.CommentService;
 
-public class CommentServiceImpl extends BaseServiceImpl
-		implements CommentService {
+public class CommentServiceImpl extends BaseServiceImpl implements CommentService {
 
 	@Autowired
 	private CommentDao commentDao;
@@ -48,16 +47,13 @@ public class CommentServiceImpl extends BaseServiceImpl
 	private List<CommentHandler> handlers = new ArrayList<CommentHandler>();
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
-	public Comment insertComment(Comment comment)
-			throws CommentAuthencationException, LogicException {
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public Comment insertComment(Comment comment) throws CommentAuthencationException, LogicException {
 		CommentScope scope = comment.getScope();
 		CommentHandler handler = getCommentHandler(scope);
 		User owner;
 		handler.doAuthencationBeforeInsert(comment);
-		CommentScope _scope = commentScopeDao
-				.selectByScopeAndScopeId(scope.getScope(), scope.getScopeId());
+		CommentScope _scope = commentScopeDao.selectByScopeAndScopeId(scope.getScope(), scope.getScopeId());
 		if (_scope == null) {
 			owner = handler.getScopeUser(scope);
 			scope.setUser(owner);
@@ -71,8 +67,7 @@ public class CommentServiceImpl extends BaseServiceImpl
 		checkFrequencyLimit(config.getLimit(), comment.getUser());
 
 		if (!config.getAllowAnonymous() && comment.getIsAnonymous()) {
-			throw new CommentAuthencationException(
-					"error.comment.allowAnonymous");
+			throw new CommentAuthencationException("error.comment.allowAnonymous");
 		}
 		Comment parent = comment.getParent();
 		if (parent != null) {
@@ -98,10 +93,8 @@ public class CommentServiceImpl extends BaseServiceImpl
 			// 只能回复作者
 			// 如果当前用户不是scope拥有者，如果回复对象不是scope拥有者
 			if (config.getCommentOnAuthorOnly()
-					&& (!(UserContext.getUser().equals(owner))
-							&& !(reply.getUser().equals(owner)))) {
-				throw new CommentAuthencationException(
-						"error.comment.commentOnAuthorOnly");
+					&& (!(UserContext.getUser().equals(owner)) && !(reply.getUser().equals(owner)))) {
+				throw new CommentAuthencationException("error.comment.commentOnAuthorOnly");
 			}
 		}
 
@@ -109,18 +102,15 @@ public class CommentServiceImpl extends BaseServiceImpl
 
 		handler.tip(owner, comment, tipServer);
 
-		Comment inserted = cleanComment(commentDao.selectById(comment.getId()),
-				config.getAllowHtml());
+		Comment inserted = cleanComment(commentDao.selectById(comment.getId()), config.getAllowHtml());
 		User _user = inserted.getUser();
 		_user.setAvatar(userDao.selectAvatar(_user.getId()));
 		return inserted;
 	}
 
-	protected void checkFrequencyLimit(FrequencyLimit limit, User user)
-			throws LogicException {
+	protected void checkFrequencyLimit(FrequencyLimit limit, User user) throws LogicException {
 		if (limit != null) {
-			int count = commentDao.selectCountByDate(limit.getBegin(),
-					limit.getEnd(), user);
+			int count = commentDao.selectCountByDate(limit.getBegin(), limit.getEnd(), user);
 
 			if (count >= limit.getLimit()) {
 				throw new LogicException("error.frequency.limit.comment");
@@ -130,18 +120,15 @@ public class CommentServiceImpl extends BaseServiceImpl
 
 	private Comment cleanComment(Comment comment, boolean allowHtml) {
 		String content = comment.getContent();
-		comment.setContent(allowHtml ? commentHtmlClean.handle(content)
-				: HtmlUtils.htmlEscape(content));
+		comment.setContent(allowHtml ? commentHtmlClean.handle(content) : HtmlUtils.htmlEscape(content));
 		return comment;
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public Page<Comment> findComments(CommentPageParam param)
-			throws CommentAuthencationException, LogicException {
+	public Page<Comment> findComments(CommentPageParam param) throws CommentAuthencationException, LogicException {
 		CommentScope scope = param.getScope();
-		CommentScope _scope = commentScopeDao
-				.selectByScopeAndScopeId(scope.getScope(), scope.getScopeId());
+		CommentScope _scope = commentScopeDao.selectByScopeAndScopeId(scope.getScope(), scope.getScopeId());
 		if (_scope == null) {
 			return new Page<Comment>(param, 0, new ArrayList<Comment>());
 		}
@@ -163,8 +150,7 @@ public class CommentServiceImpl extends BaseServiceImpl
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public void deleteComment(Integer id) throws LogicException {
 		Comment comment = commentDao.selectById(id);
 		if (comment == null) {
@@ -175,16 +161,13 @@ public class CommentServiceImpl extends BaseServiceImpl
 		User owner = comment.getUser();
 		boolean hasParent = (comment.getParent() != null);
 
-		CommentScope scope = commentScopeDao
-				.selectById(comment.getScope().getId());
+		CommentScope scope = commentScopeDao.selectById(comment.getScope().getId());
 		User scopeOwner = scope.getUser();
 		// 如果当前用户不是评论域拥有人、回复所有人或者评论所有人,或者超级管理员
-		if (!current.equals(scopeOwner) && !current.equals(owner)
-				&& !current.hasRole(RoleEnum.ROLE_SUPERVISOR)) {
+		if (!current.equals(scopeOwner) && !current.equals(owner) && !current.hasRole(RoleEnum.ROLE_SUPERVISOR)) {
 			boolean hasPermission = false;
 			if (hasParent) {
-				Comment parent = commentDao
-						.selectById(comment.getParent().getId());
+				Comment parent = commentDao.selectById(comment.getParent().getId());
 				User parentOwner = parent.getUser();
 				hasPermission = current.equals(parentOwner);
 			}
@@ -207,8 +190,7 @@ public class CommentServiceImpl extends BaseServiceImpl
 		throw new SystemException("无法找到评论域" + scope.toString() + "的处理器");
 	}
 
-	private Page<Comment> _findComments(CommentPageParam param,
-			CommentConfig config) {
+	private Page<Comment> _findComments(CommentPageParam param, CommentConfig config) {
 		int total = commentDao.selectCount(param);
 		List<Comment> datas = commentDao.selectPage(param);
 		if (!datas.isEmpty()) {

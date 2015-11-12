@@ -17,14 +17,12 @@ public interface OauthService {
 	 * @return
 	 * @throws LogicException
 	 */
-	User autoBind(OauthPrincipal principal, OauthUser oauthUser)
-			throws LogicException;
+	User autoBind(OauthPrincipal principal, OauthUser oauthUser) throws LogicException;
 
 	/**
 	 * 将授权用户和已经存在账号绑定
 	 */
-	User bind(OauthPrincipal principal, String code, String email,
-			OauthUser oauthUser) throws LogicException;
+	User bind(OauthPrincipal principal, String code, String email, OauthUser oauthUser) throws LogicException;
 
 	/**
 	 * 根据当前凭证查找用户是否已经绑定
@@ -40,8 +38,7 @@ public interface OauthService {
 	 * @param principal
 	 * @throws LogicException
 	 */
-	void sendBindEmail(OauthPrincipal principal, String email)
-			throws LogicException;
+	void sendBindEmail(OauthPrincipal principal, String email) throws LogicException;
 
 	/**
 	 * 解绑

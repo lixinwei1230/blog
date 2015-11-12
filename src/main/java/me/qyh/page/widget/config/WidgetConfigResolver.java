@@ -39,11 +39,9 @@ public class WidgetConfigResolver implements HandlerMethodArgumentResolver {
 	}
 
 	@Override
-	public Object resolveArgument(MethodParameter parameter,
-			ModelAndViewContainer mavContainer, NativeWebRequest webRequest,
-			WebDataBinderFactory binderFactory) throws Exception {
-		WidgetConfigAttribute att = parameter
-				.getParameterAnnotation(WidgetConfigAttribute.class);
+	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+			NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+		WidgetConfigAttribute att = parameter.getParameterAnnotation(WidgetConfigAttribute.class);
 
 		String sign = webRequest.getParameter(att.sign());
 		if (Validators.isEmptyOrNull(sign, true)) {
@@ -61,9 +59,7 @@ public class WidgetConfigResolver implements HandlerMethodArgumentResolver {
 		if (isAjax && att.requestBody()) {
 			try {
 				JsonParser jp = this.reader.getFactory()
-						.createParser(webRequest
-								.getNativeRequest(HttpServletRequest.class)
-								.getInputStream());
+						.createParser(webRequest.getNativeRequest(HttpServletRequest.class).getInputStream());
 				config = this.reader.readValue(jp, clazz);
 				binder = binderFactory.createBinder(webRequest, config, name);
 			} catch (IOException e) {
@@ -81,11 +77,9 @@ public class WidgetConfigResolver implements HandlerMethodArgumentResolver {
 		if (att.validate()) {
 			binder.validate();
 			if (isAjax && binder.getBindingResult().hasErrors()) {
-				throw new MethodArgumentNotValidException(parameter,
-						binder.getBindingResult());
+				throw new MethodArgumentNotValidException(parameter, binder.getBindingResult());
 			}
-			return new BindingResultWidgetConfig(binder.getBindingResult(),
-					config);
+			return new BindingResultWidgetConfig(binder.getBindingResult(), config);
 		}
 		return config;
 	}
@@ -101,8 +95,7 @@ public class WidgetConfigResolver implements HandlerMethodArgumentResolver {
 
 	private void bind(WebDataBinder binder, NativeWebRequest request) {
 		if (binder instanceof ServletRequestDataBinder) {
-			((ServletRequestDataBinder) binder)
-					.bind(request.getNativeRequest(HttpServletRequest.class));
+			((ServletRequestDataBinder) binder).bind(request.getNativeRequest(HttpServletRequest.class));
 		} else if (binder instanceof WebRequestDataBinder) {
 			((WebRequestDataBinder) binder).bind(request);
 		}

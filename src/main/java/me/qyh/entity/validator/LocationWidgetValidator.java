@@ -47,13 +47,12 @@ public class LocationWidgetValidator implements Validator {
 			return;
 		}
 		if (lw.getWidth() < minWidth) {
-			e.rejectValue("width", "validation.widget.width.toosmall",
-					new Object[] { minWidth }, "挂件宽度不能小于" + minWidth);
+			e.rejectValue("width", "validation.widget.width.toosmall", new Object[] { minWidth },
+					"挂件宽度不能小于" + minWidth);
 			return;
 		}
 		if (lw.getWidth() > maxWidth) {
-			e.rejectValue("width", "validation.widget.width.toolong",
-					new Object[] { maxWidth }, "挂件宽度不能超过" + maxWidth);
+			e.rejectValue("width", "validation.widget.width.toolong", new Object[] { maxWidth }, "挂件宽度不能超过" + maxWidth);
 			return;
 		}
 		if (lw.getR() < 0) {
@@ -61,8 +60,7 @@ public class LocationWidgetValidator implements Validator {
 			return;
 		}
 		if (lw.getR() > maxR) {
-			e.rejectValue("r", "validation.widget.r.toolong",
-					new Object[] { maxR }, "挂件所在行数不能超过" + maxR);
+			e.rejectValue("r", "validation.widget.r.toolong", new Object[] { maxR }, "挂件所在行数不能超过" + maxR);
 			return;
 		}
 		if (lw.getX() < 0) {
@@ -70,8 +68,7 @@ public class LocationWidgetValidator implements Validator {
 			return;
 		}
 		if (lw.getX() > maxX) {
-			e.rejectValue("x", "validation.widget.x.toolong",
-					new Object[] { maxX }, "挂件所在列数不能超过" + maxX);
+			e.rejectValue("x", "validation.widget.x.toolong", new Object[] { maxX }, "挂件所在列数不能超过" + maxX);
 			return;
 		}
 		if (lw.getY() < 0) {
@@ -79,8 +76,7 @@ public class LocationWidgetValidator implements Validator {
 			return;
 		}
 		if (lw.getY() > maxY) {
-			e.rejectValue("y", "validation.widget.y.toolong",
-					new Object[] { maxY }, "挂件所在个数不能超过" + maxY);
+			e.rejectValue("y", "validation.widget.y.toolong", new Object[] { maxY }, "挂件所在个数不能超过" + maxY);
 			return;
 		}
 

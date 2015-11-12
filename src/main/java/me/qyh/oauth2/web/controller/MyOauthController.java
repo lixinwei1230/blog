@@ -30,17 +30,14 @@ public class MyOauthController extends BaseController {
 
 	@RequestMapping(value = "unbind", method = RequestMethod.POST)
 	@ResponseBody
-	public Info unbind(
-			@RequestParam(value = "type", defaultValue = "QQ") OauthType type)
-					throws LogicException {
+	public Info unbind(@RequestParam(value = "type", defaultValue = "QQ") OauthType type) throws LogicException {
 		oauthService.unbind(UserContext.getUser(), OauthType.QQ);
 		return new Info(true);
 	}
 
 	@RequestMapping(value = "list", method = RequestMethod.GET)
 	public String list(ModelMap model) {
-		model.addAttribute(OAUTHS,
-				oauthService.findOauthBinds(UserContext.getUser()));
+		model.addAttribute(OAUTHS, oauthService.findOauthBinds(UserContext.getUser()));
 		return "my/oauth/list";
 	}
 
@@ -49,11 +46,9 @@ public class MyOauthController extends BaseController {
 		return "my/oauth/competeinfo_email";
 	}
 
-	@RequestMapping(value = "completeInfo", method = RequestMethod.GET,
-			params = { "code", "userid" })
-	public String checkCompleteInfoEmail(
-			@RequestParam(value = "code", defaultValue = "") String code,
-			int userid, RedirectAttributes ra) {
+	@RequestMapping(value = "completeInfo", method = RequestMethod.GET, params = { "code", "userid" })
+	public String checkCompleteInfoEmail(@RequestParam(value = "code", defaultValue = "") String code, int userid,
+			RedirectAttributes ra) {
 		if (code.trim().isEmpty() || userid == 0) {
 			throw new InvalidParamException();
 		}
@@ -68,14 +63,11 @@ public class MyOauthController extends BaseController {
 		return "my/oauth/competeinfo_email";
 	}
 
-	@RequestMapping(value = "completeInfo", method = RequestMethod.POST,
-			params = { "email" })
-	public String sendCompleteInfoMail(
-			@RequestParam(value = "email", defaultValue = "") String email,
-			ModelMap model, RedirectAttributes ra) {
+	@RequestMapping(value = "completeInfo", method = RequestMethod.POST, params = { "email" })
+	public String sendCompleteInfoMail(@RequestParam(value = "email", defaultValue = "") String email, ModelMap model,
+			RedirectAttributes ra) {
 		if (!Validators.validateEmail(email)) {
-			model.addAttribute(ERROR,
-					new I18NMessage("validation.email.invalid"));
+			model.addAttribute(ERROR, new I18NMessage("validation.email.invalid"));
 			return "my/oauth/competeinfo_email";
 		}
 		try {
@@ -84,8 +76,7 @@ public class MyOauthController extends BaseController {
 			model.addAttribute(ERROR, e.getI18nMessage());
 			return "my/oauth/competeinfo_email";
 		}
-		ra.addFlashAttribute(SUCCESS,
-				new I18NMessage("success.oauth.completeUserInfo.sendEmail"));
+		ra.addFlashAttribute(SUCCESS, new I18NMessage("success.oauth.completeUserInfo.sendEmail"));
 		return "redirect:completeInfo";
 	}
 

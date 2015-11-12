@@ -30,7 +30,7 @@ public class MyFile extends Id {
 	private FileStatus status;
 	private String relativePath;
 	private String originalFilename;// 原始文件名
-	private MyFile cover;//封面 gif图片会用到
+	private MyFile cover;// 封面 gif图片会用到
 	private boolean isCover;
 
 	public boolean isImage() {
@@ -39,8 +39,7 @@ public class MyFile extends Id {
 
 	public String getOriginalFilenameWithoutExtension() {
 
-		return originalFilename == null ? "" : Files
-				.getFilename(originalFilename);
+		return originalFilename == null ? "" : Files.getFilename(originalFilename);
 	}
 
 	public User getUser() {
@@ -123,9 +122,8 @@ public class MyFile extends Id {
 
 	}
 
-	public MyFile(User user, long size, String extension, String name,
-			Date uploadDate, FileStore store, FileStatus status,
-			String relativePath, String originalFilename,boolean isCover) {
+	public MyFile(User user, long size, String extension, String name, Date uploadDate, FileStore store,
+			FileStatus status, String relativePath, String originalFilename, boolean isCover) {
 		super();
 		this.user = user;
 		this.size = size;
@@ -138,7 +136,7 @@ public class MyFile extends Id {
 		this.originalFilename = originalFilename;
 		this.isCover = isCover;
 	}
-	
+
 	public MyFile getCover() {
 		return cover;
 	}

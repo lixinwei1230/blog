@@ -21,8 +21,7 @@ public class SpaceDisabledException extends BusinessRuntimeException {
 		return space;
 	}
 
-	public SpaceDisabledException(Space space, String errorCode,
-			Object... params) {
+	public SpaceDisabledException(Space space, String errorCode, Object... params) {
 		super(errorCode, params);
 		this.space = space;
 	}

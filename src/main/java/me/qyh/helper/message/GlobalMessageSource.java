@@ -29,13 +29,11 @@ public class GlobalMessageSource implements MessageSource {
 
 	@Override
 	public List<MessageReceive> provideTosendMessages(User user) {
-		List<MessageSend> messages = messageSendDao
-				.selectUnSendMessageByTypeAndUser(MessageType.GLOBAL, user,
-						maxCount);
+		List<MessageSend> messages = messageSendDao.selectUnSendMessageByTypeAndUser(MessageType.GLOBAL, user,
+				maxCount);
 
 		if (!messages.isEmpty()) {
-			List<MessageReceive> receives = new ArrayList<MessageReceive>(
-					messages.size());
+			List<MessageReceive> receives = new ArrayList<MessageReceive>(messages.size());
 			for (MessageSend send : messages) {
 				MessageReceive receive = new MessageReceive();
 				receive.setMessage(send);

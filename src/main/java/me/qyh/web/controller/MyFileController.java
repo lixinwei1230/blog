@@ -33,8 +33,7 @@ public class MyFileController extends BaseController {
 	private int pageSize;
 
 	@RequestMapping(value = "list/{currentPage}", method = RequestMethod.GET)
-	public String list(@PathVariable("currentPage") int currentPage,
-			MyFilePageParam param, ModelMap model) {
+	public String list(@PathVariable("currentPage") int currentPage, MyFilePageParam param, ModelMap model) {
 		param.setStatus(FileStatus.NORMAL);
 		param.setUser(UserContext.getUser());
 		model.put(INDEXS, myFileService.findIndexs(param));
@@ -49,11 +48,9 @@ public class MyFileController extends BaseController {
 		return "my/file/index";
 	}
 
-	@RequestMapping(value = "list/{currentPage}", method = RequestMethod.GET,
-			headers = "x-requested-with=XMLHttpRequest")
+	@RequestMapping(value = "list/{currentPage}", method = RequestMethod.GET, headers = "x-requested-with=XMLHttpRequest")
 	@ResponseBody
-	public Info list(@PathVariable("currentPage") int currentPage,
-			MyFilePageParam param) {
+	public Info list(@PathVariable("currentPage") int currentPage, MyFilePageParam param) {
 		param.setStatus(FileStatus.NORMAL);
 		param.setUser(UserContext.getUser());
 		param.setCurrentPage(currentPage);
@@ -66,8 +63,7 @@ public class MyFileController extends BaseController {
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	@ResponseBody
-	public Info delete(@RequestParam(value = "id") int id)
-			throws LogicException {
+	public Info delete(@RequestParam(value = "id") int id) throws LogicException {
 		myFileService.deleteMyFile(id);
 		return new Info(true);
 	}

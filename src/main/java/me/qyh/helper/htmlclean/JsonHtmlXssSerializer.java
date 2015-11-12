@@ -18,9 +18,8 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 public class JsonHtmlXssSerializer extends JsonSerializer<String> {
 
 	@Override
-	public void serialize(String value, JsonGenerator jsonGenerator,
-			SerializerProvider arg2)
-					throws IOException, JsonProcessingException {
+	public void serialize(String value, JsonGenerator jsonGenerator, SerializerProvider arg2)
+			throws IOException, JsonProcessingException {
 		if (value != null) {
 			String encodedValue = HtmlUtils.htmlEscape(value);
 			jsonGenerator.writeString(encodedValue);

@@ -38,21 +38,19 @@ public class SpaceBaseController extends BaseController {
 	private WidgetService widgetService;
 
 	@ModelAttribute
-	public final void publicData(@PathVariable("spaceId") String spaceId,
-			ModelMap model, HttpServletRequest request) throws LogicException {
+	public final void publicData(@PathVariable("spaceId") String spaceId, ModelMap model, HttpServletRequest request)
+			throws LogicException {
 		if (Webs.isAjaxRequest(request)) {
 			return;
 		}
 		Space space = spaceServer.getSpaceById(spaceId);
 		model.addAttribute(SPACE, space);
-		model.addAttribute(USER,
-				userServer.getUserById(space.getUser().getId()));
+		model.addAttribute(USER, userServer.getUserById(space.getUser().getId()));
 
 		PageType type = this.providePageType();
 		if (type != null) {
 			try {
-				model.addAttribute(WIDGET_PAGE, new SimpleBootstrapPage(
-						widgetService.getPage(type, space.getUser())));
+				model.addAttribute(WIDGET_PAGE, new SimpleBootstrapPage(widgetService.getPage(type, space.getUser())));
 			} catch (DataNotFoundException e) {
 				logger.error("空间:{}，找不到对应的自定义页面：{}", space, type);
 			}

@@ -50,8 +50,7 @@ public class ManageUserController extends ManageBaseController {
 	}
 
 	@RequestMapping(value = "list/{currentPage}", method = RequestMethod.GET)
-	public String list(@PathVariable("currentPage") int currentPage,
-			UserPageParam param, ModelMap model) {
+	public String list(@PathVariable("currentPage") int currentPage, UserPageParam param, ModelMap model) {
 		param.setCurrentPage(currentPage);
 		param.setPageSize(pageSize);
 		param.addIgnoreRole(RoleEnum.ROLE_MESSAGER, RoleEnum.ROLE_SUPERVISOR);
@@ -63,16 +62,15 @@ public class ManageUserController extends ManageBaseController {
 
 	@RequestMapping(value = "toggle/abled", method = RequestMethod.POST)
 	@ResponseBody
-	public Info toggleAbled(@RequestBody @Validated TipMessage message,
-			@RequestParam("id") int id) throws LogicException {
+	public Info toggleAbled(@RequestBody @Validated TipMessage message, @RequestParam("id") int id)
+			throws LogicException {
 		userService.toggleUserAbled(id, message);
 		return new Info(true);
 	}
 
 	@RequestMapping(value = "sendMessage", method = RequestMethod.POST)
 	@ResponseBody
-	public Info send(@RequestBody @Validated MessageSendDetail detail)
-			throws LogicException {
+	public Info send(@RequestBody @Validated MessageSendDetail detail) throws LogicException {
 		detail.setType(MessageType.SYSTEM);
 		detail.setSender(UserContext.getUser());
 		detail.setSendDate(new Date());
@@ -83,8 +81,7 @@ public class ManageUserController extends ManageBaseController {
 	@RequestMapping(value = "space/toggle/abled", method = RequestMethod.POST)
 	@ResponseBody
 	public Info toggleAbled(@RequestBody @Validated TipMessage message,
-			@RequestParam(value = "id", defaultValue = "") String id)
-					throws LogicException {
+			@RequestParam(value = "id", defaultValue = "") String id) throws LogicException {
 		spaceManageService.toggleSpaceAbled(id, message);
 		return new Info(true);
 	}

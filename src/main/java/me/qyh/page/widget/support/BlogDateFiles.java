@@ -13,11 +13,11 @@ public class BlogDateFiles {
 	private Date end;
 	private int count;
 	private DateType dateType;
-	
-	public enum DateType{
-		YEAR,MONTH
+
+	public enum DateType {
+		YEAR, MONTH
 	}
-	
+
 	private List<BlogDateFiles> subfiles = new ArrayList<BlogDateFiles>();
 
 	public Date getBegin() {
@@ -31,7 +31,7 @@ public class BlogDateFiles {
 	public int getCount() {
 		return count;
 	}
-	
+
 	public List<BlogDateFiles> getSubfiles() {
 		return subfiles;
 	}
@@ -39,12 +39,12 @@ public class BlogDateFiles {
 	public void setSubfiles(List<BlogDateFiles> subfiles) {
 		this.subfiles = subfiles;
 	}
-	
+
 	public DateType getDateType() {
 		return dateType;
 	}
 
-	public BlogDateFiles(BlogDateFile file , DateType type) {
+	public BlogDateFiles(BlogDateFile file, DateType type) {
 		Date date = file.getDate();
 		switch (type) {
 		case YEAR:

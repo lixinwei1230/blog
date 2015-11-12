@@ -16,7 +16,6 @@ public interface MessageReceiveDao extends BaseDao<MessageReceive, Integer> {
 
 	int selectCount(MessageReceivePageParam param);
 
-	void deleteByOverdaysAndStatus(@Param("days") int days,
-			@Param("status") MessageStatus status);
+	void deleteByOverdaysAndStatus(@Param("days") int days, @Param("status") MessageStatus status);
 
 }

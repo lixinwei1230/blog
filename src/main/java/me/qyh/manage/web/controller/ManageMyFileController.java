@@ -29,8 +29,7 @@ public class ManageMyFileController extends ManageBaseController {
 	private MyFileManageService service;
 
 	@RequestMapping(value = "list/{currentPage}", method = RequestMethod.GET)
-	public String list(@PathVariable("currentPage") int currentPage,
-			MyFilePageParam param, ModelMap model) {
+	public String list(@PathVariable("currentPage") int currentPage, MyFilePageParam param, ModelMap model) {
 		param.setStatus(FileStatus.NORMAL);
 		param.setCurrentPage(currentPage);
 		param.setPageSize(pageSize);
@@ -42,8 +41,7 @@ public class ManageMyFileController extends ManageBaseController {
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	@ResponseBody
-	public Info delete(@RequestBody @Validated TipMessage message,
-			@RequestParam("id") int id) throws LogicException {
+	public Info delete(@RequestBody @Validated TipMessage message, @RequestParam("id") int id) throws LogicException {
 		service.deleteMyFile(id, message);
 		return new Info(true);
 	}

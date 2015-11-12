@@ -10,7 +10,6 @@ import me.qyh.page.PageType;
 
 public interface PageDao extends BaseDao<Page, Integer> {
 
-	List<Page> selectByPageType(@Param("type") PageType type,
-			@Param("user") User user);
+	List<Page> selectByPageType(@Param("type") PageType type, @Param("user") User user);
 
 }

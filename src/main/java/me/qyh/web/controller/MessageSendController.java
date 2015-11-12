@@ -57,12 +57,10 @@ public class MessageSendController extends BaseController {
 
 	@RequestMapping(value = "send", method = RequestMethod.POST)
 	@ResponseBody
-	public Info send(@RequestBody @Validated MessageSendDetail detail,
-			@RequestParam("validateCode") String code, HttpSession session,
-			Locale locale) throws LogicException {
+	public Info send(@RequestBody @Validated MessageSendDetail detail, @RequestParam("validateCode") String code,
+			HttpSession session, Locale locale) throws LogicException {
 		if (!Webs.matchValidateCode(session, code)) {
-			return new Info(false, messageSource
-					.getMessage("error.validateCode", null, locale));
+			return new Info(false, messageSource.getMessage("error.validateCode", null, locale));
 		}
 		detail.setType(MessageType.PERSONAL);
 		detail.setSender(UserContext.getUser());
@@ -71,11 +69,10 @@ public class MessageSendController extends BaseController {
 		return new Info(true);
 	}
 
-	@RequestMapping(value = "{sendId}/receives/list/{currentPage}",
-			method = RequestMethod.GET)
+	@RequestMapping(value = "{sendId}/receives/list/{currentPage}", method = RequestMethod.GET)
 	@ResponseBody
-	public Info list(@PathVariable(value = "currentPage") int currentPage,
-			@PathVariable("sendId") int sendId, MessageReceivePageParam param) {
+	public Info list(@PathVariable(value = "currentPage") int currentPage, @PathVariable("sendId") int sendId,
+			MessageReceivePageParam param) {
 		param.setSend(new MessageSend(sendId));
 		param.setCurrentPage(currentPage);
 		param.setPageSize(receivePageSize);
@@ -85,8 +82,7 @@ public class MessageSendController extends BaseController {
 	}
 
 	@RequestMapping(value = "list/{currentPage}", method = RequestMethod.GET)
-	public String list(@PathVariable("currentPage") int currentPage,
-			MessageSendPageParam param, ModelMap model) {
+	public String list(@PathVariable("currentPage") int currentPage, MessageSendPageParam param, ModelMap model) {
 		param.setCurrentPage(currentPage);
 		param.setPageSize(pageSize);
 		param.setSender(UserContext.getUser());
@@ -98,8 +94,7 @@ public class MessageSendController extends BaseController {
 	}
 
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
-	public String get(@PathVariable("id") int id, ModelMap model)
-			throws DataNotFoundException {
+	public String get(@PathVariable("id") int id, ModelMap model) throws DataNotFoundException {
 		MessageSend message = messageService.getMessageSend(id);
 		model.addAttribute("message", message);
 		return "my/message/sendDetail";
@@ -107,8 +102,7 @@ public class MessageSendController extends BaseController {
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)
 	@ResponseBody
-	public Info delete(@RequestParam("ids") Set<Integer> ids)
-			throws LogicException {
+	public Info delete(@RequestParam("ids") Set<Integer> ids) throws LogicException {
 		validIds(ids);
 		messageService.deleteMessageSends(ids);
 		return new Info(true);

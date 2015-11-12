@@ -41,7 +41,6 @@ public class CaptchaImageCreateController {
 		}
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.valueOf("image/jpeg"));
-		return new ResponseEntity<byte[]>(baos.toByteArray(), headers,
-				HttpStatus.CREATED);
+		return new ResponseEntity<byte[]>(baos.toByteArray(), headers, HttpStatus.CREATED);
 	}
 }

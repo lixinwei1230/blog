@@ -51,13 +51,11 @@ public class GolbalExceptionHandler extends BaseController {
 
 	@ExceptionHandler(SpaceDisabledException.class)
 	@ResponseStatus(HttpStatus.OK)
-	public ModelAndView handleSpaceDisabledException(SpaceDisabledException e,
-			HttpServletRequest request, HttpServletResponse response)
-					throws IOException {
+	public ModelAndView handleSpaceDisabledException(SpaceDisabledException e, HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
 		I18NMessage _message = e.getI18nMessage();
 		if (Webs.isAjaxRequest(request)) {
-			String message = messageSource.getMessage(_message.getCode(),
-					_message.getParams(), request.getLocale());
+			String message = messageSource.getMessage(_message.getCode(), _message.getParams(), request.getLocale());
 			Webs.writeInfo(response, objectWriter, new Info(false, message));
 			return null;
 		}
@@ -68,16 +66,13 @@ public class GolbalExceptionHandler extends BaseController {
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ResponseBody
-	public Info handleMethodArgumentNotValidException(
-			MethodArgumentNotValidException ex, HttpServletRequest request) {
+	public Info handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, HttpServletRequest request) {
 		BindingResult result = ex.getBindingResult();
-		List<MyFieldError> errors = new ArrayList<MyFieldError>(
-				result.getFieldErrorCount());
+		List<MyFieldError> errors = new ArrayList<MyFieldError>(result.getFieldErrorCount());
 		for (FieldError fieldError : result.getFieldErrors()) {
-			String message = messageSource.getMessage(fieldError.getCode(),
-					fieldError.getArguments(), request.getLocale());
-			MyFieldError error = new MyFieldError(fieldError.getField(),
-					message);
+			String message = messageSource.getMessage(fieldError.getCode(), fieldError.getArguments(),
+					request.getLocale());
+			MyFieldError error = new MyFieldError(fieldError.getField(), message);
 			errors.add(error);
 		}
 		return new Info(false, errors);
@@ -85,22 +80,19 @@ public class GolbalExceptionHandler extends BaseController {
 
 	@ExceptionHandler(MyFileNotFoundException.class)
 	@ResponseStatus(HttpStatus.OK)
-	public ModelAndView handleMyFileNotFoundException(MyFileNotFoundException e,
-			HttpServletRequest request) throws Exception {
-		return new ModelAndView("/error/logic").addObject(ERROR,
-				e.getI18nMessage());
+	public ModelAndView handleMyFileNotFoundException(MyFileNotFoundException e, HttpServletRequest request)
+			throws Exception {
+		return new ModelAndView("/error/logic").addObject(ERROR, e.getI18nMessage());
 	}
 
 	@ExceptionHandler(LogicException.class)
 	@ResponseStatus(HttpStatus.OK)
-	public ModelAndView handlerLogicException(LogicException e,
-			HttpServletRequest request, HttpServletResponse response)
-					throws IOException {
+	public ModelAndView handlerLogicException(LogicException e, HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
 		I18NMessage _message = e.getI18nMessage();
 
 		if (Webs.isAjaxRequest(request)) {
-			String message = messageSource.getMessage(_message.getCode(),
-					_message.getParams(), request.getLocale());
+			String message = messageSource.getMessage(_message.getCode(), _message.getParams(), request.getLocale());
 			Webs.writeInfo(response, objectWriter, new Info(false, message));
 			return null;
 		}
@@ -110,42 +102,36 @@ public class GolbalExceptionHandler extends BaseController {
 
 	@ExceptionHandler(MaxUploadSizeExceededException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ModelAndView handleMaxUploadSizeExceededException(
-			MaxUploadSizeExceededException e) {
+	public ModelAndView handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e) {
 		return new ModelAndView("/error/400");
 	}
 
 	@ExceptionHandler(SystemException.class)
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public ModelAndView handleSystemException(SystemException se)
-			throws Exception {
+	public ModelAndView handleSystemException(SystemException se) throws Exception {
 		logger.error(se.getMessage(), se);
 		return new ModelAndView("/error/500");
 	}
 
 	@ExceptionHandler(Oauth2Exception.class)
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public ModelAndView handleOauth2Exception(Oauth2Exception e)
-			throws Exception {
+	public ModelAndView handleOauth2Exception(Oauth2Exception e) throws Exception {
 		if (!(e instanceof Oauth2InvalidStateException)) {
 			logger.error(e.getMessage(), e);
 		}
-		return new ModelAndView("/error/oauth2").addObject(OAUTH_TYPE,
-				e.getType());
+		return new ModelAndView("/error/oauth2").addObject(OAUTH_TYPE, e.getType());
 	}
 
 	@ExceptionHandler(BusinessAccessDeinedException.class)
 	@ResponseStatus(HttpStatus.FORBIDDEN)
-	public ModelAndView handleBusinessAccessDeinedException(
-			BusinessAccessDeinedException e) throws IOException {
-		return new ModelAndView("/error/403").addObject(ERROR,
-				e.getI18nMessage());
+	public ModelAndView handleBusinessAccessDeinedException(BusinessAccessDeinedException e) throws IOException {
+		return new ModelAndView("/error/403").addObject(ERROR, e.getI18nMessage());
 	}
 
 	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
 	@ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
-	public ModelAndView handleHttpRequestMethodNotSupportedException(
-			HttpRequestMethodNotSupportedException ex) throws IOException {
+	public ModelAndView handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex)
+			throws IOException {
 		return new ModelAndView("/error/405");
 	}
 }

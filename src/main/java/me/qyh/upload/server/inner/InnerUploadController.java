@@ -53,50 +53,42 @@ public class InnerUploadController {
 
 	@RequestMapping(value = "upload", method = RequestMethod.POST)
 	@ResponseBody
-	public Info upload(@RequestParam("files") List<MultipartFile> files,
-			Locale locale) throws LogicException {
-		return new UploadedInfo(uploadServer.upload(files), messageSource,
-				locale);
+	public Info upload(@RequestParam("files") List<MultipartFile> files, Locale locale) throws LogicException {
+		return new UploadedInfo(uploadServer.upload(files), messageSource, locale);
 	}
 
 	@RequestMapping(value = "write", method = RequestMethod.GET)
-	public void write(
-			@RequestParam(value = "path", defaultValue = "") String path,
-			@RequestParam(required = false, value = "size") Integer size,
-			ServletWebRequest request, HttpServletResponse response)
-			throws MyFileNotFoundException {
+	public void write(@RequestParam(value = "path", defaultValue = "") String path,
+			@RequestParam(required = false, value = "size") Integer size, ServletWebRequest request,
+			HttpServletResponse response) throws MyFileNotFoundException {
 		FileWriteConfig config = configServer.getFileWriteConfig();
 		RequestMatcher matcher = config.getRequestMatcher();
-		if(matcher != null && !matcher.matches(request.getRequest())){
+		if (matcher != null && !matcher.matches(request.getRequest())) {
 			response.setStatus(HttpStatus.NOT_FOUND.value());
 			return;
 		}
 		File seek = uploadServer.seekFile(path);
 		if (Webs.isWebImage(seek.getName())) {
-			response.setContentType(URLConnection.guessContentTypeFromName(seek
-					.getName()));
+			response.setContentType(URLConnection.guessContentTypeFromName(seek.getName()));
 			String etag = Webs.generatorETag(path);
 			if (request.checkNotModified(etag)) {
 				return;
 			}
 			ImageZoomMatcher zm = config.getZoomMatcher();
-			if (zm != null && zm.zoom(size , seek)) {
+			if (zm != null && zm.zoom(size, seek)) {
 				String relativePath = getRelativePath(seek);
-				File dest = new File(imageCacheDir + relativePath
-						+ File.separator
+				File dest = new File(imageCacheDir + relativePath + File.separator
 						+ Files.appendFilename(seek.getName(), "_" + size));
 				if (dest.exists()) {
 					seek = dest;
 				} else {
 					File folder = new File(imageCacheDir + relativePath);
 					if (!folder.exists() && !folder.mkdirs()) {
-						throw new SystemException(String.format("%s:创建文件夹%s失败",
-								this.getClass().getName(),
-								folder.getAbsolutePath()));
+						throw new SystemException(
+								String.format("%s:创建文件夹%s失败", this.getClass().getName(), folder.getAbsolutePath()));
 					}
 					try {
-						seek = zoomImage(seek.getAbsolutePath(),
-								dest.getAbsolutePath(), size, false);
+						seek = zoomImage(seek.getAbsolutePath(), dest.getAbsolutePath(), size, false);
 					} catch (Exception e) {
 						throw new SystemException(e);
 					}
@@ -104,8 +96,7 @@ public class InnerUploadController {
 			}
 		} else {
 			response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-			response.setHeader("Content-Disposition", "attachment;filename="
-					+ seek.getName());
+			response.setHeader("Content-Disposition", "attachment;filename=" + seek.getName());
 		}
 		response.setContentLength((int) seek.length());
 		try {
@@ -120,8 +111,7 @@ public class InnerUploadController {
 		return absPath.substring(absPath.indexOf(File.separatorChar));
 	}
 
-	private File zoomImage(String absPath, String destPath, int size,
-			boolean force) throws Exception {
+	private File zoomImage(String absPath, String destPath, int size, boolean force) throws Exception {
 		if (!force) {
 			File zoom = new File(absPath);
 			ImageInfo info = im4javas.getImageInfo(absPath);

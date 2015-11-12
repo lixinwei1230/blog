@@ -102,8 +102,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	private ConfigServer configServer;
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public void insertBlog(Blog blog) throws LogicException {
 		BlogCategory category = loadBlogCategory(blog.getCategory().getId());
 		super.doAuthencation(blog.getSpace(), category.getSpace());
@@ -119,8 +118,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public void deleteBlog(Integer id) throws LogicException {
 		Blog blog = loadBlog(id);
 		super.doAuthencation(UserContext.getSpace(), blog.getSpace());
@@ -139,8 +137,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		Integer id = blog.getId();
 		blogDao.deleteById(blog.getId());
 
-		CommentScope scope = commentScopeDao.selectByScopeAndScopeId(
-				Blog.class.getSimpleName(), id.toString());
+		CommentScope scope = commentScopeDao.selectByScopeAndScopeId(Blog.class.getSimpleName(), id.toString());
 
 		if (scope != null) {
 			commentDao.deleteByCommentScope(scope);
@@ -150,17 +147,14 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 
 	@Override
 	@Transactional(readOnly = true)
-	@SignCache(cacheName = "blogCache", cacheKey = "'blog-'+#id",
-			condition = "#result.scope == T(me.qyh.entity.Scope).PUBLIC")
+	@SignCache(cacheName = "blogCache", cacheKey = "'blog-'+#id", condition = "#result.scope == T(me.qyh.entity.Scope).PUBLIC")
 	public Blog getBlog(Integer id) throws LogicException {
 		Blog blog = loadBlog(id);
 		if (isBlogDeleted(blog)) {
 			throw new DataNotFoundException("error.blog.notexists");
 		}
 
-		super.doAuthencation(
-				spaceServer.getScopes(UserContext.getUser(), blog.getSpace()),
-				blog.getScope());
+		super.doAuthencation(spaceServer.getScopes(UserContext.getUser(), blog.getSpace()), blog.getScope());
 		User user = userServer.getUserBySpace(blog.getSpace());
 		BlogConfig config = configServer.getBlogConfig(user);
 		blog.setContent(config.getClean().handle(blog.getContent()));
@@ -177,10 +171,8 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
-	public BlogCategory insertOrUpdateBlogCategory(BlogCategory category)
-			throws LogicException {
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public BlogCategory insertOrUpdateBlogCategory(BlogCategory category) throws LogicException {
 		if (category.getId() == null) {
 			insertBlogCategory(category);
 		} else {
@@ -190,8 +182,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public void deleteBlogCategory(Integer id) throws LogicException {
 		BlogCategory db = loadBlogCategory(id);
 		super.doAuthencation(UserContext.getSpace(), db.getSpace());
@@ -207,8 +198,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public void updateHits(Integer blog, int hits) {
 		blogDao.updateHits(blog, hits);
 	}
@@ -216,16 +206,13 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	@Override
 	@Transactional(readOnly = true)
 	public Page<Blog> findBlogs(BlogPageParam param) {
-		Scopes max = spaceServer
-				.getScopes(UserContext.getUser(), param.getSpace());
-		if(!max.contains(param.getScopes())){
+		Scopes max = spaceServer.getScopes(UserContext.getUser(), param.getSpace());
+		if (!max.contains(param.getScopes())) {
 			param.setScopes(max);
 		}
 		Set<Integer> tagIds = param.getTagIds();
-		if (!Validators.isEmptyOrNull(tagIds)
-				&& tagIds.size() > tagsMaxSizeWhenSearch) {
-			param.setTagIds(new HashSet<Integer>(new ArrayList<Integer>(tagIds)
-					.subList(0, tagsMaxSizeWhenSearch)));
+		if (!Validators.isEmptyOrNull(tagIds) && tagIds.size() > tagsMaxSizeWhenSearch) {
+			param.setTagIds(new HashSet<Integer>(new ArrayList<Integer>(tagIds).subList(0, tagsMaxSizeWhenSearch)));
 		}
 		List<Blog> datas = blogDao.selectPage(param);
 		if (!datas.isEmpty()) {
@@ -239,8 +226,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	@SignCacheEvit(cacheName = "blogCache", cacheKey = "'blog-'+#id")
 	public void deleteBlogLogic(Integer id) throws LogicException {
 
@@ -260,8 +246,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	@SignCacheEvit(cacheName = "blogCache", cacheKey = "'blog-'+#toUpdate.id")
 	public void updateBlog(Blog toUpdate) throws LogicException {
 		Blog db = loadBlog(toUpdate.getId());
@@ -273,8 +258,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		Space current = UserContext.getSpace();
 		super.doAuthencation(current, db.getSpace());
 
-		BlogCategory category = loadBlogCategory(
-				toUpdate.getCategory().getId());
+		BlogCategory category = loadBlogCategory(toUpdate.getCategory().getId());
 		super.doAuthencation(current, category.getSpace());
 
 		setBlogSummray(toUpdate, summaryLength);
@@ -291,8 +275,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public void handleTemporaryBlog(Blog blog) throws LogicException {
 		List<TemporaryBlog> tBlogs = temporaryBlogDao.selectByBlog(blog);
 		if (tBlogs.isEmpty()) {
@@ -319,8 +302,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public void recover(Integer id) throws LogicException {
 		Blog blog = loadBlog(id);
 		super.doAuthencation(UserContext.getSpace(), blog.getSpace());
@@ -363,8 +345,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class,
-			propagation = Propagation.REQUIRED)
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public void insertOrUpdateTemporaryBlog(Blog blog) {
 		TemporaryBlog tBlog;
 		try {
@@ -378,8 +359,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 			if (blog.hasId()) {
 				Blog _blog = blogDao.selectById(blog.getId());
 				if (_blog != null) {
-					super.doAuthencation(UserContext.getSpace(),
-							_blog.getSpace());
+					super.doAuthencation(UserContext.getSpace(), _blog.getSpace());
 				}
 				tBlog.setBlog(_blog);
 			} else {
@@ -397,8 +377,8 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	}
 
 	private int getComments(Blog blog) {
-		CommentScope scope = commentScopeDao.selectByScopeAndScopeId(
-				Blog.class.getSimpleName(), blog.getId().toString());
+		CommentScope scope = commentScopeDao.selectByScopeAndScopeId(Blog.class.getSimpleName(),
+				blog.getId().toString());
 
 		if (scope == null) {
 			return 0;
@@ -426,8 +406,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 
 					tag.setCreateDate(new Date());
 					webTagDao.insert(tag);
-					webTagCountDao.insert(new WebTagCount(tag, TagModule.BLOG,
-							blog.getIsPrivate() ? 0 : 1));
+					webTagCountDao.insert(new WebTagCount(tag, TagModule.BLOG, blog.getIsPrivate() ? 0 : 1));
 				} else {
 					tag.setId(db.getId());
 					if (!blog.getIsPrivate()) {
@@ -444,8 +423,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 					_ut.setTag(tag);
 					_ut.setCreateDate(new Date());
 					userTagDao.insert(_ut);
-					userTagCountDao
-							.insert(new UserTagCount(_ut, TagModule.BLOG, 1));
+					userTagCountDao.insert(new UserTagCount(_ut, TagModule.BLOG, 1));
 				} else {
 					userTagCountDao.updateCount(ut, TagModule.BLOG, 1);
 				}
@@ -462,43 +440,35 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		return Strings.deleteWhitespace(name).toUpperCase();
 	}
 
-	private void insertBlogCategory(BlogCategory category)
-			throws LogicException {
-		BlogCategory db = blogCategoryDao
-				.selectBySpaceAndName(category.getSpace(), category.getName());
+	private void insertBlogCategory(BlogCategory category) throws LogicException {
+		BlogCategory db = blogCategoryDao.selectBySpaceAndName(category.getSpace(), category.getName());
 
 		if (db != null) {
-			throw new LogicException("error.blog.category.duplicate",
-					db.getName());
+			throw new LogicException("error.blog.category.duplicate", db.getName());
 		}
 
 		int count = blogCategoryDao.selectCountBySpace(category.getSpace());
 		if (count >= categoryMaxSize) {
-			throw new LogicException("error.blog.category.oversize",
-					categoryMaxSize);
+			throw new LogicException("error.blog.category.oversize", categoryMaxSize);
 		}
 
 		blogCategoryDao.insert(category);
 	}
 
-	private void updateBlogCategory(BlogCategory toUpdate)
-			throws LogicException {
+	private void updateBlogCategory(BlogCategory toUpdate) throws LogicException {
 		BlogCategory db = loadBlogCategory(toUpdate.getId());
 		super.doAuthencation(UserContext.getSpace(), db.getSpace());
 
-		BlogCategory toCheck = blogCategoryDao
-				.selectBySpaceAndName(db.getSpace(), toUpdate.getName());
+		BlogCategory toCheck = blogCategoryDao.selectBySpaceAndName(db.getSpace(), toUpdate.getName());
 
 		if (toCheck != null && !toCheck.equals(toUpdate)) {
-			throw new LogicException("error.blog.category.duplicate",
-					toCheck.getName());
+			throw new LogicException("error.blog.category.duplicate", toCheck.getName());
 		}
 
 		blogCategoryDao.update(toUpdate);
 	}
 
-	private BlogCategory loadBlogCategory(Integer id)
-			throws DataNotFoundException {
+	private BlogCategory loadBlogCategory(Integer id) throws DataNotFoundException {
 
 		BlogCategory category = blogCategoryDao.selectById(id);
 
@@ -523,8 +493,8 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 			if (!blog.getIsPrivate()) {
 				webTagCountDao.updateCount(tag, TagModule.BLOG, count);
 			}
-			userTagCountDao.updateCount(userTagDao.selectByName(tag.getName(),
-					UserContext.getUser()), TagModule.BLOG, count);
+			userTagCountDao.updateCount(userTagDao.selectByName(tag.getName(), UserContext.getUser()), TagModule.BLOG,
+					count);
 		}
 	}
 
@@ -547,8 +517,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		blog.setSummary(summary);
 	}
 
-	private void checkInsertFrequency(FrequencyLimit limit, Space space)
-			throws LogicException {
+	private void checkInsertFrequency(FrequencyLimit limit, Space space) throws LogicException {
 		if (limit != null) {
 			BlogPageParam param = new BlogPageParam();
 			param.setBegin(limit.getBegin());

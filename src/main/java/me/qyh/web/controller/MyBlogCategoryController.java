@@ -37,18 +37,15 @@ public class MyBlogCategoryController extends BaseController {
 	@RequestMapping(value = "all", method = RequestMethod.GET)
 	@ResponseBody
 	public Info list() {
-		return new Info(true,
-				blogService.findBlogCategorys(UserContext.getSpace()));
+		return new Info(true, blogService.findBlogCategorys(UserContext.getSpace()));
 	}
 
 	@RequestMapping(value = "addOrUpdate", method = RequestMethod.POST)
 	@ResponseBody
-	public Info addOrUpdate(@Validated @RequestBody BlogCategory blogCategory)
-			throws LogicException {
+	public Info addOrUpdate(@Validated @RequestBody BlogCategory blogCategory) throws LogicException {
 		blogCategory.setSpace(UserContext.getSpace());
 		blogCategory.setCreateDate(new Date());
-		return new Info(true,
-				blogService.insertOrUpdateBlogCategory(blogCategory));
+		return new Info(true, blogService.insertOrUpdateBlogCategory(blogCategory));
 	}
 
 	@RequestMapping(value = "delete", method = RequestMethod.POST)

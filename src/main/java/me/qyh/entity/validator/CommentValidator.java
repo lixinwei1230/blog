@@ -40,8 +40,7 @@ public class CommentValidator implements Validator {
 			return;
 		}
 		if (scope.length() > scopeMaxLength) {
-			e.rejectValue("scope", "validation.comment.scope.scope.toolong",
-					new Object[] { scopeMaxLength },
+			e.rejectValue("scope", "validation.comment.scope.scope.toolong", new Object[] { scopeMaxLength },
 					"目标空间不能超过" + scopeMaxLength + "个字符");
 			return;
 		}
@@ -51,8 +50,7 @@ public class CommentValidator implements Validator {
 			return;
 		}
 		if (tid.length() > scopeIdMaxLength) {
-			e.rejectValue("scope", "validation.comment.scope.scopeId.toolong",
-					new Object[] { scopeIdMaxLength },
+			e.rejectValue("scope", "validation.comment.scope.scopeId.toolong", new Object[] { scopeIdMaxLength },
 					"目标空间ID不能超过" + scopeIdMaxLength + "个字符");
 			return;
 		}
@@ -62,20 +60,17 @@ public class CommentValidator implements Validator {
 			return;
 		}
 		if (title.length() > titleMaxLength) {
-			e.rejectValue("title", "validation.comment.title.toolong",
-					new Object[] { titleMaxLength },
+			e.rejectValue("title", "validation.comment.title.toolong", new Object[] { titleMaxLength },
 					"评论标题不能超过" + titleMaxLength + "个字符");
 			return;
 		}
 		String content = comment.getContent();
-		if (Validators.isEmptyOrNull(content, true)
-				|| !Validators.hasText(content)) {
+		if (Validators.isEmptyOrNull(content, true) || !Validators.hasText(content)) {
 			e.rejectValue("content", "validation.comment.content.empty");
 			return;
 		}
 		if (content.length() > contentMaxLength) {
-			e.rejectValue("content", "validation.comment.content.toolong",
-					new Object[] { contentMaxLength },
+			e.rejectValue("content", "validation.comment.content.toolong", new Object[] { contentMaxLength },
 					"评论内容不能超过" + contentMaxLength + "个字符");
 			return;
 		}

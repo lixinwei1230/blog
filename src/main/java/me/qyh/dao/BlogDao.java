@@ -21,7 +21,7 @@ public interface BlogDao extends BaseDao<Blog, Integer> {
 	List<BlogDateFile> selectDateFile(BlogFilesQueryBean bean);
 
 	List<BlogCategoryFile> selectCategoryFile(BlogFilesQueryBean bean);
-	
+
 	void updateRecommend(Blog blog);
 
 }

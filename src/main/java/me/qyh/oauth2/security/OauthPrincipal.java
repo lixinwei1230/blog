@@ -31,7 +31,6 @@ public class OauthPrincipal {
 
 	@Override
 	public String toString() {
-		return "OauthPrincipal [oauthUserId=" + oauthUserId + ", type=" + type
-				+ "]";
+		return "OauthPrincipal [oauthUserId=" + oauthUserId + ", type=" + type + "]";
 	}
 }
