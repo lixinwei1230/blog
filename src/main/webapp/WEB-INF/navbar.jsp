@@ -44,14 +44,14 @@
 							href="http://<u:url user="${user }" myMenu="true"/>/index">我的主页</a></li>
 					</sec:authorize>
 				</ul>
-				<ul class="nav navbar-nav navbar-right">
-					<li><a href="https://github.com/mhlx/blog">GitHub</a></li>
-				</ul>
 				<sec:authorize ifAnyGranted="ROLE_USER,ROLE_OAUTH">
 					<ul class="nav navbar-nav navbar-right">
 						<li><a href="http://<u:url/>/logout">退出</a></li>
 					</ul>
 				</sec:authorize>
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="https://github.com/mhlx/blog" target="_blank">GitHub</a></li>
+				</ul>
 			</div>
 			<!--/.nav-collapse -->
 		</div>

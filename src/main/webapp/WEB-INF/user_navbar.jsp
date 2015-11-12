@@ -23,9 +23,6 @@
 						<li><a href="http://<u:url space="${space }"/>/blog/list/1">博客</a></li>
 					</ul>
 				</c:if>
-				<ul class="nav navbar-nav navbar-right">
-					<li><a href="https://github.com/mhlx/blog">GitHub</a></li>
-				</ul>
 				<sec:authorize ifAnyGranted="ROLE_USER,ROLE_OAUTH" var="login" />
 				<c:choose>
 					<c:when test="${login }">
@@ -47,6 +44,9 @@
 						</ul>
 					</c:otherwise>
 				</c:choose>
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="https://github.com/mhlx/blog" target="_blank">GitHub</a></li>
+				</ul>
 			</div>
 			<!--/.nav-collapse -->
 		</div>
