@@ -11,7 +11,7 @@ import org.springframework.context.ApplicationContextAware;
  */
 public class SpringContextHolder implements ApplicationContextAware {
 
-	private static ApplicationContext applicationContext;
+	public static ApplicationContext applicationContext;
 
 	@Override
 	public void setApplicationContext(ApplicationContext application) throws BeansException {
