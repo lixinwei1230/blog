@@ -45,7 +45,7 @@ public class MessageServiceImpl extends BaseServiceImpl implements MessageServic
 	@Autowired
 	private MessageDetailDao messageDetailDao;
 	@Autowired
-	private HtmlContentHandler messageHtmlClean;
+	private HtmlContentHandler messageHtmlHandler;
 	@Autowired
 	private MessageCache messageCache;
 	@Autowired
@@ -224,7 +224,7 @@ public class MessageServiceImpl extends BaseServiceImpl implements MessageServic
 	}
 
 	private void cleanMessageDetail(MessageDetail detail) {
-		detail.setContent(messageHtmlClean.handle(detail.getContent()));
+		detail.setContent(messageHtmlHandler.handle(detail.getContent()));
 	}
 
 	@Override

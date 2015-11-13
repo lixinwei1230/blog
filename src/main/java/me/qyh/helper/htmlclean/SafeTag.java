@@ -1,7 +1,7 @@
 package me.qyh.helper.htmlclean;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 安全标签
@@ -12,7 +12,7 @@ import java.util.List;
 public class SafeTag {
 
 	private String name;// 标签名
-	private List<SafeTagAttribute> atts = new ArrayList<SafeTagAttribute>();// 标签属性
+	private Set<SafeTagAttribute> atts = new HashSet<SafeTagAttribute>();// 标签属性
 
 	public String getName() {
 		return name;
@@ -22,17 +22,22 @@ public class SafeTag {
 		this.name = name;
 	}
 
-	public List<SafeTagAttribute> getAtts() {
+	public Set<SafeTagAttribute> getAtts() {
 		return atts;
 	}
 
-	public void setAtts(List<SafeTagAttribute> atts) {
+	public void setAtts(Set<SafeTagAttribute> atts) {
 		this.atts = atts;
 	}
 
 	public SafeTag(String name) {
 		super();
 		this.name = name;
+	}
+
+	@Override
+	public String toString() {
+		return "SafeTag [name=" + name + ", atts=" + atts + "]";
 	}
 
 }

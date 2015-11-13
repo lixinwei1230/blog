@@ -9,11 +9,13 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
+import freemarker.cache.CacheStorage;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateHashModel;
 import me.qyh.exception.SystemException;
+import me.qyh.helper.refresh.Refresh;
 import me.qyh.utils.Validators;
 import me.qyh.web.tag.url.UrlHelper;
 
@@ -23,7 +25,7 @@ import me.qyh.web.tag.url.UrlHelper;
  * @author mhlx
  *
  */
-public class WebFreemarkers {
+public class WebFreemarkers implements Refresh{
 
 	private static final String URL_HELPER = "urlHelper";
 
@@ -82,6 +84,16 @@ public class WebFreemarkers {
 
 	public void setPublicDatas(Map<String, Object> publicDatas) {
 		this.publicDatas = publicDatas;
+	}
+
+	@Override
+	public void refresh() throws Exception {
+		CacheStorage cs = freeMarker.getConfiguration().getCacheStorage();
+		if(cs != null ){
+			synchronized (cs) {
+				cs.clear();
+			}
+		}
 	}
 
 }

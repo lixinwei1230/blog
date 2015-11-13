@@ -82,13 +82,13 @@ public class DefaultConfigServer implements ConfigServer {
 	@Value("${config.avatar.allowSizes}")
 	private int[] avatar_allowSizes;
 	@Autowired
-	private HtmlContentHandler fullBlogHtmlClean;
+	private HtmlContentHandler fullBlogHtmlHandler;
 	@Autowired
-	private HtmlContentHandler blogHtmlClean;
+	private HtmlContentHandler blogHtmlHandler;
 	@Autowired
-	private HtmlContentHandler fullWidgetHtmlClean;
+	private HtmlContentHandler fullWidgetHtmlHandler;
 	@Autowired
-	private HtmlContentHandler widgetHtmlClean;
+	private HtmlContentHandler widgetHtmlHandler;
 
 	@Override
 	public CommentConfig getCommentConfig(CommentScope target) {
@@ -114,9 +114,9 @@ public class DefaultConfigServer implements ConfigServer {
 		config.setUserWidgetLimit(userWidgetLimit);
 
 		if (user.hasRole(RoleEnum.ROLE_SUPERVISOR)) {
-			config.setClean(fullWidgetHtmlClean);
+			config.setClean(fullWidgetHtmlHandler);
 		} else {
-			config.setClean(widgetHtmlClean);
+			config.setClean(widgetHtmlHandler);
 		}
 		return config;
 	}
@@ -136,9 +136,9 @@ public class DefaultConfigServer implements ConfigServer {
 		config.setLimit(new FrequencyLimit(small, now, blog_count));
 
 		if (user.hasRole(RoleEnum.ROLE_SUPERVISOR)) {
-			config.setClean(fullBlogHtmlClean);
+			config.setClean(fullBlogHtmlHandler);
 		} else {
-			config.setClean(blogHtmlClean);
+			config.setClean(blogHtmlHandler);
 		}
 
 		return config;

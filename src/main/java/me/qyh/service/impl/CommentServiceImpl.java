@@ -39,7 +39,7 @@ public class CommentServiceImpl extends BaseServiceImpl implements CommentServic
 	@Autowired
 	private ConfigServer configServer;
 	@Autowired
-	private HtmlContentHandler commentHtmlClean;
+	private HtmlContentHandler commentHtmlHandler;
 	@Autowired
 	private UserDao userDao;
 	@Autowired
@@ -120,7 +120,7 @@ public class CommentServiceImpl extends BaseServiceImpl implements CommentServic
 
 	private Comment cleanComment(Comment comment, boolean allowHtml) {
 		String content = comment.getContent();
-		comment.setContent(allowHtml ? commentHtmlClean.handle(content) : HtmlUtils.htmlEscape(content));
+		comment.setContent(allowHtml ? commentHtmlHandler.handle(content) : HtmlUtils.htmlEscape(content));
 		return comment;
 	}
 

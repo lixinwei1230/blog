@@ -48,7 +48,7 @@ public class WidgetServiceImpl extends BaseServiceImpl implements WidgetService 
 	@Autowired
 	private UserServer userServer;
 	@Autowired
-	private HtmlContentHandler fullWidgetHtmlClean;
+	private HtmlContentHandler fullWidgetHtmlHandler;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -61,7 +61,7 @@ public class WidgetServiceImpl extends BaseServiceImpl implements WidgetService 
 				throw new BusinessAccessDeinedException();
 			}
 			Widget preview = swh.getPreviewWidget(current);
-			preview.setHtml(fullWidgetHtmlClean.handle(preview.getHtml()));
+			preview.setHtml(fullWidgetHtmlHandler.handle(preview.getHtml()));
 			return preview;
 		case USER:
 			UserWidget uw = loadUserWidget(id);
@@ -208,7 +208,7 @@ public class WidgetServiceImpl extends BaseServiceImpl implements WidgetService 
 			switch (widget.getType()) {
 			case SYSTEM:
 				SystemWidget sw = getHandler(widget.getId()).getWidget(lw, user, UserContext.getUser());
-				sw.setHtml(fullWidgetHtmlClean.handle(sw.getHtml()));
+				sw.setHtml(fullWidgetHtmlHandler.handle(sw.getHtml()));
 				lw.setWidget(sw);
 				break;
 			case USER:
