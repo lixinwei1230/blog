@@ -5,6 +5,11 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.multipart.MultipartFile;
+
 import me.qyh.bean.I18NMessage;
 import me.qyh.config.ConfigServer;
 import me.qyh.config.FileUploadConfig;
@@ -14,20 +19,18 @@ import me.qyh.dao.FileDao;
 import me.qyh.entity.FileStatus;
 import me.qyh.entity.MyFile;
 import me.qyh.entity.User;
+import me.qyh.exception.LogicException;
 import me.qyh.exception.MyFileNotFoundException;
 import me.qyh.exception.SystemException;
 import me.qyh.helper.im4java.Im4javas;
 import me.qyh.helper.im4java.Im4javas.ImageInfo;
 import me.qyh.security.UserContext;
+import me.qyh.upload.server.UploadServer;
 import me.qyh.upload.server.UploadedResult;
 import me.qyh.utils.Files;
 import me.qyh.utils.Strings;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.multipart.MultipartFile;
-
-public class InnerFileUploadServer {
+public class InnerFileUploadServer implements UploadServer{
 
 	@Autowired
 	private ConfigServer configServer;
@@ -50,6 +53,7 @@ public class InnerFileUploadServer {
 	 * 
 	 * @param files
 	 */
+	@Override
 	public UploadedResult upload(List<MultipartFile> files) {
 		User user = UserContext.getUser();
 		UploadedResult info = new UploadedResult(true);
@@ -161,6 +165,20 @@ public class InnerFileUploadServer {
 		return info;
 	}
 
+	@Override
+	public Object deleteFile(String... paths) throws LogicException {
+		if(paths != null && paths.length > 0){
+			for(String path : paths){
+				File file = new File(absPath + path);
+				if(file.exists() && file.canExecute()){
+					FileUtils.deleteQuietly(file);
+				}
+			}
+		}
+		return null;
+	}
+
+	@Override
 	public File seekFile(String relativePath) throws MyFileNotFoundException {
 		File file = new File(absPath + relativePath);
 		if (!file.isFile()) {
@@ -168,7 +186,7 @@ public class InnerFileUploadServer {
 		}
 		return file;
 	}
-
+	
 	private boolean maybeImage(String contentType) {
 		return contentType != null && contentType.startsWith(IMAGEPREFIX);
 	}

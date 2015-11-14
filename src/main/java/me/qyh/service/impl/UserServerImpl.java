@@ -14,7 +14,6 @@ import me.qyh.entity.MyFile;
 import me.qyh.entity.RoleEnum;
 import me.qyh.entity.Space;
 import me.qyh.entity.User;
-import me.qyh.exception.DataNotFoundException;
 import me.qyh.exception.LogicException;
 import me.qyh.server.UserServer;
 
@@ -96,7 +95,7 @@ public class UserServerImpl implements UserServer {
 
 	private void validUser(User user) throws LogicException {
 		if (user == null || !user.getActivate()) {
-			throw new DataNotFoundException("error.user.notexists");
+			throw new LogicException("error.user.notexists");
 		}
 		if (!user.isAccountNonExpired()) {
 			throw new LogicException("error.account.expired");

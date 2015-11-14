@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import me.qyh.dao.UserWidgetConfigDao;
 import me.qyh.entity.User;
-import me.qyh.exception.DataNotFoundException;
 import me.qyh.exception.LogicException;
 import me.qyh.helper.freemaker.WebFreemarkers;
 import me.qyh.page.LocationWidget;
@@ -48,21 +47,21 @@ public abstract class AbstractSimpleSystemWidgetHandler extends AbstractSystemWi
 	}
 
 	@Override
-	public WidgetConfig getConfig(Integer id) throws DataNotFoundException {
+	public WidgetConfig getConfig(Integer id) throws LogicException {
 		WidgetConfig db = userWidgetConfigDao.selectById(id);
 		if (db == null) {
-			throw new DataNotFoundException(CODE_CONFIG_NOT_EXISTS);
+			throw new LogicException(CODE_CONFIG_NOT_EXISTS);
 		}
 		return db;
 	}
 
 	@Override
 	SystemWidget getWidget(LocationWidget widget, WebFreemarkers freeMarkers, User owner, User visitor)
-			throws DataNotFoundException {
+			throws LogicException {
 		WidgetConfig config = userWidgetConfigDao.selectByLocationWidget(widget);
 
 		if (config == null) {
-			throw new DataNotFoundException(CODE_CONFIG_NOT_EXISTS);
+			throw new LogicException(CODE_CONFIG_NOT_EXISTS);
 		}
 
 		SystemWidget sw = new SystemWidget();

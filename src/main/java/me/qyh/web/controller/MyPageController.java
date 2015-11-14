@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import me.qyh.bean.Info;
-import me.qyh.exception.DataNotFoundException;
 import me.qyh.exception.LogicException;
 import me.qyh.helper.page.SimpleBootstrapPage;
 import me.qyh.page.LocationWidget;
@@ -85,13 +84,13 @@ public class MyPageController extends BaseController {
 	@RequestMapping(value = "widget/preview/{id}", method = RequestMethod.GET)
 	@ResponseBody
 	public Info previewWidget(@RequestParam(value = "type", defaultValue = "SYSTEM") WidgetType type,
-			@PathVariable("id") int id) throws DataNotFoundException {
+			@PathVariable("id") int id) throws LogicException {
 		return new Info(true, widgetService.getPreviewWidget(id, type));
 	}
 
 	@RequestMapping(value = "widget/{id}/config", method = RequestMethod.GET)
 	@ResponseBody
-	public Info getWidgetConfig(@PathVariable("id") int id) throws DataNotFoundException {
+	public Info getWidgetConfig(@PathVariable("id") int id) throws LogicException {
 		return new Info(true, widgetService.getConfig(id));
 	}
 

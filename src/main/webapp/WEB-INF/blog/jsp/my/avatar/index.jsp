@@ -309,7 +309,7 @@
 					for(var i=0;i< files.length;i++){
 						var file = files[i];
 						if(file.id == id){
-							$.get(contextPath + "/my/avatar/choose" , {"path" : file.seekPath},function callBack(data){
+							$.get(contextPath + "/my/avatar/choose" , {"id" : file.id},function callBack(data){
 								if(data.success){
 									var url = "${ctx}/my/avatar/drew?time="+new Date().getTime();
 									loadImage(url, function callBack(){

@@ -1,7 +1,9 @@
 package me.qyh.service.impl;
 
 import java.io.File;
+import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,12 +19,13 @@ import me.qyh.exception.SystemException;
 import me.qyh.helper.im4java.Im4javas;
 import me.qyh.helper.im4java.Im4javas.ImageInfo;
 import me.qyh.security.UserContext;
+import me.qyh.upload.server.UploadServer;
 import me.qyh.upload.server.inner.BadImageException;
 import me.qyh.utils.Files;
 import me.qyh.utils.Strings;
 
 @Service
-public class AvatarUploadServer {
+public class AvatarUploadServer implements UploadServer{
 
 	@Autowired
 	private ConfigServer configServer;
@@ -33,7 +36,9 @@ public class AvatarUploadServer {
 	@Value("${config.tempdir}")
 	private String tempdir;
 
-	public File upload(MultipartFile file) throws LogicException {
+	@Override
+	public File upload(List<MultipartFile> files) throws LogicException {
+		MultipartFile file = files.get(0);
 		if (file.isEmpty()) {
 			throw new LogicException("error.upload.emptyFile");
 		}
@@ -81,12 +86,26 @@ public class AvatarUploadServer {
 		return rename;
 	}
 
+	@Override
 	public File seekFile(String relativePath) throws MyFileNotFoundException {
 		File file = new File(absPath + relativePath);
-		if (!file.isFile()) {
+		if (!file.exists() || !file.isFile()) {
 			throw new MyFileNotFoundException();
 		}
 		return file;
+	}
+	
+	@Override
+	public Object deleteFile(String... paths) throws LogicException {
+		if(paths != null && paths.length > 0){
+			for(String path : paths){
+				File file = new File(absPath + path);
+				if(file.exists() && file.canExecute()){
+					FileUtils.deleteQuietly(file);
+				}
+			}
+		}
+		return null;
 	}
 
 	public void setAbsPath(String absPath) {

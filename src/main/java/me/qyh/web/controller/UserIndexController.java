@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import me.qyh.entity.User;
-import me.qyh.exception.DataNotFoundException;
 import me.qyh.exception.LogicException;
 import me.qyh.helper.page.SimpleBootstrapPage;
 import me.qyh.page.PageType;
@@ -39,7 +38,7 @@ public class UserIndexController {
 	}
 
 	@RequestMapping(value = "user/{id}/", method = RequestMethod.GET)
-	public String index() throws DataNotFoundException {
+	public String index() throws LogicException {
 		return "forward:/index";
 	}
 

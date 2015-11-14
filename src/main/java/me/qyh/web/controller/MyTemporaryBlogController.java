@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import me.qyh.bean.Info;
 import me.qyh.entity.blog.Blog;
-import me.qyh.exception.DataNotFoundException;
 import me.qyh.exception.LogicException;
 import me.qyh.security.UserContext;
 import me.qyh.service.BlogService;
@@ -41,7 +40,7 @@ public class MyTemporaryBlogController {
 	}
 
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
-	public String loadTemporaryBlog(@PathVariable("id") int id, ModelMap model) throws DataNotFoundException {
+	public String loadTemporaryBlog(@PathVariable("id") int id, ModelMap model) throws LogicException {
 		model.addAttribute(BLOG, blogService.getTemporaryBlog(id));
 		model.addAttribute(UPLOAD_URL, fileServer.getStore().uploadUrl());
 		return "my/blog/temporary";

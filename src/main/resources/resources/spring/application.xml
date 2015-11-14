@@ -266,6 +266,7 @@
 		<property name="protocal" value="http"/>
 		<property name="uploadRequestUrl" value="upload" />
 		<property name="writeRequestUrl" value="write" />
+		<property name="deleteRequestUrl" value="manage/file/deletePhysical"/>
 	</bean>
 
 	<bean id="avatarStore" class="me.qyh.upload.server.inner.InnerFileStore">
@@ -273,9 +274,10 @@
 		<property name="protocal" value="http"/>
 		<property name="uploadRequestUrl" value="my/avatar/upload" />
 		<property name="writeRequestUrl" value="avatar" />
+		<property name="deleteRequestUrl" value="manage/avatar/deletePhysical"/>
 	</bean>
 
-	<bean class="me.qyh.upload.server.inner.InnerFileUploadServer"/>
+	<bean id="innerFileUploadServer" class="me.qyh.upload.server.inner.InnerFileUploadServer"/>
 
 	<bean id="fileServer" class="me.qyh.upload.server.MemoryServer">
 		<property name="stores">

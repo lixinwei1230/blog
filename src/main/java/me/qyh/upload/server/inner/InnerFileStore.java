@@ -1,9 +1,9 @@
 package me.qyh.upload.server.inner;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import me.qyh.upload.server.FileStore;
 import me.qyh.web.tag.url.UrlHelper;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class InnerFileStore implements FileStore {
 
@@ -11,6 +11,7 @@ public class InnerFileStore implements FileStore {
 	private String writeRequestUrl;
 	private Integer id;
 	private String protocal;
+	private String deleteRequestUrl;
 
 	@Autowired
 	private UrlHelper urlHelper;
@@ -26,6 +27,11 @@ public class InnerFileStore implements FileStore {
 	@Override
 	public String seekPrefix() {
 		return protocal + "://" + urlHelper.getDomainAndPort() + "/" + writeRequestUrl;
+	}
+
+	@Override
+	public String deleteUrl() {
+		return protocal + "://" + urlHelper.getDomainAndPort() + "/" + deleteRequestUrl;
 	}
 
 	@Override
@@ -47,5 +53,9 @@ public class InnerFileStore implements FileStore {
 
 	public void setProtocal(String protocal) {
 		this.protocal = protocal;
+	}
+
+	public void setDeleteRequestUrl(String deleteRequestUrl) {
+		this.deleteRequestUrl = deleteRequestUrl;
 	}
 }

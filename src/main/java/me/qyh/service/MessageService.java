@@ -7,7 +7,6 @@ import me.qyh.entity.message.MessageReceive;
 import me.qyh.entity.message.MessageSend;
 import me.qyh.entity.message.MessageSendDetail;
 import me.qyh.entity.message.MessageStatus;
-import me.qyh.exception.DataNotFoundException;
 import me.qyh.exception.LogicException;
 import me.qyh.pageparam.MessageReceivePageParam;
 import me.qyh.pageparam.MessageSendPageParam;
@@ -21,11 +20,11 @@ public interface MessageService {
 
 	Page<MessageSend> findMessageSends(MessageSendPageParam param);
 
-	MessageSend getMessageSend(Integer id) throws DataNotFoundException;
+	MessageSend getMessageSend(Integer id) throws LogicException;
 
 	Page<MessageReceive> findMessageReceives(MessageReceivePageParam param);
 
-	MessageReceive getMessageReceive(Integer id) throws DataNotFoundException;
+	MessageReceive getMessageReceive(Integer id) throws LogicException;
 
 	void updateIsRead(Set<Integer> receives, boolean isRead) throws LogicException;
 

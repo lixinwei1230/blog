@@ -3,6 +3,10 @@ package me.qyh.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import me.qyh.config.ConfigServer;
 import me.qyh.config.PageConfig;
 import me.qyh.dao.LocationWidgetDao;
@@ -11,7 +15,6 @@ import me.qyh.dao.UserWidgetConfigDao;
 import me.qyh.dao.UserWidgetDao;
 import me.qyh.entity.User;
 import me.qyh.exception.BusinessAccessDeinedException;
-import me.qyh.exception.DataNotFoundException;
 import me.qyh.exception.LogicException;
 import me.qyh.exception.SystemException;
 import me.qyh.helper.htmlclean.HtmlContentHandler;
@@ -27,10 +30,6 @@ import me.qyh.page.widget.config.WidgetConfig;
 import me.qyh.security.UserContext;
 import me.qyh.server.UserServer;
 import me.qyh.service.WidgetService;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 public class WidgetServiceImpl extends BaseServiceImpl implements WidgetService {
 
@@ -52,7 +51,7 @@ public class WidgetServiceImpl extends BaseServiceImpl implements WidgetService 
 
 	@Override
 	@Transactional(readOnly = true)
-	public Widget getPreviewWidget(Integer id, WidgetType type) throws DataNotFoundException {
+	public Widget getPreviewWidget(Integer id, WidgetType type) throws LogicException {
 		User current = UserContext.getUser();
 		switch (type) {
 		case SYSTEM:
@@ -76,7 +75,7 @@ public class WidgetServiceImpl extends BaseServiceImpl implements WidgetService 
 			return uw;
 		}
 
-		throw new DataNotFoundException("error.widget.notexists");
+		throw new LogicException("error.widget.notexists");
 	}
 
 	@Override
@@ -145,7 +144,7 @@ public class WidgetServiceImpl extends BaseServiceImpl implements WidgetService 
 
 	@Override
 	@Transactional(readOnly = true)
-	public WidgetConfig getConfig(Integer locationWidgetId) throws DataNotFoundException {
+	public WidgetConfig getConfig(Integer locationWidgetId) throws LogicException {
 		LocationWidget lw = loadLocationWidget(locationWidgetId);
 
 		Page page = pageDao.selectById(lw.getPage().getId());
@@ -191,7 +190,7 @@ public class WidgetServiceImpl extends BaseServiceImpl implements WidgetService 
 		List<Page> pages = pageDao.selectByPageType(type, user);
 
 		if (pages.isEmpty()) {
-			throw new DataNotFoundException("error.page.notexists");
+			throw new LogicException("error.page.notexists");
 		}
 
 		return getPage(pages.get(0));
@@ -250,7 +249,7 @@ public class WidgetServiceImpl extends BaseServiceImpl implements WidgetService 
 		case USER:
 			db = userWidgetConfigDao.selectById(config.getId());
 			if (db == null) {
-				throw new DataNotFoundException("error.widget.config.notexists");
+				throw new LogicException("error.widget.config.notexists");
 			}
 			break;
 		}
@@ -309,7 +308,7 @@ public class WidgetServiceImpl extends BaseServiceImpl implements WidgetService 
 
 	@Override
 	@Transactional(readOnly = true)
-	public UserWidget getUserWidget(Integer id) throws DataNotFoundException {
+	public UserWidget getUserWidget(Integer id) throws LogicException {
 		return loadUserWidget(id);
 	}
 
@@ -349,33 +348,33 @@ public class WidgetServiceImpl extends BaseServiceImpl implements WidgetService 
 		userWidgetDao.update(uw);
 	}
 
-	private UserWidget loadUserWidget(Integer id) throws DataNotFoundException {
+	private UserWidget loadUserWidget(Integer id) throws LogicException {
 		UserWidget widget = userWidgetDao.selectById(id);
 
 		if (widget == null) {
-			throw new DataNotFoundException("error.widget.notexists");
+			throw new LogicException("error.widget.notexists");
 		}
 
 		return widget;
 	}
 
-	private LocationWidget loadLocationWidget(Integer id) throws DataNotFoundException {
+	private LocationWidget loadLocationWidget(Integer id) throws LogicException {
 		LocationWidget lw = locationWidgetDao.selectById(id);
 		if (lw == null) {
-			throw new DataNotFoundException("error.widget.notexists");
+			throw new LogicException("error.widget.notexists");
 		}
 
 		return lw;
 	}
 
-	private SystemWidgetHandler getHandler(Integer id) throws DataNotFoundException {
+	private SystemWidgetHandler getHandler(Integer id) throws LogicException {
 		for (SystemWidgetHandler handler : systemWidgetHandlers) {
 			if (id.equals(handler.getSimpleWidget().getId())) {
 
 				return handler;
 			}
 		}
-		throw new DataNotFoundException("error.widget.notexists");
+		throw new LogicException("error.widget.notexists");
 	}
 
 	public void setSystemWidgetHandlers(List<SystemWidgetHandler> systemWidgetHandlers) {

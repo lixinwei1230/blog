@@ -1,7 +1,6 @@
 package me.qyh.page.widget;
 
 import me.qyh.entity.User;
-import me.qyh.exception.DataNotFoundException;
 import me.qyh.exception.LogicException;
 import me.qyh.page.LocationWidget;
 import me.qyh.page.widget.config.WidgetConfig;
@@ -19,9 +18,9 @@ public interface SystemWidgetHandler {
 	 * 
 	 * @param current
 	 * @return
-	 * @throws DataNotFoundException
+	 * @throws LogicException
 	 */
-	SystemWidget getWidget(LocationWidget widget, User owner, User visitor) throws DataNotFoundException;
+	SystemWidget getWidget(LocationWidget widget, User owner, User visitor) throws LogicException;
 
 	/**
 	 * 得到当前widget可供配置项
@@ -60,9 +59,9 @@ public interface SystemWidgetHandler {
 	 * 
 	 * @param id
 	 * @return
-	 * @throws DataNotFoundException
+	 * @throws LogicException
 	 */
-	WidgetConfig getConfig(Integer id) throws DataNotFoundException;
+	WidgetConfig getConfig(Integer id) throws LogicException;
 
 	/**
 	 * 验证用户是否具有操作该widget的权限

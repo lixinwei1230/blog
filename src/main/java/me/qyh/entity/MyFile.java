@@ -3,11 +3,11 @@ package me.qyh.entity;
 import java.io.File;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import me.qyh.upload.server.FileStore;
 import me.qyh.utils.Files;
 import me.qyh.web.Webs;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * 文件对象

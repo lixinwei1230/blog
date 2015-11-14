@@ -3,10 +3,6 @@ package me.qyh.helper.im4java;
 import java.util.Iterator;
 import java.util.List;
 
-import me.qyh.exception.SystemException;
-import me.qyh.upload.server.inner.BadImageException;
-import me.qyh.utils.Validators;
-
 import org.im4java.core.ConvertCmd;
 import org.im4java.core.IMOperation;
 import org.im4java.core.IdentifyCmd;
@@ -14,6 +10,10 @@ import org.im4java.process.ArrayListOutputConsumer;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import me.qyh.exception.SystemException;
+import me.qyh.upload.server.inner.BadImageException;
+import me.qyh.utils.Validators;
 
 @Component
 public class Im4javas implements InitializingBean {

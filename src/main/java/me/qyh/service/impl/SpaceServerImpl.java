@@ -8,7 +8,7 @@ import me.qyh.bean.Scopes;
 import me.qyh.dao.SpaceDao;
 import me.qyh.entity.Space;
 import me.qyh.entity.User;
-import me.qyh.exception.DataNotFoundException;
+import me.qyh.exception.LogicException;
 import me.qyh.exception.SpaceDisabledException;
 import me.qyh.server.SpaceServer;
 
@@ -20,10 +20,10 @@ public class SpaceServerImpl implements SpaceServer {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Space getSpaceById(String id) throws DataNotFoundException, SpaceDisabledException {
+	public Space getSpaceById(String id) throws LogicException, SpaceDisabledException {
 		Space space = spaceDao.selectById(id);
 		if (space == null) {
-			throw new DataNotFoundException("error.space.notexists");
+			throw new LogicException("error.space.notexists");
 		}
 
 		validSpace(space);
@@ -32,10 +32,10 @@ public class SpaceServerImpl implements SpaceServer {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Space getSpaceByUser(User user) throws DataNotFoundException, SpaceDisabledException {
+	public Space getSpaceByUser(User user) throws LogicException, SpaceDisabledException {
 		Space space = spaceDao.selectByUser(user);
 		if (space == null) {
-			throw new DataNotFoundException("error.space.notexists");
+			throw new LogicException("error.space.notexists");
 		}
 
 		validSpace(space);
@@ -52,7 +52,7 @@ public class SpaceServerImpl implements SpaceServer {
 				if (visitor.equals(db.getUser())) {
 					return Scopes.ALL;
 				}
-			} catch (DataNotFoundException e) {
+			} catch (LogicException e) {
 
 			}
 		}

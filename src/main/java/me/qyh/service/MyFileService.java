@@ -15,5 +15,6 @@ public interface MyFileService {
 	List<MyFileIndex> findIndexs(MyFilePageParam param);
 
 	void deleteMyFile(Integer id) throws LogicException;
-
+	
+	MyFile getMyFile(Integer id) throws LogicException;
 }

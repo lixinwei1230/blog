@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import me.qyh.entity.Space;
 import me.qyh.entity.blog.Blog;
 import me.qyh.entity.blog.BlogStatus;
-import me.qyh.exception.DataNotFoundException;
 import me.qyh.exception.LogicException;
 import me.qyh.page.PageType;
 import me.qyh.pageparam.BlogPageParam;
@@ -34,7 +33,7 @@ public class SpaceBlogController extends SpaceBaseController {
 
 	@RequestMapping(value = "list/{currentPage}", method = RequestMethod.GET)
 	public String list(@PathVariable("currentPage") int currentPage, BlogPageParam param, ModelMap model)
-			throws DataNotFoundException {
+			throws LogicException {
 
 		param.setCurrentPage(currentPage);
 		param.setPageSize(pageSize);

@@ -21,7 +21,6 @@ import me.qyh.entity.message.MessageSend;
 import me.qyh.entity.message.MessageSendDetail;
 import me.qyh.entity.message.MessageStatus;
 import me.qyh.entity.message.MessageType;
-import me.qyh.exception.DataNotFoundException;
 import me.qyh.exception.LogicException;
 import me.qyh.exception.SystemException;
 import me.qyh.helper.htmlclean.HtmlContentHandler;
@@ -122,7 +121,7 @@ public class MessageServiceImpl extends BaseServiceImpl implements MessageServic
 
 	@Override
 	@Transactional(readOnly = true)
-	public MessageSend getMessageSend(Integer id) throws DataNotFoundException {
+	public MessageSend getMessageSend(Integer id) throws LogicException {
 		MessageSend send = loadMessageSend(id);
 		super.doAuthencation(UserContext.getUser(), send.getSender());
 		cleanMessageDetail(send.getDetail());
@@ -214,7 +213,7 @@ public class MessageServiceImpl extends BaseServiceImpl implements MessageServic
 
 	@Override
 	@Transactional(readOnly = true)
-	public MessageReceive getMessageReceive(Integer id) throws DataNotFoundException {
+	public MessageReceive getMessageReceive(Integer id) throws LogicException {
 		MessageReceive receive = loadMessageReceive(id);
 		super.doAuthencation(UserContext.getUser(), receive.getReceiver());
 
@@ -255,19 +254,19 @@ public class MessageServiceImpl extends BaseServiceImpl implements MessageServic
 
 	}
 
-	private MessageReceive loadMessageReceive(Integer id) throws DataNotFoundException {
+	private MessageReceive loadMessageReceive(Integer id) throws LogicException {
 		MessageReceive receive = messageReceiveDao.selectById(id);
 		if (receive == null) {
-			throw new DataNotFoundException("error.message.notFound");
+			throw new LogicException("error.message.notFound");
 		}
 
 		return receive;
 	}
 
-	private MessageSend loadMessageSend(Integer id) throws DataNotFoundException {
+	private MessageSend loadMessageSend(Integer id) throws LogicException {
 		MessageSend send = messageSendDao.selectById(id);
 		if (send == null) {
-			throw new DataNotFoundException("error.message.notFound");
+			throw new LogicException("error.message.notFound");
 		}
 
 		return send;

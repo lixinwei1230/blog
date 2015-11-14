@@ -22,5 +22,7 @@ public interface FileStore {
 	 * @return
 	 */
 	Integer id();
+	
+	String deleteUrl();
 
 }

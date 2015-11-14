@@ -3,7 +3,6 @@ package me.qyh.service;
 import java.util.List;
 
 import me.qyh.entity.User;
-import me.qyh.exception.DataNotFoundException;
 import me.qyh.exception.LogicException;
 import me.qyh.page.LocationWidget;
 import me.qyh.page.Page;
@@ -23,11 +22,11 @@ public interface WidgetService {
 
 	void removeWidget(Integer id) throws LogicException;
 
-	Widget getPreviewWidget(Integer id, WidgetType type) throws DataNotFoundException;
+	Widget getPreviewWidget(Integer id, WidgetType type) throws LogicException;
 
 	Page getPage(PageType type, User user) throws LogicException;
 
-	WidgetConfig getConfig(Integer locationWidgetId) throws DataNotFoundException;
+	WidgetConfig getConfig(Integer locationWidgetId) throws LogicException;
 
 	void updateConfig(WidgetConfig config) throws LogicException;
 
@@ -37,7 +36,7 @@ public interface WidgetService {
 
 	void updateLocationWidget(LocationWidget widget, boolean wrap) throws LogicException;
 
-	UserWidget getUserWidget(Integer id) throws DataNotFoundException;
+	UserWidget getUserWidget(Integer id) throws LogicException;
 
 	void updateUserWidget(UserWidget uw) throws LogicException;
 

@@ -9,19 +9,6 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletResponse;
 
-import me.qyh.bean.Info;
-import me.qyh.config.ConfigServer;
-import me.qyh.config.FileWriteConfig;
-import me.qyh.config.ImageZoomMatcher;
-import me.qyh.exception.LogicException;
-import me.qyh.exception.MyFileNotFoundException;
-import me.qyh.exception.SystemException;
-import me.qyh.helper.im4java.Im4javas;
-import me.qyh.helper.im4java.Im4javas.ImageInfo;
-import me.qyh.upload.server.UploadedInfo;
-import me.qyh.utils.Files;
-import me.qyh.web.Webs;
-
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,11 +24,26 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
+import me.qyh.bean.Info;
+import me.qyh.config.ConfigServer;
+import me.qyh.config.FileWriteConfig;
+import me.qyh.config.ImageZoomMatcher;
+import me.qyh.exception.LogicException;
+import me.qyh.exception.MyFileNotFoundException;
+import me.qyh.exception.SystemException;
+import me.qyh.helper.im4java.Im4javas;
+import me.qyh.helper.im4java.Im4javas.ImageInfo;
+import me.qyh.upload.server.UploadServer;
+import me.qyh.upload.server.UploadedInfo;
+import me.qyh.upload.server.UploadedResult;
+import me.qyh.utils.Files;
+import me.qyh.web.Webs;
+
 @Controller
 public class InnerUploadController {
 
 	@Autowired
-	private InnerFileUploadServer uploadServer;
+	private UploadServer innerFileUploadServer;
 	@Autowired
 	private MessageSource messageSource;
 	@Autowired
@@ -54,9 +56,17 @@ public class InnerUploadController {
 	@RequestMapping(value = "upload", method = RequestMethod.POST)
 	@ResponseBody
 	public Info upload(@RequestParam("files") List<MultipartFile> files, Locale locale) throws LogicException {
-		return new UploadedInfo(uploadServer.upload(files), messageSource, locale);
+		return new UploadedInfo( (UploadedResult) innerFileUploadServer.upload(files), messageSource, locale);
 	}
-
+	
+	@ResponseBody
+	@RequestMapping(value = "manage/file/deletePhysical", method = RequestMethod.POST)
+	public Info delete(@RequestParam("path") String path) throws LogicException{
+		System.out.println("delete");
+		innerFileUploadServer.deleteFile(path);
+		return new Info(true);
+	}
+	
 	@RequestMapping(value = "write", method = RequestMethod.GET)
 	public void write(@RequestParam(value = "path", defaultValue = "") String path,
 			@RequestParam(required = false, value = "size") Integer size, ServletWebRequest request,
@@ -67,7 +77,7 @@ public class InnerUploadController {
 			response.setStatus(HttpStatus.NOT_FOUND.value());
 			return;
 		}
-		File seek = uploadServer.seekFile(path);
+		File seek = innerFileUploadServer.seekFile(path);
 		if (Webs.isWebImage(seek.getName())) {
 			response.setContentType(URLConnection.guessContentTypeFromName(seek.getName()));
 			String etag = Webs.generatorETag(path);

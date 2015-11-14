@@ -13,7 +13,6 @@ import me.qyh.dao.BlogWidgetConfigDao;
 import me.qyh.entity.Space;
 import me.qyh.entity.User;
 import me.qyh.entity.blog.Blog;
-import me.qyh.exception.DataNotFoundException;
 import me.qyh.exception.LogicException;
 import me.qyh.helper.freemaker.WebFreemarkers;
 import me.qyh.page.LocationWidget;
@@ -94,10 +93,10 @@ public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 
 	@Override
 	SystemWidget getWidget(LocationWidget widget, WebFreemarkers freeMarkers, User owner, User visitor)
-			throws DataNotFoundException {
+			throws LogicException {
 		BlogWidgetConfig config = blogWidgetConfigDao.selectByLocationWidget(widget);
 		if (config == null) {
-			throw new DataNotFoundException(CODE_CONFIG_NOT_EXISTS);
+			throw new LogicException(CODE_CONFIG_NOT_EXISTS);
 		}
 		SystemWidget sw = new SystemWidget();
 		sw.setId(id);
@@ -139,10 +138,10 @@ public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 	}
 
 	@Override
-	public WidgetConfig getConfig(Integer id) throws DataNotFoundException {
+	public WidgetConfig getConfig(Integer id) throws LogicException {
 		BlogWidgetConfig db = blogWidgetConfigDao.selectById(id);
 		if (db == null) {
-			throw new DataNotFoundException("error.widget.config.blogWidgetConfig.notexists");
+			throw new LogicException("error.widget.config.blogWidgetConfig.notexists");
 		}
 
 		return db;

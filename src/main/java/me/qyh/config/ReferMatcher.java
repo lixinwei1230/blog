@@ -2,15 +2,15 @@ package me.qyh.config;
 
 import javax.servlet.http.HttpServletRequest;
 
-import me.qyh.utils.Validators;
-import me.qyh.web.tag.url.UrlHelper;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import me.qyh.utils.Validators;
+import me.qyh.web.tag.url.UrlHelper;
 
 @Component("fileWriteMatcher")
 public class ReferMatcher implements RequestMatcher, InitializingBean {

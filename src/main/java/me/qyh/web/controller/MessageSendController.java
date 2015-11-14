@@ -26,7 +26,6 @@ import me.qyh.bean.Info;
 import me.qyh.entity.message.MessageSend;
 import me.qyh.entity.message.MessageSendDetail;
 import me.qyh.entity.message.MessageType;
-import me.qyh.exception.DataNotFoundException;
 import me.qyh.exception.LogicException;
 import me.qyh.pageparam.MessageReceivePageParam;
 import me.qyh.pageparam.MessageSendPageParam;
@@ -94,7 +93,7 @@ public class MessageSendController extends BaseController {
 	}
 
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
-	public String get(@PathVariable("id") int id, ModelMap model) throws DataNotFoundException {
+	public String get(@PathVariable("id") int id, ModelMap model) throws LogicException {
 		MessageSend message = messageService.getMessageSend(id);
 		model.addAttribute("message", message);
 		return "my/message/sendDetail";

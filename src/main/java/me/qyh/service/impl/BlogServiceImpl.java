@@ -7,6 +7,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
+
 import me.qyh.bean.Scopes;
 import me.qyh.config.BlogConfig;
 import me.qyh.config.ConfigServer;
@@ -34,7 +46,6 @@ import me.qyh.entity.tag.UserTag;
 import me.qyh.entity.tag.UserTagCount;
 import me.qyh.entity.tag.WebTag;
 import me.qyh.entity.tag.WebTagCount;
-import me.qyh.exception.DataNotFoundException;
 import me.qyh.exception.LogicException;
 import me.qyh.exception.SystemException;
 import me.qyh.helper.cache.SignCache;
@@ -48,18 +59,6 @@ import me.qyh.server.UserServer;
 import me.qyh.service.BlogService;
 import me.qyh.utils.Strings;
 import me.qyh.utils.Validators;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
 
 @Service("blogService")
 public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
@@ -151,7 +150,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	public Blog getBlog(Integer id) throws LogicException {
 		Blog blog = loadBlog(id);
 		if (isBlogDeleted(blog)) {
-			throw new DataNotFoundException("error.blog.notexists");
+			throw new LogicException("error.blog.notexists");
 		}
 
 		super.doAuthencation(spaceServer.getScopes(UserContext.getUser(), blog.getSpace()), blog.getScope());
@@ -327,11 +326,11 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Blog getTemporaryBlog(Integer id) throws DataNotFoundException {
+	public Blog getTemporaryBlog(Integer id) throws LogicException {
 		TemporaryBlog tBlog = temporaryBlogDao.selectById(id);
 
 		if (tBlog == null) {
-			throw new DataNotFoundException("error.blog.temporary.notexists");
+			throw new LogicException("error.blog.temporary.notexists");
 		}
 
 		super.doAuthencation(UserContext.getSpace(), tBlog.getSpace());
@@ -468,21 +467,21 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		blogCategoryDao.update(toUpdate);
 	}
 
-	private BlogCategory loadBlogCategory(Integer id) throws DataNotFoundException {
+	private BlogCategory loadBlogCategory(Integer id) throws LogicException {
 
 		BlogCategory category = blogCategoryDao.selectById(id);
 
 		if (category == null) {
-			throw new DataNotFoundException("error.blog.category.notexists");
+			throw new LogicException("error.blog.category.notexists");
 		}
 
 		return category;
 	}
 
-	protected Blog loadBlog(Integer id) throws DataNotFoundException {
+	protected Blog loadBlog(Integer id) throws LogicException {
 		Blog blog = blogDao.selectById(id);
 		if (blog == null) {
-			throw new DataNotFoundException("error.blog.notexists");
+			throw new LogicException("error.blog.notexists");
 		}
 
 		return blog;

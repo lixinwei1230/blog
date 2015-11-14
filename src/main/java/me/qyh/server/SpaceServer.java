@@ -3,14 +3,14 @@ package me.qyh.server;
 import me.qyh.bean.Scopes;
 import me.qyh.entity.Space;
 import me.qyh.entity.User;
-import me.qyh.exception.DataNotFoundException;
+import me.qyh.exception.LogicException;
 import me.qyh.exception.SpaceDisabledException;
 
 public interface SpaceServer {
 
-	Space getSpaceById(String id) throws DataNotFoundException, SpaceDisabledException;
+	Space getSpaceById(String id) throws LogicException, SpaceDisabledException;
 
-	Space getSpaceByUser(User user) throws DataNotFoundException, SpaceDisabledException;
+	Space getSpaceByUser(User user) throws LogicException, SpaceDisabledException;
 
 	/**
 	 * 判断当前用户访问该空间的范围

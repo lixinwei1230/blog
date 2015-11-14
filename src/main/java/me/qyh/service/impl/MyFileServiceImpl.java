@@ -12,7 +12,6 @@ import me.qyh.dao.FileDao;
 import me.qyh.entity.FileStatus;
 import me.qyh.entity.MyFile;
 import me.qyh.entity.MyFileIndex;
-import me.qyh.exception.DataNotFoundException;
 import me.qyh.exception.LogicException;
 import me.qyh.pageparam.MyFilePageParam;
 import me.qyh.pageparam.Page;
@@ -61,11 +60,13 @@ public class MyFileServiceImpl extends BaseServiceImpl implements MyFileService 
 			deleteMyFile(cover);
 		}
 	}
-
-	protected MyFile getMyFile(Integer id) throws DataNotFoundException {
+	
+	@Override
+	@Transactional(readOnly = true)
+	public MyFile getMyFile(Integer id) throws LogicException {
 		MyFile db = fileDao.selectById(id);
 		if (db == null) {
-			throw new DataNotFoundException("error.file.notexists");
+			throw new LogicException("error.file.notexists");
 		}
 		return db;
 	}
@@ -74,5 +75,4 @@ public class MyFileServiceImpl extends BaseServiceImpl implements MyFileService 
 		db.setStatus(FileStatus.RECYCLER);
 		fileDao.update(db);
 	}
-
 }

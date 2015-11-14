@@ -45,9 +45,10 @@ import me.qyh.upload.server.inner.BadImageException;
 import me.qyh.upload.server.inner.InnerFileStore;
 import me.qyh.utils.Files;
 import me.qyh.utils.Times;
+import me.qyh.web.controller.MyAvatarController.AvatarFile;
 
 @Service(value = "userService")
-public class UserServiceImpl implements UserService, InitializingBean {
+public class UserServiceImpl extends BaseServiceImpl implements UserService, InitializingBean {
 
 	@Autowired
 	private UserDao userDao;
@@ -253,10 +254,12 @@ public class UserServiceImpl implements UserService, InitializingBean {
 			throw new SystemException(
 					String.format("%s:创建文件夹:%s失败", this.getClass().getName(), folder.getAbsolutePath()));
 		}
+		boolean croped = false;
 		String absPath = folder.getAbsolutePath() + File.separator + file.getName();
 		try {
 			ImageInfo info = im4javas.getImageInfo(file.getAbsolutePath());
-			if (info.getWidth() != crop.getW() && info.getHeight() != crop.getH()) {
+			croped = (info.getWidth() != crop.getW() || info.getHeight() != crop.getH());
+			if (croped) {
 				im4javas.crop(file.getAbsolutePath(), absPath, crop.getX(), crop.getY(), crop.getW(), crop.getH());
 			}
 		} catch (BadImageException e) {
@@ -264,11 +267,17 @@ public class UserServiceImpl implements UserService, InitializingBean {
 		} catch (Exception e) {
 			throw new LogicException("error.avatar.badCrop");
 		}
-		File croped = new File(absPath);
+		MyFile avatar = null;
+		if (!(file instanceof AvatarFile)) {
+			File cropFile = croped ? new File(absPath) : file;
+			avatar = new MyFile(user, cropFile.length(), Files.getFileExtension(file.getName()), file.getName(),
+					new Date(), avatarStore, FileStatus.NORMAL, relativePath, file.getName(), false);
+			fileDao.insert(avatar);
+		} else {
+			avatar = ((AvatarFile) file).getMyFile();
+			super.doAuthencation(user, avatar.getUser());
+		}
 
-		MyFile avatar = new MyFile(UserContext.getUser(), croped.length(), Files.getFileExtension(file.getName()),
-				file.getName(), new Date(), avatarStore, FileStatus.NORMAL, relativePath, file.getName(), false);
-		fileDao.insert(avatar);
 		user.setAvatar(avatar);
 		userDao.update(user);
 	}

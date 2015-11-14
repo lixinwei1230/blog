@@ -6,7 +6,6 @@ import me.qyh.entity.Space;
 import me.qyh.entity.blog.Blog;
 import me.qyh.entity.blog.BlogCategory;
 import me.qyh.entity.blog.TemporaryBlog;
-import me.qyh.exception.DataNotFoundException;
 import me.qyh.exception.LogicException;
 import me.qyh.pageparam.BlogPageParam;
 import me.qyh.pageparam.Page;
@@ -37,7 +36,7 @@ public interface BlogService {
 
 	TemporaryBlog getTemporaryBlog(Blog blog);
 
-	Blog getTemporaryBlog(Integer id) throws DataNotFoundException;
+	Blog getTemporaryBlog(Integer id) throws LogicException;
 
 	void handleTemporaryBlog(Blog blog) throws LogicException;
 

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import me.qyh.bean.Info;
 import me.qyh.entity.blog.BlogFrom;
 import me.qyh.entity.blog.BlogStatus;
-import me.qyh.exception.DataNotFoundException;
+import me.qyh.exception.LogicException;
 import me.qyh.pageparam.BlogPageParam;
 import me.qyh.service.BlogService;
 
@@ -34,7 +34,7 @@ public class BlogController extends BaseController {
 
 	@RequestMapping(value = "list/{currentPage}")
 	public String list(@PathVariable("currentPage") int currentPage, BlogPageParam param, ModelMap model)
-			throws DataNotFoundException {
+			throws LogicException {
 
 		param.setCurrentPage(currentPage);
 		param.setPageSize(pageSize);

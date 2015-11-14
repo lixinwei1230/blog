@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import me.qyh.entity.Space;
-import me.qyh.exception.DataNotFoundException;
 import me.qyh.exception.LogicException;
 import me.qyh.helper.page.SimpleBootstrapPage;
 import me.qyh.page.PageType;
@@ -51,7 +50,7 @@ public class SpaceBaseController extends BaseController {
 		if (type != null) {
 			try {
 				model.addAttribute(WIDGET_PAGE, new SimpleBootstrapPage(widgetService.getPage(type, space.getUser())));
-			} catch (DataNotFoundException e) {
+			} catch (LogicException e) {
 				logger.error("空间:{}，找不到对应的自定义页面：{}", space, type);
 			}
 		}

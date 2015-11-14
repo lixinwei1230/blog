@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.springframework.context.MessageSource;
+
 import me.qyh.bean.I18NMessage;
 import me.qyh.bean.Info;
 import me.qyh.upload.server.inner.FailedUploadFile;
 import me.qyh.upload.server.inner.I18NFailedUploadFile;
-
-import org.springframework.context.MessageSource;
 
 public class UploadedInfo extends Info {
 

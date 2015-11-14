@@ -7,6 +7,18 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.ServletWebRequest;
+
 import me.qyh.bean.Info;
 import me.qyh.config.ConfigServer;
 import me.qyh.config.FileWriteConfig;
@@ -20,18 +32,6 @@ import me.qyh.service.impl.AvatarUploadServer;
 import me.qyh.utils.Files;
 import me.qyh.web.InvalidParamException;
 import me.qyh.web.Webs;
-
-import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.request.ServletWebRequest;
 
 @Controller
 public class UserController extends BaseController {
@@ -78,9 +78,6 @@ public class UserController extends BaseController {
 			return;
 		}
 		File file = uploadServer.seekFile(path);
-		if (file == null || !file.exists()) {
-			throw new MyFileNotFoundException();
-		}
 		String etag = Webs.generatorETag(path);
 		if (request.checkNotModified(etag)) {
 			return;

@@ -3,7 +3,7 @@ package me.qyh.page.widget.support;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import me.qyh.entity.User;
-import me.qyh.exception.DataNotFoundException;
+import me.qyh.exception.LogicException;
 import me.qyh.helper.freemaker.WebFreemarkers;
 import me.qyh.page.LocationWidget;
 import me.qyh.page.widget.SystemWidget;
@@ -31,12 +31,12 @@ public abstract class AbstractSystemWidgetHandler implements SystemWidgetHandler
 	}
 
 	@Override
-	public SystemWidget getWidget(LocationWidget widget, User owner, User visitor) throws DataNotFoundException {
+	public SystemWidget getWidget(LocationWidget widget, User owner, User visitor) throws LogicException {
 		return getWidget(widget, freeMarkers, owner, visitor);
 	}
 
 	abstract SystemWidget getWidget(LocationWidget widget, WebFreemarkers freeMarkers, User owner, User visitor)
-			throws DataNotFoundException;
+			throws LogicException;
 
 	@Override
 	public SystemWidget getSimpleWidget() {

@@ -1,17 +1,10 @@
 package me.qyh.web.controller;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.servlet.http.HttpSession;
-
-import me.qyh.bean.Crop;
-import me.qyh.bean.Info;
-import me.qyh.exception.LogicException;
-import me.qyh.exception.MyFileNotFoundException;
-import me.qyh.service.UserService;
-import me.qyh.service.impl.AvatarUploadServer;
-import me.qyh.upload.server.inner.InnerFileStore;
-import me.qyh.utils.Files;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -28,8 +21,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import me.qyh.bean.Crop;
+import me.qyh.bean.Info;
+import me.qyh.entity.MyFile;
+import me.qyh.exception.LogicException;
+import me.qyh.exception.MyFileNotFoundException;
+import me.qyh.service.MyFileService;
+import me.qyh.service.UserService;
+import me.qyh.upload.server.UploadServer;
+import me.qyh.upload.server.inner.InnerFileStore;
+import me.qyh.utils.Files;
+
 @Controller
-@RequestMapping(value = "my/avatar")
 public class MyAvatarController extends BaseController {
 
 	private static final String AVATAR = "avatar";
@@ -37,40 +40,43 @@ public class MyAvatarController extends BaseController {
 	private static final String STORE = "store";
 
 	@Autowired
-	private AvatarUploadServer uploadServer;
+	private UploadServer avatarUploadServer;
 	@Autowired
 	private InnerFileStore avatarStore;
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private MyFileService myFileService;
 
-	@RequestMapping(value = "index", method = RequestMethod.GET)
+	@RequestMapping(value = "my/avatar/index", method = RequestMethod.GET)
 	public String index(ModelMap model) {
 		model.addAttribute(STORE, avatarStore.id());
 		model.addAttribute(UPLOAD_URL, avatarStore.uploadUrl());
 		return "my/avatar/index";
 	}
 
-	@RequestMapping(value = "upload", method = RequestMethod.POST)
+	@RequestMapping(value = "my/avatar/upload", method = RequestMethod.POST)
 	@ResponseBody
 	public Info upload(@RequestParam(value = "file") MultipartFile file, HttpSession session) throws LogicException {
-		session.setAttribute(AVATAR, uploadServer.upload(file));
+		session.setAttribute(AVATAR,
+				avatarUploadServer.upload(new ArrayList<MultipartFile>(Arrays.asList(new MultipartFile[] { file }))));
 		return new Info(true);
 	}
 
-	@RequestMapping(value = "choose", method = RequestMethod.GET)
+	@RequestMapping(value = "my/avatar/choose", method = RequestMethod.GET)
 	@ResponseBody
-	public Info choose(@RequestParam(value = "path" ,defaultValue = "") String path,HttpSession session)
-			throws LogicException {
+	public Info choose(@RequestParam(value = "id") int id, HttpSession session) throws LogicException {
+		MyFile mf = myFileService.getMyFile(id);
 		try {
-			File file = uploadServer.seekFile(path);
-			session.setAttribute(AVATAR, file);
+			File file = avatarUploadServer.seekFile(mf.getSeekPath());
+			session.setAttribute(AVATAR, new AvatarFile(file.getAbsolutePath(), mf));
 		} catch (MyFileNotFoundException e) {
 			throw new LogicException(e.getI18nMessage());
 		}
 		return new Info(true);
 	}
 
-	@RequestMapping(value = "confirm", method = RequestMethod.POST)
+	@RequestMapping(value = "my/avatar/confirm", method = RequestMethod.POST)
 	@ResponseBody
 	public Info confirm(@RequestBody Crop crop, HttpSession session) throws LogicException {
 		crop.setFile((File) session.getAttribute(AVATAR));
@@ -78,7 +84,7 @@ public class MyAvatarController extends BaseController {
 		return new Info(true);
 	}
 
-	@RequestMapping(value = "drew", method = RequestMethod.GET)
+	@RequestMapping(value = "my/avatar/drew", method = RequestMethod.GET)
 	public ResponseEntity<FileSystemResource> drew(HttpSession session) throws MyFileNotFoundException {
 		File file = (File) session.getAttribute(AVATAR);
 		if (file == null || !file.exists()) {
@@ -89,5 +95,33 @@ public class MyAvatarController extends BaseController {
 		headers.setContentLength(file.length());
 		FileSystemResource res = new FileSystemResource(file);
 		return new ResponseEntity<FileSystemResource>(res, headers, HttpStatus.CREATED);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "manage/avatar/deletePhysical", method = RequestMethod.POST)
+	public Info delete(@RequestParam("path") String path) throws LogicException{
+		System.out.println("delete");
+		avatarUploadServer.deleteFile(path);
+		return new Info(true);
+	}
+
+	public class AvatarFile extends File {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		private AvatarFile(String absPath, MyFile file) {
+			super(absPath);
+			this.myFile = file;
+		}
+
+		private MyFile myFile;
+
+		public MyFile getMyFile() {
+			return myFile;
+		}
+
 	}
 }

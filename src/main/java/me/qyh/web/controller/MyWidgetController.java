@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import me.qyh.bean.Info;
-import me.qyh.exception.DataNotFoundException;
 import me.qyh.exception.LogicException;
 import me.qyh.page.widget.UserWidget;
 import me.qyh.security.UserContext;
@@ -64,7 +63,7 @@ public class MyWidgetController extends BaseController {
 
 	@RequestMapping(value = "get/{id}", method = RequestMethod.GET)
 	@ResponseBody
-	public Info get(@PathVariable("id") int id) throws DataNotFoundException {
+	public Info get(@PathVariable("id") int id) throws LogicException {
 		return new Info(true, widgetService.getUserWidget(id));
 	}
 

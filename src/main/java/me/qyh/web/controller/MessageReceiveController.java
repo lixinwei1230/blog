@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import me.qyh.bean.Info;
 import me.qyh.entity.message.MessageReceive;
 import me.qyh.entity.message.MessageStatus;
-import me.qyh.exception.DataNotFoundException;
 import me.qyh.exception.LogicException;
 import me.qyh.pageparam.MessageReceivePageParam;
 import me.qyh.security.UserContext;
@@ -52,7 +51,7 @@ public class MessageReceiveController extends BaseController {
 	}
 
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
-	public String getMessage(@PathVariable(value = "id") int id, ModelMap model) throws DataNotFoundException {
+	public String getMessage(@PathVariable(value = "id") int id, ModelMap model) throws LogicException {
 		MessageReceive receive = messageService.getMessageReceive(id);
 		model.addAttribute("receive", receive);
 		return "my/message/receiveDetail";
