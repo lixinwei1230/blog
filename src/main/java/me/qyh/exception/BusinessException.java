@@ -21,6 +21,10 @@ public class BusinessException extends Exception {
 	public I18NMessage getI18nMessage() {
 		return i18nMessage;
 	}
+	
+	public BusinessException(I18NMessage i18nMessage) {
+		this.i18nMessage = i18nMessage;
+	}
 
 	@Override
 	public Throwable fillInStackTrace() {

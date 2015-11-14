@@ -75,6 +75,7 @@
 					id="fileupload" type="file" name="file"
 					data-url="${ctx }/my/avatar/upload" multiple>
 				</span>
+				<button class="btn btn-primary" onclick="showChooseModal()" type="button">选择以前头像</button>
 				<div id="progress" style="margin-top: 5px" class="progress">
 					<div class="progress-bar progress-bar-success"></div>
 				</div>
@@ -101,6 +102,28 @@
 	<input type="hidden" id="y" value="0" />
 	<input type="hidden" id="w" value="0" />
 	<input type="hidden" id="h" value="0" />
+	<input type="hidden" id="store" value="${store }">
+	<div class="modal fade" id="avatars" tabindex="-1"
+	role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+	data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title" id="myModalLabel">以前的头像</h4>
+			</div>
+			<div class="modal-body" id="home">
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">
+					关闭
+				</button>
+			</div>
+			</div>
+		</div>
+	</div>
 	<jsp:include page="/WEB-INF/scripts.jsp"></jsp:include>
 	<script type="text/javascript"
 		src="${ctx}/static/plugins/jupload/canvas-to-blob.min.js"></script>
@@ -219,6 +242,114 @@
 				}
 			}
 		});
+	}
+	
+	var files = [];
+	function writePage(page){
+		$.get(contextPath + "/my/file/list/"+page,{"store":$("#store").val()},function callBack(data){
+			if(data.success){
+				files = [];
+				var page = data.result;
+				var html = "";
+				var datas = page.datas;
+				if(datas.length == 0){
+					html = '<div class="alert alert-info">当前没有任何文件</div>';
+				}else{
+					html += '<div class="table-responsive">';
+					html += '<table class="table">';
+					html += '<thead><tr><th>文件名</th><th>上传日期</th><th>操作</th></tr></thead>';
+					html += '<tbody>';
+					for(var i=0;i<datas.length;i++){
+						var file = datas[i];
+						files.push(file);
+						html += '<tr>';
+						if(file.image){
+							if(file.cover && file.cover != null){
+								 html += '<td><div class="videos">';
+								 html += '<a class="video" data-play="'+file.seekPrefixUrl+'?path='+file.seekPath+'"> <span>&nbsp;</span> <img class="img-responsive" src="'+file.cover.seekPrefixUrl+'?path='+file.cover.seekPath+'"> </a> ';
+							     html += '<div class="clearfix">&nbsp;</div>'
+								 html += '</div></td>'; 
+							}else{
+								html += '<td><img src="'+file.seekPrefixUrl+'?path='+file.seekPath+'&size=200"/></td>';
+							}
+						}else{
+							var name = file.originalFilenameWithoutExtension;
+							if(name.length > 10){
+								name = name.substring(0,10)+"...";
+							}
+							html += '<td>'+name+'.'+file.extension+'</td>';
+						}
+						html += '<td>'+new Date(file.uploadDate).pattern("yyyy-MM-dd HH:mm")+'</td>';
+						html += '<td><a href="javascript:void(0)" class="insert-'+file.id+'">插入</a>';
+						if(file.image){
+							html += '&nbsp;&nbsp;<a href="'+file.seekPrefixUrl+'?path='+file.seekPath+'" target="_blank">原图</a>';
+						}
+						html += '</td></tr>';
+					}
+					html += '</tbody>';
+					html += '</table>';
+					html += '</div>';
+				}
+				if(page.totalPage > 1){
+	    			html += '<div class="row"  id="ckeditor_file_manager_paging">';
+	    			html += '<div class="col-md-12">';
+	    			html += '<ul class="pagination">';
+	    			for(var i=page.listbegin;i<=page.listend-1;i++){
+	    				html += '<li><a href="javascript:void(0)" onclick="writePage('+i+')">'+i+'</a></li>';
+	    			}
+	    			html += '</ul>';
+	    			html += '</div>';
+	    			html += '</div>';
+	    		}
+				$("#home").html(html);
+				$("#home a[class^='insert-']").on('click',function(){
+					var _me = $(this);
+					var clazz = _me.attr("class");
+					var id = clazz.split("-")[1];
+					for(var i=0;i< files.length;i++){
+						var file = files[i];
+						if(file.id == id){
+							$.get(contextPath + "/my/avatar/choose" , {"path" : file.seekPath},function callBack(data){
+								if(data.success){
+									var url = "${ctx}/my/avatar/drew?time="+new Date().getTime();
+									loadImage(url, function callBack(){
+										var image = this;
+										$(".img-container").html(image);
+										var $image = $(".img-container img");
+										$image.cropper({
+										    aspectRatio: 1/1,
+										    data: {
+										        x: 480,
+										        y: 60,
+										        width: 640,
+										        height: 360
+										    },
+										    preview: ".img-preview",
+										    done: function(data) {
+										    	$("#x").val(data.x);
+										    	$("#y").val(data.y);
+										    	$("#w").val(data.width);
+										    	$("#h").val(data.height);
+										    }
+										});
+										relativePath = url;
+										$("#avatars").modal("hide");
+									});
+								}else{
+									$.messager.popup(data.result);
+								}
+							});
+						}
+					}
+				});
+			}else{
+				$.messager.popup(data.result);
+			}
+		});
+	}
+	function showChooseModal(){
+		$("#avatars").modal("show");
+		writePage(1);
 	}
 	</script>
 </body>

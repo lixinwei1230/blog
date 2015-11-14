@@ -1,5 +1,6 @@
 package me.qyh.service.impl;
 
+import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,21 +19,31 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import me.qyh.bean.Crop;
+import me.qyh.dao.FileDao;
 import me.qyh.dao.RoleDao;
 import me.qyh.dao.UserCodeDao;
 import me.qyh.dao.UserDao;
+import me.qyh.entity.FileStatus;
+import me.qyh.entity.MyFile;
 import me.qyh.entity.Role;
 import me.qyh.entity.RoleEnum;
 import me.qyh.entity.User;
 import me.qyh.entity.UserCode;
 import me.qyh.entity.UserCodeType;
 import me.qyh.exception.LogicException;
+import me.qyh.exception.SystemException;
 import me.qyh.helper.freemaker.WebFreemarkers;
+import me.qyh.helper.im4java.Im4javas;
+import me.qyh.helper.im4java.Im4javas.ImageInfo;
 import me.qyh.helper.mail.Mailer;
 import me.qyh.helper.mail.MimeMessageHelperHandler;
 import me.qyh.security.UserContext;
 import me.qyh.server.UserServer;
 import me.qyh.service.UserService;
+import me.qyh.upload.server.inner.BadImageException;
+import me.qyh.upload.server.inner.InnerFileStore;
+import me.qyh.utils.Files;
 import me.qyh.utils.Times;
 
 @Service(value = "userService")
@@ -63,6 +74,14 @@ public class UserServiceImpl implements UserService, InitializingBean {
 	private UserNameChecker userNameChecker = new SafeUserNameChecker();
 	@Autowired
 	private MessageSource messageSource;
+	@Autowired
+	private FileDao fileDao;
+	@Autowired
+	private InnerFileStore avatarStore;
+	@Value("${config.avatar.absPath}")
+	private String absPath;
+	@Autowired
+	private Im4javas im4javas;
 
 	private static final String MAIL_ACTIVATE_TPL_PATH = "mail/activate.ftl";
 	private static final String MAIL_FINDPASSWORD_TPL_PATH = "mail/findPassword.ftl";
@@ -217,6 +236,40 @@ public class UserServiceImpl implements UserService, InitializingBean {
 		userNameChecker.check(nickname);
 		User user = UserContext.getUser();
 		user.setNickname(nickname);
+		userDao.update(user);
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public void updateAvatar(Crop crop) throws LogicException {
+		User user = UserContext.getUser();
+		File file = crop.getFile();
+		if (file == null || !file.exists()) {
+			throw new LogicException("error.avatar.fileNotFound");
+		}
+		String relativePath = Files.ymd();
+		File folder = new File(this.absPath + relativePath);
+		if (!folder.exists() && !folder.mkdirs()) {
+			throw new SystemException(
+					String.format("%s:创建文件夹:%s失败", this.getClass().getName(), folder.getAbsolutePath()));
+		}
+		String absPath = folder.getAbsolutePath() + File.separator + file.getName();
+		try {
+			ImageInfo info = im4javas.getImageInfo(file.getAbsolutePath());
+			if (info.getWidth() != crop.getW() && info.getHeight() != crop.getH()) {
+				im4javas.crop(file.getAbsolutePath(), absPath, crop.getX(), crop.getY(), crop.getW(), crop.getH());
+			}
+		} catch (BadImageException e) {
+			throw new LogicException("error.upload.badImage");
+		} catch (Exception e) {
+			throw new LogicException("error.avatar.badCrop");
+		}
+		File croped = new File(absPath);
+
+		MyFile avatar = new MyFile(UserContext.getUser(), croped.length(), Files.getFileExtension(file.getName()),
+				file.getName(), new Date(), avatarStore, FileStatus.NORMAL, relativePath, file.getName(), false);
+		fileDao.insert(avatar);
+		user.setAvatar(avatar);
 		userDao.update(user);
 	}
 

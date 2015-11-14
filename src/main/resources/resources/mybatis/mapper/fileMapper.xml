@@ -12,100 +12,147 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result column="extension" property="extension" />
 		<result column="uploadDate" property="uploadDate" />
 		<result column="file_store" property="store" typeHandler="FileStoreTypeHandler" />
-		<result column="relativePath" property="relativePath"/>
-		<result column="original_name" property="originalFilename"/>
-		<result column="is_cover" property="isCover"/>
+		<result column="relativePath" property="relativePath" />
+		<result column="original_name" property="originalFilename" />
+		<result column="is_cover" property="isCover" />
 		<association property="user" javaType="User">
 			<id column="user_id" property="id" />
 		</association>
 		<association property="cover" javaType="MyFile">
 			<id column="cover_id" property="id" />
-			<result column="cover_file_store" property="store" typeHandler="FileStoreTypeHandler" />
-			<result column="cover_relativePath" property="relativePath"/>
+			<result column="cover_file_store" property="store"
+				typeHandler="FileStoreTypeHandler" />
+			<result column="cover_relativePath" property="relativePath" />
 			<result column="cover_file_name" property="name" />
 		</association>
 	</resultMap>
-	
+
 	<select id="selectById" resultMap="FileDetail">
-	    SELECT bf.id,bf.file_size,bf.file_name,bf.file_status,bf.extension,bf.uploadDate,bf.file_store,bf.user_id,bf.relativePath,bf.original_name,cv.file_store AS cover_file_store,cv.relativePath AS cover_relativePath,cv.file_name AS cover_file_name,cv.id AS cover_id
-	    FROM blog_file bf
-	    LEFT OUTER JOIN blog_file cv ON bf.cover = cv.id
-	    WHERE bf.id = #{id}
+		SELECT
+		bf.id,bf.file_size,bf.file_name,bf.file_status,bf.extension,bf.uploadDate,bf.file_store,bf.user_id,bf.relativePath,bf.original_name,cv.file_store
+		AS cover_file_store,cv.relativePath AS cover_relativePath,cv.file_name
+		AS cover_file_name,cv.id AS cover_id
+		FROM blog_file bf
+		LEFT OUTER JOIN
+		blog_file cv ON bf.cover = cv.id
+		WHERE bf.id = #{id}
 	</select>
-	
+
 	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
-	    INSERT INTO blog_file(file_size,file_name,file_status,extension,uploadDate,file_store,user_id,relativePath,original_name,cover,is_cover)
-	    VALUES(#{size},#{name},#{status,javaType=FileStatus,typeHandler=EnumOrdinalTypeHandler},#{extension},#{uploadDate},#{store,typeHandler=FileStoreTypeHandler},#{user.id},#{relativePath},#{originalFilename},#{cover.id},#{isCover})
+		INSERT
+		INTO
+		blog_file(file_size,file_name,file_status,extension,uploadDate,file_store,user_id,relativePath,original_name,cover,is_cover)
+		VALUES(#{size},#{name},#{status,javaType=FileStatus,typeHandler=EnumOrdinalTypeHandler},#{extension},#{uploadDate},#{store,typeHandler=FileStoreTypeHandler},#{user.id},#{relativePath},#{originalFilename},#{cover.id},#{isCover})
 	</insert>
 
 	<update id="update">
 		UPDATE blog_file
 		<set>
 			<if test="status != null">
-				file_status = #{status,javaType=FileStatus,typeHandler=EnumOrdinalTypeHandler}
+				file_status =
+				#{status,javaType=FileStatus,typeHandler=EnumOrdinalTypeHandler}
 			</if>
 		</set>
 		WHERE id = #{id}
 	</update>
-	
+
 	<select id="selectPage" resultMap="FileDetail">
-	   SELECT bf.id,bf.file_size,bf.file_name,bf.file_status,bf.extension,bf.uploadDate,bf.file_store,bf.user_id,bf.relativePath,bf.original_name,cv.file_store AS cover_file_store,cv.relativePath AS cover_relativePath,cv.file_name AS cover_file_name
-	   FROM blog_file bf
-	   LEFT OUTER JOIN blog_file cv ON bf.cover = cv.id
-	   WHERE bf.file_status = #{status,javaType=FileStatus,typeHandler=EnumOrdinalTypeHandler}
-	   <if test="showCover != null">
-	   		AND bf.is_cover = #{showCover}
-	   </if>
-	   <if test="user != null">
-	   		AND bf.user_id = #{user.id}
-	   </if>
-	   <if test="begin != null and end != null">
-	   		AND bf.uploadDate BETWEEN #{begin} AND #{end}
-	   </if>
-	   <if test="name != null and name != ''">
+		SELECT
+		bf.id,bf.file_size,bf.file_name,bf.file_status,bf.extension,bf.uploadDate,bf.file_store,bf.user_id,bf.relativePath,bf.original_name,cv.file_store
+		AS cover_file_store,cv.relativePath AS cover_relativePath,cv.file_name
+		AS cover_file_name
+		FROM blog_file bf
+		LEFT OUTER JOIN blog_file cv ON
+		bf.cover = cv.id
+		WHERE bf.file_status =
+		#{status,javaType=FileStatus,typeHandler=EnumOrdinalTypeHandler}
+		<if test="showCover != null">
+			AND bf.is_cover = #{showCover}
+		</if>
+		<if test="user != null">
+			AND bf.user_id = #{user.id}
+		</if>
+		<if test="begin != null and end != null">
+			AND bf.uploadDate BETWEEN #{begin} AND #{end}
+		</if>
+		<if test="name != null and name != ''">
 			AND bf.original_name LIKE CONCAT('%', #{name},'%')
 		</if>
-	   ORDER BY id DESC
-	   LIMIT #{offset},#{pageSize}
+		<if test="small != null and large != null">
+			AND bf.file_size BETWEEN #{small} AND #{large}
+		</if>
+		<if test="store != null">
+			AND bf.file_store = #{store}
+		</if>
+		<if test="extensions != null and !extensions.isEmpty()">
+			AND
+			(
+			<foreach collection="extensions" item="extension" open=""
+				separator="OR" close="">
+				bf.extension = #{extension}
+			</foreach>
+			)
+		</if>
+		ORDER BY id DESC
+		LIMIT #{offset},#{pageSize}
 	</select>
-	
+
 	<select id="selectCount" resultType="int">
-	   SELECT COUNT(id)
-	   FROM blog_file 
-	   WHERE file_status = #{status,javaType=FileStatus,typeHandler=EnumOrdinalTypeHandler}
-	   <if test="showCover != null">
-	   		AND is_cover = #{showCover}
-	   </if>
-	   <if test="user != null">
-	   		AND user_id = #{user.id}
-	   </if>
-	   <if test="begin != null and end != null">
-	   		AND uploadDate BETWEEN #{begin} AND #{end}
-	   </if>
-	   <if test="name != null and name != ''">
+		SELECT COUNT(id)
+		FROM blog_file
+		WHERE file_status =
+		#{status,javaType=FileStatus,typeHandler=EnumOrdinalTypeHandler}
+		<if test="showCover != null">
+			AND is_cover = #{showCover}
+		</if>
+		<if test="user != null">
+			AND user_id = #{user.id}
+		</if>
+		<if test="begin != null and end != null">
+			AND uploadDate BETWEEN #{begin} AND #{end}
+		</if>
+		<if test="name != null and name != ''">
 			AND original_name LIKE CONCAT('%', #{name},'%')
 		</if>
+		<if test="small != null and large != null">
+			AND file_size BETWEEN #{small} AND #{large}
+		</if>
+		<if test="store != null">
+			AND file_store = #{store}
+		</if>
+		<if test="extensions != null and !extensions.isEmpty()">
+			AND
+			(
+			<foreach collection="extensions" item="extension" open=""
+				separator="OR" close="">
+				extension = #{extension}
+			</foreach>
+			)
+		</if>
 	</select>
-	
+
 	<select id="selectAllFileSize" resultType="long">
-	    SELECT COALESCE(SUM(file_size),0) FROM  blog_file bf 
-	    WHERE bf.user_id = #{id}
-	    AND bf.is_cover = false
-	    AND bf.file_status = 0
+		SELECT
+		COALESCE(SUM(file_size),0) FROM blog_file bf
+		WHERE bf.user_id = #{id}
+		AND bf.is_cover = false
+		AND bf.file_status = 0
 	</select>
-	
+
 	<select id="selectIndexs" resultType="me.qyh.entity.MyFileIndex">
 		SELECT uploadDate AS monthDate,COUNT(id) AS total
-		FROM blog_file 
-		WHERE file_status = #{status,javaType=FileStatus,typeHandler=EnumOrdinalTypeHandler}
+		FROM blog_file
+		WHERE
+		file_status =
+		#{status,javaType=FileStatus,typeHandler=EnumOrdinalTypeHandler}
 		<if test="user != null">
-	   		AND user_id = #{user.id}
-	   	</if>
-	   	<if test="begin != null and end != null">
-	   		AND uploadDate BETWEEN #{begin} AND #{end}
-	   	</if>
+			AND user_id = #{user.id}
+		</if>
+		<if test="begin != null and end != null">
+			AND uploadDate BETWEEN #{begin} AND #{end}
+		</if>
 		GROUP BY YEAR(uploadDate),MONTH(uploadDate)
-	   	ORDER BY id DESC LIMIT 0,12
+		ORDER BY id DESC LIMIT 0,12
 	</select>
-	
+
 </mapper>

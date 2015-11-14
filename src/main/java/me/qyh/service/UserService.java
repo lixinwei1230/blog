@@ -1,5 +1,6 @@
 package me.qyh.service;
 
+import me.qyh.bean.Crop;
 import me.qyh.entity.User;
 import me.qyh.exception.LogicException;
 
@@ -20,5 +21,7 @@ public interface UserService {
 	void changePassword(String oldPassword, String newPassword) throws LogicException;
 
 	void changeNickname(String nickname) throws LogicException;
+
+	void updateAvatar(Crop crop) throws LogicException;
 
 }

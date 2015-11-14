@@ -1,6 +1,8 @@
 package me.qyh.pageparam;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -22,6 +24,10 @@ public class MyFilePageParam extends PageParam {
 	private User user;
 	private String name;
 	private Boolean showCover;
+	private Set<String> extensions = new HashSet<String>();
+	private Long small;
+	private Long large;
+	private Integer store;
 
 	public FileStatus getStatus() {
 		return status;
@@ -71,4 +77,35 @@ public class MyFilePageParam extends PageParam {
 		this.showCover = showCover;
 	}
 
+	public Set<String> getExtensions() {
+		return extensions;
+	}
+
+	public void setExtensions(Set<String> extensions) {
+		this.extensions = extensions;
+	}
+
+	public Long getSmall() {
+		return small;
+	}
+
+	public void setSmall(Long small) {
+		this.small = small;
+	}
+
+	public Long getLarge() {
+		return large;
+	}
+
+	public void setLarge(Long large) {
+		this.large = large;
+	}
+
+	public Integer getStore() {
+		return store;
+	}
+
+	public void setStore(Integer store) {
+		this.store = store;
+	}
 }

@@ -1,7 +1,6 @@
 package me.qyh.web.controller;
 
 import java.io.File;
-import java.util.Locale;
 
 import javax.servlet.http.HttpSession;
 
@@ -9,6 +8,7 @@ import me.qyh.bean.Crop;
 import me.qyh.bean.Info;
 import me.qyh.exception.LogicException;
 import me.qyh.exception.MyFileNotFoundException;
+import me.qyh.service.UserService;
 import me.qyh.service.impl.AvatarUploadServer;
 import me.qyh.upload.server.inner.InnerFileStore;
 import me.qyh.utils.Files;
@@ -34,31 +34,47 @@ public class MyAvatarController extends BaseController {
 
 	private static final String AVATAR = "avatar";
 	private static final String UPLOAD_URL = "uploadUrl";
+	private static final String STORE = "store";
 
 	@Autowired
 	private AvatarUploadServer uploadServer;
 	@Autowired
 	private InnerFileStore avatarStore;
+	@Autowired
+	private UserService userService;
 
 	@RequestMapping(value = "index", method = RequestMethod.GET)
 	public String index(ModelMap model) {
+		model.addAttribute(STORE, avatarStore.id());
 		model.addAttribute(UPLOAD_URL, avatarStore.uploadUrl());
 		return "my/avatar/index";
 	}
 
 	@RequestMapping(value = "upload", method = RequestMethod.POST)
 	@ResponseBody
-	public Info upload(@RequestParam(value = "file") MultipartFile file, HttpSession session, Locale locale)
-			throws LogicException {
+	public Info upload(@RequestParam(value = "file") MultipartFile file, HttpSession session) throws LogicException {
 		session.setAttribute(AVATAR, uploadServer.upload(file));
+		return new Info(true);
+	}
+
+	@RequestMapping(value = "choose", method = RequestMethod.GET)
+	@ResponseBody
+	public Info choose(@RequestParam(value = "path" ,defaultValue = "") String path,HttpSession session)
+			throws LogicException {
+		try {
+			File file = uploadServer.seekFile(path);
+			session.setAttribute(AVATAR, file);
+		} catch (MyFileNotFoundException e) {
+			throw new LogicException(e.getI18nMessage());
+		}
 		return new Info(true);
 	}
 
 	@RequestMapping(value = "confirm", method = RequestMethod.POST)
 	@ResponseBody
-	public Info confirm(@RequestBody Crop crop, HttpSession session, Locale locale) throws LogicException {
+	public Info confirm(@RequestBody Crop crop, HttpSession session) throws LogicException {
 		crop.setFile((File) session.getAttribute(AVATAR));
-		uploadServer.crop(crop);
+		userService.updateAvatar(crop);
 		return new Info(true);
 	}
 

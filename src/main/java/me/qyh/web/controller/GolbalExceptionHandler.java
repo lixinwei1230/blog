@@ -79,7 +79,7 @@ public class GolbalExceptionHandler extends BaseController {
 	}
 
 	@ExceptionHandler(MyFileNotFoundException.class)
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public ModelAndView handleMyFileNotFoundException(MyFileNotFoundException e, HttpServletRequest request)
 			throws Exception {
 		return new ModelAndView("/error/logic").addObject(ERROR, e.getI18nMessage());

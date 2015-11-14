@@ -153,11 +153,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		#{role,javaType=RoleEnum,typeHandler=EnumTypeHandler}
 	</select>
 
-	<delete id="deleteAvatarFile">
-		UPDATE blog_file SET file_status = 1 WHERE id IN (
-		SELECT avatar AS id FROM blog_user WHERE id = #{id})
-	</delete>
-
 	<select id="selectAvatar" resultMap="me.qyh.dao.FileDao.FileDetail">
 		SELECT bf.id,file_name
 		,file_status ,extension,file_store,relativePath

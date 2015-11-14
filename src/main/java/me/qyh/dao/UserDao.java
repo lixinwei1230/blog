@@ -30,8 +30,6 @@ public interface UserDao extends BaseDao<User, Integer> {
 
 	List<User> selectByRole(RoleEnum role);
 
-	void deleteAvatarFile(User user);
-
 	MyFile selectAvatar(Integer userId);
 
 	List<User> selectPage(UserPageParam param);
