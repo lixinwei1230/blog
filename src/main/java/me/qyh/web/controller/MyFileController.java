@@ -36,10 +36,10 @@ public class MyFileController extends BaseController {
 	public String list(@PathVariable("currentPage") int currentPage, MyFilePageParam param, ModelMap model) {
 		param.setStatus(FileStatus.NORMAL);
 		param.setUser(UserContext.getUser());
+		param.setShowCover(false);
 		model.put(INDEXS, myFileService.findIndexs(param));
 
 		param.setCurrentPage(currentPage);
-		param.setShowCover(false);
 		param.setPageSize(pageSize);
 		param.validate();
 		model.put(PAGE, myFileService.findMyFiles(param));
