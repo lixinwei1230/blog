@@ -8,6 +8,8 @@ import java.util.UUID;
 
 import javax.mail.MessagingException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -87,6 +89,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 	private static final String MAIL_ACTIVATE_TPL_PATH = "mail/activate.ftl";
 	private static final String MAIL_FINDPASSWORD_TPL_PATH = "mail/findPassword.ftl";
 	private static final String MAIL_REGISTER_SUCCESS_TPL_PATH = "mail/registerSuccess.ftl";
+
+	private static final Logger logger = LoggerFactory.getLogger("warningLogger");
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
@@ -276,6 +280,11 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 		} else {
 			avatar = ((AvatarFile) file).getMyFile();
 			super.doAuthencation(user, avatar.getUser());
+			if (croped) {
+				if (!file.setLastModified(System.currentTimeMillis())) {
+					logger.warn("用户:{}更新了头像，但是无法改变物理文件:{}的最后操作时间，这将会导致无法刷新用户头像缓存", user, file);
+				}
+			}
 		}
 
 		user.setAvatar(avatar);

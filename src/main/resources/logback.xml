@@ -22,6 +22,20 @@
 			<charset>UTF-8</charset>
 		</encoder>
 	</appender>
+	
+	<appender name="warningDailyRollingFileAppender"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>c:/logs/blog/warning.log</File>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>c:/logs/blog/warning.%d{yyyy-MM-dd}.log</FileNamePattern>
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg %n
+			</Pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+	</appender>
 
 	<appender name="mlogDailyRollingFileAppender"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -56,6 +70,11 @@
 	<logger name="errorLogger" additivity="false">
 		<level value="ERROR" />
 		<appender-ref ref="errorDailyRollingFileAppender" />
+	</logger>
+	
+	<logger name="warningLogger" additivity="false">
+		<level value="WARNING" />
+		<appender-ref ref="warningDailyRollingFileAppender" />
 	</logger>
 
 	<logger name="login" additivity="false">

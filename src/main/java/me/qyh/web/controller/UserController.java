@@ -78,7 +78,7 @@ public class UserController extends BaseController {
 			return;
 		}
 		File file = uploadServer.seekFile(path);
-		String etag = Webs.generatorETag(path);
+		String etag = Webs.generatorETag(path + file.lastModified());
 		if (request.checkNotModified(etag)) {
 			return;
 		}
@@ -86,8 +86,8 @@ public class UserController extends BaseController {
 		ImageZoomMatcher zm = config.getZoomMatcher();
 		if (zm != null && zm.zoom(size, file)) {
 			String relativePath = getRelativePath(file);
-			File dest = new File(
-					imageCacheDir + relativePath + File.separator + Files.appendFilename(file.getName(), "_" + size));
+			File dest = new File(imageCacheDir + relativePath + File.separator
+					+ Files.appendFilename(file.getName(), "_" + file.lastModified() + "_" + size));
 			if (dest.exists()) {
 				file = dest;
 			} else {
