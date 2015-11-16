@@ -181,7 +181,7 @@ public class InnerFileUploadServer implements UploadServer{
 	@Override
 	public File seekFile(String relativePath) throws MyFileNotFoundException {
 		File file = new File(absPath + relativePath);
-		if (!file.isFile()) {
+		if (!file.exists() || !file.isFile()) {
 			throw new MyFileNotFoundException();
 		}
 		return file;

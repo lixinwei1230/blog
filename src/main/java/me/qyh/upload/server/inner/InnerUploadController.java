@@ -16,7 +16,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,7 +38,6 @@ import me.qyh.upload.server.UploadedResult;
 import me.qyh.utils.Files;
 import me.qyh.web.Webs;
 
-@Controller
 public class InnerUploadController {
 
 	@Autowired
@@ -57,14 +55,6 @@ public class InnerUploadController {
 	@ResponseBody
 	public Info upload(@RequestParam("files") List<MultipartFile> files, Locale locale) throws LogicException {
 		return new UploadedInfo( (UploadedResult) innerFileUploadServer.upload(files), messageSource, locale);
-	}
-	
-	@ResponseBody
-	@RequestMapping(value = "manage/file/deletePhysical", method = RequestMethod.POST)
-	public Info delete(@RequestParam("path") String path) throws LogicException{
-		System.out.println("delete");
-		innerFileUploadServer.deleteFile(path);
-		return new Info(true);
 	}
 	
 	@RequestMapping(value = "write", method = RequestMethod.GET)

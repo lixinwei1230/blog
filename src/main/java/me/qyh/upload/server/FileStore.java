@@ -24,5 +24,7 @@ public interface FileStore {
 	Integer id();
 	
 	String deleteUrl();
+	
+	String delKey();
 
 }

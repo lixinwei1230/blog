@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -14,18 +12,12 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import me.qyh.dao.FileDao;
 import me.qyh.entity.FileStatus;
 import me.qyh.entity.MyFile;
-import me.qyh.entity.RoleEnum;
-import me.qyh.entity.User;
 import me.qyh.pageparam.MyFilePageParam;
 import me.qyh.pageparam.Page;
-import me.qyh.security.RoleGrantedAuthority;
 import me.qyh.upload.server.FileStore;
 import me.qyh.utils.Times;
 
@@ -53,15 +45,13 @@ public class ClearFileJob {
 	}
 
 	private void deleteMyFile(MyFile file) {
+		FileStore store = file.getStore();
+		sendPost(store.deleteUrl() + "?path=" + file.getSeekPath() + "&key=" + store.delKey());
 	}
 
 	public synchronized void doJob() {
 		FileUtils.deleteQuietly(new File(tempdir));
 		FileUtils.deleteQuietly(new File(imageCacheDir));
-		/*Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-		authorities.add(new RoleGrantedAuthority(RoleEnum.ROLE_SUPERVISOR, -1));
-		SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(
-				new User(0, this.getClass().getSimpleName()), null, authorities));
 		MyFilePageParam param = new MyFilePageParam();
 		param.setCurrentPage(1);
 		param.setPageSize(pageSize);
@@ -79,7 +69,6 @@ public class ClearFileJob {
 				cleanFiles(findMyFiles(param).getDatas());
 			}
 		}
-		// SecurityContextHolder.clearContext();*/
 	}
 
 	private void cleanFiles(List<MyFile> files) {

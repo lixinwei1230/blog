@@ -107,4 +107,5 @@
 	<bean id="blogRssView" class="me.qyh.web.rss.SpaceBlogRssFeedView" />
 
 	<bean class="me.qyh.upload.server.inner.InnerUploadController" />
+	<bean class="me.qyh.upload.server.inner.CleanFileController" />
 </beans>

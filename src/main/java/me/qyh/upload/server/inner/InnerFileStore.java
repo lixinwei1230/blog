@@ -1,17 +1,20 @@
 package me.qyh.upload.server.inner;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import me.qyh.upload.server.FileStore;
+import me.qyh.utils.Strings;
 import me.qyh.web.tag.url.UrlHelper;
 
-public class InnerFileStore implements FileStore {
+public class InnerFileStore implements FileStore , InitializingBean {
 
 	private String uploadRequestUrl;
 	private String writeRequestUrl;
 	private Integer id;
 	private String protocal;
 	private String deleteRequestUrl;
+	private String delKey;
 
 	@Autowired
 	private UrlHelper urlHelper;
@@ -57,5 +60,15 @@ public class InnerFileStore implements FileStore {
 
 	public void setDeleteRequestUrl(String deleteRequestUrl) {
 		this.deleteRequestUrl = deleteRequestUrl;
+	}
+
+	@Override
+	public String delKey() {
+		return delKey;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		delKey = Strings.getMd5(Strings.getMd5(id + deleteRequestUrl));
 	}
 }
