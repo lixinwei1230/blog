@@ -16,6 +16,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,6 +39,7 @@ import me.qyh.upload.server.UploadedResult;
 import me.qyh.utils.Files;
 import me.qyh.web.Webs;
 
+@Controller
 public class InnerUploadController {
 
 	@Autowired
