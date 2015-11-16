@@ -28,11 +28,11 @@ a.video span {
 	position: absolute;
 	background: url("play-btn.png") no-repeat;
 	background-position: 50% 50%;
-	background-size: 300%;
+	background-size: 230%;
 }
 
 @media screen and (max-width: 480px) {
 	a.video span {
-		background-size: 400%;
+		background-size: 200%;
 	}
 }

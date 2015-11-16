@@ -148,8 +148,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<if test="user != null">
 			AND user_id = #{user.id}
 		</if>
-		<if test="begin != null and end != null">
-			AND uploadDate BETWEEN #{begin} AND #{end}
+		<if test="showCover != null">
+			AND is_cover = #{showCover}
 		</if>
 		GROUP BY YEAR(uploadDate),MONTH(uploadDate)
 		ORDER BY id DESC LIMIT 0,12
