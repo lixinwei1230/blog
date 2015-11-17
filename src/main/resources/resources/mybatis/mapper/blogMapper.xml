@@ -251,7 +251,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		WHERE id = #{id}
 	</update>
 
-	<select id="selectDateFile" resultType="me.qyh.bean.BlogDateFile">
+	<select id="selectDateFile" resultType="me.qyh.bean.DateFileIndex">
 		SELECT write_date AS date,COUNT(id) AS count FROM blog
 		WHERE space_id =
 		#{space.id}

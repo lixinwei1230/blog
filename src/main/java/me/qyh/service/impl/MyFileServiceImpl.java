@@ -11,7 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import me.qyh.dao.FileDao;
 import me.qyh.entity.FileStatus;
 import me.qyh.entity.MyFile;
-import me.qyh.entity.MyFileIndex;
+import me.qyh.bean.DateFileIndex;
+import me.qyh.bean.DateFileIndexs;
 import me.qyh.exception.LogicException;
 import me.qyh.pageparam.MyFilePageParam;
 import me.qyh.pageparam.Page;
@@ -33,13 +34,14 @@ public class MyFileServiceImpl extends BaseServiceImpl implements MyFileService 
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<MyFileIndex> findIndexs(MyFilePageParam param) {
+	public List<DateFileIndexs> findIndexs(MyFilePageParam param) {
 		if (param.getBegin() == null || param.getEnd() == null) {
 			Date now = new Date();
 			param.setBegin(Times.getFirstDayOfThisYear(now));
 			param.setEnd(now);
 		}
-		return fileDao.selectIndexs(param);
+		List<DateFileIndex> indexs =  fileDao.selectIndexs(param);
+		return DateFileIndexs.buildYM(indexs);
 	}
 
 	@Override

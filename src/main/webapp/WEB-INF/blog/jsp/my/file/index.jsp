@@ -16,8 +16,7 @@
 <meta name="_csrf_header" content="${_csrf.headerName}" />
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="page" />
 <sec:authentication property='principal.space' var="space" />
-<title><sec:authentication property='principal.nickname' />
-</title>
+<title><sec:authentication property='principal.nickname' /></title>
 <link href="${ctx}/static/plugins/bootstrap/3.3.5/css/bootstrap.min.css"
 	rel="stylesheet">
 <link
@@ -53,11 +52,12 @@
 														<c:choose>
 															<c:when test="${file.cover != null }">
 																<div class="videos">
-																	<a data-play="${file.seekPrefixUrl }?path=${file.seekPath}" class="video">
-																		<span></span> <img
-																		src="${file.cover.seekPrefixUrl }?path=${file.cover.seekPath}" class="img-responsive"
-																		onerror="javascript:this.src='${ctx}/static/imgs/img-missing.png'" 
-																		/>
+																	<a
+																		data-play="${file.seekPrefixUrl }?path=${file.seekPath}"
+																		class="video"> <span></span> <img
+																		src="${file.cover.seekPrefixUrl }?path=${file.cover.seekPath}"
+																		class="img-responsive"
+																		onerror="javascript:this.src='${ctx}/static/imgs/img-missing.png'" />
 																	</a>
 																</div>
 															</c:when>
@@ -65,7 +65,7 @@
 																<img
 																	src="${file.seekPrefixUrl }?path=${file.seekPath}&size=200"
 																	class="img-responsive"
-																	style="max-width:200px;max-height:200px"
+																	style="max-width: 200px; max-height: 200px"
 																	onerror="javascript:this.src='${ctx}/static/imgs/img-missing.png'" />
 															</c:otherwise>
 														</c:choose>
@@ -93,10 +93,9 @@
 													</c:when>
 													<c:otherwise>
 														<a href="${file.seekPrefixUrl }?path=${file.seekPath}"
-															title="文件下载" ><span
+															title="文件下载"><span
 															class="glyphicon glyphicon-download-alt"
-															aria-hidden="true"></span>
-														</a>
+															aria-hidden="true"></span> </a>
 													</c:otherwise>
 												</c:choose> &nbsp;&nbsp; <a href="javascript:void(0)"
 												onclick="deleteFile('${file.id}',$(this))" title="删除"> <span
@@ -127,8 +126,7 @@
 													href="${ctx }/my/file/list/${i }?${pageContext.request.queryString}">${i
 													}</a>
 											</c:otherwise>
-										</c:choose>
-									</li>
+										</c:choose></li>
 								</c:if>
 							</c:forEach>
 						</ul>
@@ -136,50 +134,73 @@
 				</c:if>
 			</div>
 			<div class="col-lg-4 col-md-4 text">
-				<button type="button" class="btn btn-primary btn-lg btn-block" id="file-upload-btn">文件上传</button>
-				<div class="alert alert-warning" style="margin-top:5px">文件上传成功后请手动刷新</div>
-				<a href="${ctx }/my/file/list/1" class="btn btn-primary btn-lg btn-block"  style="margin-top:20px">刷新</a>
+				<button type="button" class="btn btn-primary btn-lg btn-block"
+					id="file-upload-btn">文件上传</button>
+				<div class="alert alert-warning" style="margin-top: 5px">文件上传成功后请手动刷新</div>
+				<a href="${ctx }/my/file/list/1"
+					class="btn btn-primary btn-lg btn-block" style="margin-top: 20px">刷新</a>
 				<c:if test="${not empty indexs }">
-					<div class="panel panel-default" style="margin-top:20px">
+					<div class="panel panel-default" style="margin-top: 20px">
 						<div class="panel-heading">
 							<h3>文件索引</h3>
 						</div>
-						<div class="table-responsive">
-							<table class="table">
-								<c:forEach items="${indexs }" var="index">
-								<tr>
-									<td>
-										<a href="${ctx }/my/file/list/1?begin=<fmt:formatDate value="${index.firstDayOfCurrentMonth}" pattern="yyyy-MM-dd HH:mm:ss"/>&end=<fmt:formatDate value="${index.firstDayOfNextMonth}" pattern="yyyy-MM-dd HH:mm:ss"/>"><fmt:formatDate
-											value="${index.monthDate }" pattern="yyyy-MM" />(${index.total })</a>
-									</td>
-								</tr>
+						<div class="panel-body">
+							<div class="panel-group" id="blogDateFileWidget_accordion"
+								role="tablist" aria-multiselectable="true">
+								<c:forEach var="file" items="${indexs }" varStatus="s">
+									<div class="panel panel-default">
+										<div class="panel-heading" role="tab">
+											<h4 class="panel-title">
+												<a role="button" data-toggle="collapse"
+													href="#myfileIndex_${s.index+1}" aria-expanded="false"
+													aria-controls="#myfileIndex_${s.index+1}" class="collapsed">
+													<fmt:formatDate value="${file.begin }" pattern="yyyy" />
+													(${file.count})
+												</a>
+											</h4>
+										</div>
+										<div id="myfileIndex_${s.index+1}"
+											class="panel-collapse collapse " role="tabpanel">
+											<table class="table" style="margin-bottom: 0px">
+												<c:forEach items="${file.subfiles }" var="_file">
+													<tr>
+														<td><a
+															href="http://<u:url user="${user }" myMenu="true"/>/file/list/1?begin=<fmt:formatDate value="${_file.begin }" pattern="yyyy-MM-dd"/>&end=<fmt:formatDate value="${_file.end }" pattern="yyyy-MM-dd"/>">
+															<fmt:formatDate value="${_file.begin }" pattern="yyyy-MM" />
+															(${_file.count}) </a></td>
+													</tr>
+												</c:forEach>
+											</table>
+										</div>
+									</div>
 								</c:forEach>
-							</table>
+							</div>
 						</div>
 					</div>
 				</c:if>
-				<div class="panel panel-default" style="margin-top:20px">
+				<div class="panel panel-default" style="margin-top: 20px">
 					<div class="panel-heading">
 						<h3>文件查找</h3>
 					</div>
 					<div class="panel-body">
 						<form action="${ctx }/my/file/list/1" method="get">
-							 <div class="form-group">
-							    <label >文件名</label>
-							    <input type="text" name="name" class="form-control" placeholder="文件名" value="<c:out value="${param.name }"/>">
-							  </div>
-							  <div class="form-group">
-							    <label >开始日期</label>
-							    <input type="text" name="begin" class="form-control" placeholder="yyyy-MM-dd HH:mm:ss" value="<c:out value="${param.begin }"/>">
-							  </div>
-							  <div class="form-group">
-							    <label >结束日期</label>
-							    <input type="text" name="end" class="form-control" placeholder="yyyy-MM-dd HH:mm:ss" value="<c:out value="${param.end }"/>">
-							  </div>
-							  <div class="alert alert-warning">
-							  		开始日期和结束日期必须同时存在
-							  </div>
-							  <button type="submit" class="btn btn-default">查找</button>
+							<div class="form-group">
+								<label>文件名</label> <input type="text" name="name"
+									class="form-control" placeholder="文件名"
+									value="<c:out value="${param.name }"/>">
+							</div>
+							<div class="form-group">
+								<label>开始日期</label> <input type="text" name="begin"
+									class="form-control" placeholder="yyyy-MM-dd HH:mm:ss"
+									value="<c:out value="${param.begin }"/>">
+							</div>
+							<div class="form-group">
+								<label>结束日期</label> <input type="text" name="end"
+									class="form-control" placeholder="yyyy-MM-dd HH:mm:ss"
+									value="<c:out value="${param.end }"/>">
+							</div>
+							<div class="alert alert-warning">开始日期和结束日期必须同时存在</div>
+							<button type="submit" class="btn btn-default">查找</button>
 						</form>
 					</div>
 				</div>
@@ -197,9 +218,7 @@
 					<button type="button" class="close" data-dismiss="modal">
 						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
 					</button>
-					<h4 class="modal-title" id="myModalLabel">
-						文件上传
-					</h4>
+					<h4 class="modal-title" id="myModalLabel">文件上传</h4>
 				</div>
 				<div class="modal-body">
 					<form id="fileupload" class="bs-example form-horizontal"
@@ -208,11 +227,11 @@
 						<div class="row fileupload-buttonbar">
 							<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
 								<span class="btn btn-success fileinput-button"> <i
-									class="glyphicon glyphicon-plus"></i> <span>增加文件
-								</span> <input type="file" name="files" multiple=""> </span>
+									class="glyphicon glyphicon-plus"></i> <span>增加文件 </span> <input
+									type="file" name="files" multiple="">
+								</span>
 								<button type="submit" class="btn btn-primary start">
-									<i class="glyphicon glyphicon-upload"></i> <span>开始上传
-									</span>
+									<i class="glyphicon glyphicon-upload"></i> <span>开始上传 </span>
 								</button>
 								<button type="reset" class="btn btn-warning cancel">
 									<i class="glyphicon glyphicon-ban-circle"></i> <span><spring:message
@@ -255,7 +274,7 @@
 		</div>
 	</div>
 	<jsp:include page="/WEB-INF/scripts.jsp"></jsp:include>
-		<script id="template-upload" type="text/x-tmpl">
+	<script id="template-upload" type="text/x-tmpl">
 {% for (var i=0, file; file=o.files[i]; i++) { %}
     <tr class="template-upload fade">
         <td>
@@ -335,7 +354,7 @@
 		src="${ctx}/static/plugins/jupload/9.5.7/js/jquery.fileupload-validate.js"></script>
 	<script type="text/javascript"
 		src="${ctx}/static/plugins/jupload/9.5.7/js/jquery.fileupload-ui.js"></script>
-	<script type="text/javascript">
+<script type="text/javascript">
 		$(document).ready(function(){
 			$("#file-upload-btn").click(function(){
 				$("#uploadModal").modal('show');

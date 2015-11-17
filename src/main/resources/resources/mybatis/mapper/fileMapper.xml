@@ -139,8 +139,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		AND bf.file_status = 0
 	</select>
 
-	<select id="selectIndexs" resultType="me.qyh.entity.MyFileIndex">
-		SELECT uploadDate AS monthDate,COUNT(id) AS total
+	<select id="selectIndexs" resultType="me.qyh.bean.DateFileIndex">
+		SELECT uploadDate AS date,COUNT(id) AS count
 		FROM blog_file
 		WHERE
 		file_status =

@@ -9,7 +9,7 @@ import java.util.Date;
  * @author mhlx
  *
  */
-public class BlogDateFile implements Serializable {
+public class DateFileIndex implements Serializable {
 
 	/**
 	 * 
