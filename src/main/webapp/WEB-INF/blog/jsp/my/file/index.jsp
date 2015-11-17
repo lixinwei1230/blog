@@ -165,7 +165,7 @@
 												<c:forEach items="${file.subfiles }" var="_file">
 													<tr>
 														<td><a
-															href="http://<u:url user="${user }" myMenu="true"/>/file/list/1?begin=<fmt:formatDate value="${_file.begin }" pattern="yyyy-MM-dd"/>&end=<fmt:formatDate value="${_file.end }" pattern="yyyy-MM-dd"/>">
+															href="${ctx }/my/file/list/1?begin=<fmt:formatDate value="${_file.begin }" pattern="yyyy-MM-dd HH:mm:ss"/>&end=<fmt:formatDate value="${_file.end }" pattern="yyyy-MM-dd HH:mm:ss"/>">
 															<fmt:formatDate value="${_file.begin }" pattern="yyyy-MM" />
 															(${_file.count}) </a></td>
 													</tr>
