@@ -23,7 +23,7 @@ html过滤:<br/>
 resources/config.properties 可以配置一些分页每页记录数、字段验证已经一些服务的配置。
 在resources/appConfig中可以开启二级域名(需要泛域名的支持，通过enableSpaceDomain来开启，本地可以修改hosts文件)
 
-bug信息可以在http://www.qyh.me/bug看到或提出(需要登录)
+bug信息可以在http://www.qyh.me/bug  看到或提出(需要登录)
 
 3.3====<br/>
 1.增加了rss订阅</br>
