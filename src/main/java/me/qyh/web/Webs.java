@@ -89,4 +89,8 @@ public final class Webs {
 		}
 		return false;
 	}
+
+	public static boolean isSafeFilePath(String path) {
+		return (!Validators.isEmptyOrNull(path, true) && path.indexOf("..") == -1);
+	}
 }

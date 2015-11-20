@@ -63,6 +63,10 @@ public class InnerUploadController {
 	public void write(@RequestParam(value = "path", defaultValue = "") String path,
 			@RequestParam(required = false, value = "size") Integer size, ServletWebRequest request,
 			HttpServletResponse response) throws MyFileNotFoundException {
+		if(!Webs.isSafeFilePath(path)){
+			response.setStatus(HttpStatus.NOT_FOUND.value());
+			return;
+		}
 		FileWriteConfig config = configServer.getFileWriteConfig();
 		RequestMatcher matcher = config.getRequestMatcher();
 		if (matcher != null && !matcher.matches(request.getRequest())) {

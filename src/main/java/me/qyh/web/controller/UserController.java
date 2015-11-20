@@ -71,6 +71,10 @@ public class UserController extends BaseController {
 	public void avatar(@RequestParam(value = "path", defaultValue = "") String path,
 			@RequestParam(value = "size", required = false) Integer size, ServletWebRequest request,
 			HttpServletResponse response) throws MyFileNotFoundException {
+		if(!Webs.isSafeFilePath(path)){
+			response.setStatus(HttpStatus.NOT_FOUND.value());
+			return;
+		}
 		FileWriteConfig config = configServer.getAvatarWriteConfig();
 		RequestMatcher matcher = config.getRequestMatcher();
 		if (matcher != null && !matcher.matches(request.getRequest())) {
