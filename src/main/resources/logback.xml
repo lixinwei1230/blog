@@ -66,17 +66,7 @@
 			<charset>UTF-8</charset>
 		</encoder>
 	</appender>
-
-	<logger name="errorLogger" additivity="false">
-		<level value="ERROR" />
-		<appender-ref ref="errorDailyRollingFileAppender" />
-	</logger>
 	
-	<logger name="warningLogger" additivity="false">
-		<level value="WARNING" />
-		<appender-ref ref="warningDailyRollingFileAppender" />
-	</logger>
-
 	<logger name="login" additivity="false">
 		<level value="INFO" />
 		<appender-ref ref="loginDailyRollingFileAppender" />
@@ -89,5 +79,15 @@
 
 	<root>
 		<level value="INFO" />
+	</root>
+	
+	<root>
+		<level value="WARNING" />
+		<appender-ref ref="warningDailyRollingFileAppender" />
+	</root>
+	
+	<root>
+		<level value="ERROR" />
+		<appender-ref ref="errorDailyRollingFileAppender" />
 	</root>
 </configuration>

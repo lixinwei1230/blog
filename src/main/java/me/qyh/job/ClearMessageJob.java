@@ -11,7 +11,7 @@ import me.qyh.helper.message.MessageCache;
 
 public class ClearMessageJob {
 
-	private final Logger logger = LoggerFactory.getLogger("errorLogger");
+	private final Logger logger = LoggerFactory.getLogger(ClearMessageJob.class);
 
 	@Autowired
 	private MessageReceiveDao messageReceiveDao;

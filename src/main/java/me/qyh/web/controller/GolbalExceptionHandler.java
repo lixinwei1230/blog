@@ -40,7 +40,7 @@ import me.qyh.web.Webs;
 @ControllerAdvice
 public class GolbalExceptionHandler extends BaseController {
 
-	private Logger logger = LoggerFactory.getLogger("errorLogger");
+	private Logger logger = LoggerFactory.getLogger(GolbalExceptionHandler.class);
 
 	private static final String OAUTH_TYPE = "OAUTH_TYPE";
 

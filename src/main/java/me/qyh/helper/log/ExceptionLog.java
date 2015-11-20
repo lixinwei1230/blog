@@ -16,7 +16,7 @@ import me.qyh.security.UserContext;
 @Aspect
 public class ExceptionLog {
 
-	private static final Logger logger = LoggerFactory.getLogger("errorLogger");
+	private static final Logger logger = LoggerFactory.getLogger(ExceptionLog.class);
 
 	@AfterThrowing(throwing = "e", value = "execution(* me.qyh.service.impl.*.*(..))")
 	public void afterThrowing(JoinPoint jp, Throwable e) {

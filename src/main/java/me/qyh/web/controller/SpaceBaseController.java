@@ -27,7 +27,7 @@ public class SpaceBaseController extends BaseController {
 
 	private static final String WIDGET_PAGE = "_page";
 
-	private final Logger logger = LoggerFactory.getLogger("errorLogger");
+	private final Logger logger = LoggerFactory.getLogger(SpaceBaseController.class);
 
 	@Autowired
 	protected SpaceServer spaceServer;

@@ -90,7 +90,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 	private static final String MAIL_FINDPASSWORD_TPL_PATH = "mail/findPassword.ftl";
 	private static final String MAIL_REGISTER_SUCCESS_TPL_PATH = "mail/registerSuccess.ftl";
 
-	private static final Logger logger = LoggerFactory.getLogger("warningLogger");
+	private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
