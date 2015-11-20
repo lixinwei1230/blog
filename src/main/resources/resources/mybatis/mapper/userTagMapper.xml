@@ -47,7 +47,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		SELECT st.id,st.tag_name,st.create_date,user_id,st.tag_id
 		FROM user_tag
 		st
-		LEFT OUTER JOIN user_tag_count utc ON st.id = utc.tag_id
+		<choose>
+			<when test="owner">
+				LEFT OUTER JOIN user_tag_count utc ON st.id = utc.tag_id
+			</when>
+			<otherwise>
+				LEFT OUTER JOIN web_tag_count utc ON st.tag_id = utc.tag_id
+			</otherwise>
+		</choose>
 		<where>
 			<if test="user != null">
 				user_id = #{user.id}
@@ -59,6 +66,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="name != null and name != ''">
 				AND tag_name LIKE CONCAT('%', #{name},'%')
 			</if>
+			AND utc.refrences_count > 0
 		</where>
 		<if test="module != null">
 			ORDER BY utc.refrences_count DESC,st.id DESC
@@ -69,8 +77,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="selectCount" resultType="int">
 		SELECT COUNT(st.id)
 		FROM user_tag st
-		LEFT OUTER JOIN user_tag_count utc
-		ON st.id = utc.tag_id
+		<choose>
+			<when test="owner">
+				LEFT OUTER JOIN user_tag_count utc ON st.id = utc.tag_id
+			</when>
+			<otherwise>
+				LEFT OUTER JOIN web_tag_count utc ON st.tag_id = utc.tag_id
+			</otherwise>
+		</choose>
 		<where>
 			<if test="user != null">
 				user_id = #{user.id}
@@ -82,6 +96,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="name != null and name != ''">
 				AND tag_name LIKE CONCAT('%', #{name},'%')
 			</if>
+			AND utc.refrences_count > 0
 		</where>
 	</select>
 

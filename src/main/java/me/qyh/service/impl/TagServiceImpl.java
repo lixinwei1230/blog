@@ -17,6 +17,7 @@ import me.qyh.entity.tag.WebTagCount;
 import me.qyh.pageparam.Page;
 import me.qyh.pageparam.UserTagPageParam;
 import me.qyh.pageparam.WebTagPageParam;
+import me.qyh.security.UserContext;
 import me.qyh.service.TagService;
 
 @Service("tagService")
@@ -36,9 +37,11 @@ public class TagServiceImpl implements TagService {
 	public Page<WebTag> findWebTags(WebTagPageParam param) {
 		int count = webTagDao.selectCount(param);
 		List<WebTag> tags = webTagDao.selectPage(param);
-		for (WebTag tag : tags) {
-			List<WebTagCount> counts = webTagCountDao.selectByTag(tag);
-			tag.addCounts(counts.toArray(new WebTagCount[counts.size()]));
+		if (param.isLoadCount()) {
+			for (WebTag tag : tags) {
+				List<WebTagCount> counts = webTagCountDao.selectByTag(tag);
+				tag.addCounts(counts.toArray(new WebTagCount[counts.size()]));
+			}
 		}
 		return new Page<WebTag>(param, count, tags);
 	}
@@ -46,11 +49,14 @@ public class TagServiceImpl implements TagService {
 	@Override
 	@Transactional(readOnly = true)
 	public Page<UserTag> findUserTags(UserTagPageParam param) {
+		param.setOwner(param.getUser() != null && param.getUser().equals(UserContext.getUser()));
 		int count = userTagDao.selectCount(param);
 		List<UserTag> tags = userTagDao.selectPage(param);
-		for (UserTag tag : tags) {
-			List<UserTagCount> counts = userTagCountDao.selectByTag(tag);
-			tag.addCounts(counts.toArray(new UserTagCount[counts.size()]));
+		if (param.isLoadCount()) {
+			for (UserTag tag : tags) {
+				List<UserTagCount> counts = userTagCountDao.selectByTag(tag);
+				tag.addCounts(counts.toArray(new UserTagCount[counts.size()]));
+			}
 		}
 		return new Page<UserTag>(param, count, tags);
 	}

@@ -12,6 +12,7 @@ public class WebTagPageParam extends PageParam {
 
 	private TagModule module;
 	private String name;
+	private boolean loadCount;
 
 	public TagModule getModule() {
 		return module;
@@ -27,6 +28,14 @@ public class WebTagPageParam extends PageParam {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public boolean isLoadCount() {
+		return loadCount;
+	}
+
+	public void setLoadCount(boolean loadCount) {
+		this.loadCount = loadCount;
 	}
 
 	@Override
