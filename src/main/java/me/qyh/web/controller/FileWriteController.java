@@ -39,9 +39,9 @@ public abstract class FileWriteController extends BaseController {
 	private Im4javas im4javas;
 	@Value("${config.image.thumb.cachedir}")
 	private String imageCacheDir;
-	
-	public void write(String path,Integer size, ServletWebRequest request,
-			HttpServletResponse response) throws MyFileNotFoundException {
+
+	public void write(String path, Integer size, ServletWebRequest request, HttpServletResponse response)
+			throws MyFileNotFoundException {
 		if (!Webs.isSafeFilePath(path)) {
 			response.setStatus(HttpStatus.NOT_FOUND.value());
 			return;
@@ -59,31 +59,33 @@ public abstract class FileWriteController extends BaseController {
 			if (request.checkNotModified(etag)) {
 				return;
 			}
-			
+
 			String relativePath = getRelativePath(seek);
 			File cacheFolder = new File(imageCacheDir + relativePath);
-			if(supportWebp(request.getRequest())){
-				String absPath = cacheFolder.getAbsolutePath() + File.separator + seek.getName();
-				try {
-					im4javas.format(WEBP, seek.getAbsolutePath(),absPath);
-					seek = new File(absPath + "." + WEBP);
-					response.setContentType(WEBP_CONTENT_TYPE);
-				} catch (Exception e) {
-					throw new SystemException(e);
-				}
+			if (!cacheFolder.exists() && !cacheFolder.mkdirs()) {
+				throw new SystemException(
+						String.format("%s:创建文件夹%s失败", this.getClass().getName(), cacheFolder.getAbsolutePath()));
 			}
-			
+			if (supportWebp(request.getRequest(),seek)) {
+				response.setContentType(WEBP_CONTENT_TYPE);
+				String absPath = cacheFolder.getAbsolutePath() + File.separator + seek.getName();
+				File webp = new File(absPath + "." + WEBP);
+				if (!webp.exists()) {
+					try {
+						im4javas.format(WEBP, seek.getAbsolutePath(), absPath);
+					} catch (Exception e) {
+						throw new SystemException(e);
+					}
+				}
+				seek = webp;
+			}
+
 			ImageZoomMatcher zm = config.getZoomMatcher();
 			if (zm != null && zm.zoom(size, seek)) {
 				File dest = new File(cacheFolder, Files.appendFilename(seek.getName(), "_" + size));
 				if (dest.exists()) {
 					seek = dest;
 				} else {
-					File folder = new File(imageCacheDir + relativePath);
-					if (!folder.exists() && !folder.mkdirs()) {
-						throw new SystemException(
-								String.format("%s:创建文件夹%s失败", this.getClass().getName(), folder.getAbsolutePath()));
-					}
 					try {
 						seek = zoomImage(seek.getAbsolutePath(), dest.getAbsolutePath(), size, false);
 					} catch (Exception e) {
@@ -121,11 +123,14 @@ public abstract class FileWriteController extends BaseController {
 		im4javas.zoom(absPath, destPath, size);
 		return new File(destPath);
 	}
-	
-	protected boolean supportWebp(HttpServletRequest request){
+
+	protected boolean supportWebp(HttpServletRequest request,File file) {
 		Cookie cookie = WebUtils.getCookie(request, WEBP_SUPPORT_COOKIE);
-		if(cookie != null){
-			return "true".equalsIgnoreCase(cookie.getValue());
+		if (cookie != null && "true".equalsIgnoreCase(cookie.getValue())) {
+			String ext = Files.getFileExtension(file);
+			return "jpg".equalsIgnoreCase(ext)
+					|| "jpeg".equalsIgnoreCase(ext)
+					|| "png".equalsIgnoreCase(ext);
 		}
 		return false;
 	}
