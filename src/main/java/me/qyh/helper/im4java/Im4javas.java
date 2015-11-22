@@ -45,6 +45,13 @@ public class Im4javas implements InitializingBean {
 		op.addImage();
 		getConvertCmd().run(op, absPath + "[0]", destPath);
 	}
+	
+	public void format(String fmt,String absPath,String destPath) throws Exception{
+		IMOperation op = new IMOperation();
+		op.addImage();
+		op.addImage();
+		getConvertCmd().run(op, absPath + "[0]", destPath + "." + fmt);
+	}
 
 	public ImageInfo getImageInfo(String absPath) throws BadImageException {
 		IMOperation localIMOperation = new IMOperation();

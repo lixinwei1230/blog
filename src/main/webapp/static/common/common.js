@@ -1,3 +1,15 @@
+
+var img = $("<img />").attr('src', contextPath + '/static/imgs/favicon.webp')
+	.on('load', function() {
+	    if (!(!this.complete || typeof this.naturalWidth == "undefined" || this.naturalWidth == 0)) {
+	    	setRootCookie("WEBP_SUPPORT", "true", 24*60*60*1000*30)
+	    } else{
+	    	setRootCookie("WEBP_SUPPORT", "false", 24*60*60*1000*30)
+	    }
+	}).on("error",function(){
+		setRootCookie("WEBP_SUPPORT", "false", 24*60*60*1000*30)
+	});
+
 String.prototype.endWith=function(str){     
   var reg=new RegExp(str+"$");     
   return reg.test(this);        
@@ -188,6 +200,12 @@ function getUser(id,users,type){
 		
 	}
 	return null;
+}
+
+function setRootCookie(name,value,time){
+	var exp = new Date();
+    exp.setTime(exp.getTime() +time);
+    document.cookie = name + "="+ escape (value) + ";expires=" + exp.toGMTString()+";path=/";
 }
 
 function setCookie(name,value,time)
