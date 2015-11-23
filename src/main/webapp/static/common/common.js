@@ -104,12 +104,15 @@ $(document).ready(function(){
 	
 	$(document).on("click","a[data-play]",function(){
 		var me = $(this);
-		var span = $(me.find("span")[0]);
-//		span.css({"background": 'url('+contextPath+'/static/imgs/loading-64.gif) no-repeat',"width":"100%","height":"100%","position": "absolute","background-position":"50% 50%","background-size":"300%"});
+		var loading = $('<img src="'+contextPath+'/static/imgs/loading-64.gif" class="img-responsive"/>');
+		me.parent().hide().after(loading);
 		var img = $(me.find("img")[0]);
 		img.attr("src",$(this).attr("data-play"));
+		var span = $(me.find("span")[0]);
 		img.bind("load",function(){
 			span.hide();
+			loading.remove();
+			me.parent().show();
 		})
 	}); 
 });
@@ -205,7 +208,7 @@ function getUser(id,users,type){
 function setRootCookie(name,value,time){
 	var exp = new Date();
     exp.setTime(exp.getTime() +time);
-    document.cookie = name + "="+ escape (value) + ";expires=" + exp.toGMTString()+";path=/";
+    document.cookie = name + "="+ escape (value) + ";expires=" + exp.toGMTString()+";path=/;domain="+getRootDomain();
 }
 
 function setCookie(name,value,time)

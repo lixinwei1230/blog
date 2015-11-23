@@ -6,6 +6,16 @@ var appendContextPath = contextPath != "" && contextPath != "/";
 function getUrl(){
 	return domainAndPort + (appendContextPath ? contextPath : "");
 }
+function getRootDomain(){
+	if(domain.indexOf('.') != -1){
+		var domains = domain.split('.');
+		var len = domains.length;
+		if(len > 2){
+			return '.'+domains[len-2] + '.' + domains[len-1];
+		}
+	}
+	return "";
+}
 function getUrlBySpace(space){
 	var url = "";
 	if(enableSpaceDomain)
