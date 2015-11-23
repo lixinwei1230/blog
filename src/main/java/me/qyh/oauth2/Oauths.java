@@ -37,10 +37,4 @@ public final class Oauths {
 			}
 		}
 	}
-
-	public static void main(String[] args) throws IOException {
-		System.out.println(sendHttpsGet(
-				"https://graph.qq.com/user/get_user_info?oauth_consumer_key=101243309&format=json&access_token=EC158177BA2CE276A059321A99D11F34&openid=544723CC1DF1D62345F4473BE2288A747D2"));
-	}
-
 }

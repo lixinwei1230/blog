@@ -83,6 +83,11 @@ public class AvatarUploadServer implements UploadServer{
 			throw new SystemException(
 					String.format("将文件%s修改为%s后缀失败", dest.getAbsolutePath(), info.getType().toLowerCase()));
 		}
+		try {
+			im4javas.strip(rename.getAbsolutePath());
+		} catch (Exception e) {
+			throw new SystemException(e.getMessage(),e);
+		}
 		return rename;
 	}
 

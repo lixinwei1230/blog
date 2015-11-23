@@ -131,6 +131,13 @@ public class InnerFileUploadServer implements UploadServer{
 								String.format("将文件%s修改为%s后缀失败", _file.getAbsolutePath(), ii.getType().toLowerCase()));
 					}
 					_file = rename;
+					if(!GIF.equalsIgnoreCase(ii.getType())){
+						try {
+							im4javas.strip(_file.getAbsolutePath());
+						} catch (Exception e) {
+							throw new SystemException(e.getMessage(),e);
+						}
+					}
 					contentType = IMAGEPREFIX + ii.getType().toLowerCase();
 				} catch (BadImageException e) {
 					info.addError(originalFilename, new I18NMessage("error.upload.badImage"));

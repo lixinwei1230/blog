@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.ServletWebRequest;
 
 import me.qyh.bean.Info;
+import me.qyh.config.FileWriteConfig;
 import me.qyh.exception.MyFileNotFoundException;
 import me.qyh.server.UserServer;
 import me.qyh.service.impl.AvatarUploadServer;
@@ -58,5 +59,10 @@ public class UserController extends FileWriteController {
 	@Override
 	protected File seek(String path) throws MyFileNotFoundException {
 		return uploadServer.seekFile(path);
+	}
+
+	@Override
+	protected FileWriteConfig getWriteConfig() {
+		return configServer.getAvatarWriteConfig();
 	}
 }

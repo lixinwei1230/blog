@@ -17,6 +17,7 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import me.qyh.bean.Info;
+import me.qyh.config.FileWriteConfig;
 import me.qyh.exception.LogicException;
 import me.qyh.exception.MyFileNotFoundException;
 import me.qyh.upload.server.UploadServer;
@@ -48,6 +49,11 @@ public class InnerUploadController extends FileWriteController{
 	@Override
 	protected File seek(String path) throws MyFileNotFoundException {
 		return innerFileUploadServer.seekFile(path);
+	}
+
+	@Override
+	protected FileWriteConfig getWriteConfig() {
+		return configServer.getFileWriteConfig();
 	}
 
 }

@@ -34,7 +34,7 @@ public abstract class FileWriteController extends BaseController {
 	private static final String WEBP = "webp";
 	private static final String WEBP_CONTENT_TYPE = "image/webp";
 	@Autowired
-	private ConfigServer configServer;
+	protected ConfigServer configServer;
 	@Autowired
 	private Im4javas im4javas;
 	@Value("${config.image.thumb.cachedir}")
@@ -46,7 +46,7 @@ public abstract class FileWriteController extends BaseController {
 			response.setStatus(HttpStatus.NOT_FOUND.value());
 			return;
 		}
-		FileWriteConfig config = configServer.getAvatarWriteConfig();
+		FileWriteConfig config = getWriteConfig();
 		RequestMatcher matcher = config.getRequestMatcher();
 		if (matcher != null && !matcher.matches(request.getRequest())) {
 			response.setStatus(HttpStatus.NOT_FOUND.value());
@@ -59,7 +59,6 @@ public abstract class FileWriteController extends BaseController {
 			if (request.checkNotModified(etag)) {
 				return;
 			}
-
 			String relativePath = getRelativePath(seek);
 			File cacheFolder = new File(imageCacheDir + relativePath);
 			if (!cacheFolder.exists() && !cacheFolder.mkdirs()) {
@@ -134,5 +133,7 @@ public abstract class FileWriteController extends BaseController {
 		}
 		return false;
 	}
+	
+	protected abstract FileWriteConfig getWriteConfig();
 
 }

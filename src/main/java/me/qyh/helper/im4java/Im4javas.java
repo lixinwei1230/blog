@@ -25,10 +25,19 @@ public class Im4javas implements InitializingBean {
 
 	public void zoom(String absPath, String destPath, int size) throws Exception {
 		IMOperation op = new IMOperation();
+		op.addImage();
 		op.thumbnail(size);
 		op.addImage();
-		op.addImage();
 		getConvertCmd().run(op, absPath, destPath);
+	}
+
+	public void strip(String absPath) throws Exception {
+		IMOperation op = new IMOperation();
+		op.addImage();
+		op.strip();
+		op.quality(92D);
+		op.addImage();
+		getConvertCmd().run(op, absPath + "[0]", absPath);
 	}
 
 	public void crop(String absPath, String destPath, int x, int y, int width, int height) throws Exception {
@@ -45,8 +54,8 @@ public class Im4javas implements InitializingBean {
 		op.addImage();
 		getConvertCmd().run(op, absPath + "[0]", destPath);
 	}
-	
-	public void format(String fmt,String absPath,String destPath) throws Exception{
+
+	public void format(String fmt, String absPath, String destPath) throws Exception {
 		IMOperation op = new IMOperation();
 		op.addImage();
 		op.addImage();
