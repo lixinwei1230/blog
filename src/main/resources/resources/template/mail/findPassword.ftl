@@ -4,7 +4,7 @@
    </head>  
    <body>  
      	<div>
-     		http://${urlHelper.getUrl()}/password/reset?code=${code}&userid=${user.id}
+     		${urlHelper.getUrl()}/password/reset?code=${code}&userid=${user.id}
      	<div>
    </body>  
 </html>  

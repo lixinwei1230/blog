@@ -1,5 +1,5 @@
 ${title}<br/>
-目标地址:<a href="http://${urlHelper.getUrlBySpace(space)}/blog/${comment.scope.scopeId}#comment-container">http://${urlHelper.getUrlBySpace(space)}/blog/${comment.scope.scopeId}#comment-container</a>
+目标地址:<a href="${urlHelper.getUrlBySpace(space)}/blog/${comment.scope.scopeId}#comment-container">${urlHelper.getUrlBySpace(space)}/blog/${comment.scope.scopeId}#comment-container</a>
 <br/>
 <#if comment.parent ?exists>
 回复内容:

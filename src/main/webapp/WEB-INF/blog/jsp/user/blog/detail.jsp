@@ -35,7 +35,7 @@
 						<span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
 						<c:forEach var="tag" items="${tags }">
 							<span style="margin-right: 10px"><a
-								href="http://<u:url space="${space }"/>/blog/list/1?tagIds=${tag.id}">${tag.name }</a></span>
+								href="<u:url space="${space }"/>/blog/list/1?tagIds=${tag.id}">${tag.name }</a></span>
 						</c:forEach>
 					</div>
 				</c:if>

@@ -543,7 +543,7 @@
 			temporarySaveFlag = false;
 			post(url,data,function(result){
 				if(result.success){
-					window.location.href = 'http://${spaceLinkPrefix}/blog/${blog.id}';
+					window.location.href = '${spaceLinkPrefix}/blog/${blog.id}';
 				}else{
 					$.messager.popup(result.result);
 					temporarySaveFlag = true;

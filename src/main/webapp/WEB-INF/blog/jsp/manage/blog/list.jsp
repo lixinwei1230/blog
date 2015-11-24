@@ -58,7 +58,7 @@
 													<c:otherwise>
 														<c:set var="title" value="${blog.title }" />
 													</c:otherwise>
-												</c:choose> <a href="http://<u:url space="${space }"/>/blog/${blog.id}"><c:out
+												</c:choose> <a href="<u:url space="${space }" />/blog/${blog.id}"><c:out
 														value="${title }" /></a> (<fmt:formatDate
 													value="${blog.writeDate }" pattern="yyyy-MM-dd HH:mm" />)</td>
 											<td class="user-info" info-format="username" info-mode="simple" space-id="${blog.space.id }"></td>

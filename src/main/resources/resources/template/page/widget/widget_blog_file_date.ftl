@@ -23,7 +23,7 @@
 							<#list file.subfiles as _file>
 								<tr>
 									<td>
-										<a href="http://${urlHelper.getUrlByUser(user,false)}/blog/list/1?begin=${(_file.begin?string("yyyy-MM-dd HH:mm:ss"))!}&end=${(_file.end?string("yyyy-MM-dd HH:mm:ss"))!}">
+										<a href="${urlHelper.getUrlByUser(user,false)}/blog/list/1?begin=${(_file.begin?string("yyyy-MM-dd HH:mm:ss"))!}&end=${(_file.end?string("yyyy-MM-dd HH:mm:ss"))!}">
 							    			${(_file.begin?string("yyyy-MM"))!}
 							    			(${_file.count})
 							    		</a>

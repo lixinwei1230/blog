@@ -36,7 +36,7 @@
 	<jsp:include page="/WEB-INF/scripts.jsp"></jsp:include>
 	<script type="text/javascript">
 		function toHomePage(){
-			window.location.href = "http://"+getUrl();
+			window.location.href = protocal + "://"+getUrl();
 		}
 	</script>
 </body>

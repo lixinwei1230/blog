@@ -12,7 +12,6 @@ public class InnerFileStore implements FileStore , InitializingBean {
 	private String uploadRequestUrl;
 	private String writeRequestUrl;
 	private Integer id;
-	private String protocal;
 	private String deleteRequestUrl;
 	private String delKey;
 
@@ -29,12 +28,12 @@ public class InnerFileStore implements FileStore , InitializingBean {
 
 	@Override
 	public String seekPrefix() {
-		return protocal + "://" + urlHelper.getDomainAndPort() + "/" + writeRequestUrl;
+		return urlHelper.getProtocal() + "://" + urlHelper.getDomainAndPort() + "/" + writeRequestUrl;
 	}
 
 	@Override
 	public String deleteUrl() {
-		return protocal + "://" + urlHelper.getDomainAndPort() + "/" + deleteRequestUrl;
+		return urlHelper.getProtocal() + "://" + urlHelper.getDomainAndPort() + "/" + deleteRequestUrl;
 	}
 
 	@Override
@@ -52,10 +51,6 @@ public class InnerFileStore implements FileStore , InitializingBean {
 
 	public void setId(Integer id) {
 		this.id = id;
-	}
-
-	public void setProtocal(String protocal) {
-		this.protocal = protocal;
 	}
 
 	public void setDeleteRequestUrl(String deleteRequestUrl) {

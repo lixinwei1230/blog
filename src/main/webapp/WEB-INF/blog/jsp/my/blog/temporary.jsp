@@ -528,7 +528,7 @@
 			post(url,data,function(data){
 				
 				if(data.success){
-					window.location.href = 'http://${spaceLinkPrefix}/blog/'+data.result;
+					window.location.href = '${spaceLinkPrefix}/blog/'+data.result;
 				}else{
 					$.messager.popup(data.result);
 					 temporarySaveFlag = true;

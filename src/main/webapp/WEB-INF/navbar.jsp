@@ -25,28 +25,28 @@
 							data-toggle="dropdown" role="button" aria-expanded="false"><spring:message
 									code="page.menu.user" /><span class="caret"></span></a>
 							<ul class="dropdown-menu" role="menu">
-								<li><a href="http://<u:url/>/login"><spring:message
+								<li><a href="<u:url/>/login"><spring:message
 											code="page.menu.user.login" /></a></li>
-								<li><a href="http://<u:url/>/register"><spring:message
+								<li><a href="<u:url/>/register"><spring:message
 											code="page.menu.user.register" /></a></li>
-								<li><a href="http://<u:url/>/reactivate">激活</a></li>
-								<li><a href="http://<u:url/>/password/forget"><spring:message
+								<li><a href="<u:url/>/reactivate">激活</a></li>
+								<li><a href="<u:url/>/password/forget"><spring:message
 											code="page.menu.user.password.forget" /></a></li>
 							</ul></li>
 					</sec:authorize>
 					<sec:authorize ifAnyGranted="ROLE_USER,ROLE_OAUTH">
 						<sec:authentication property='principal' var="user" />
 						<li><a
-							href="http://<u:url user="${user }" myMenu="true"/>/message/receive/list/1?isRead=false"><spring:message
+							href="<u:url user="${user }" myMenu="true"/>/message/receive/list/1?isRead=false"><spring:message
 									code="page.menu.message" /><span class="badge"
 								id="toReadMessageBadge">0</span></a></li>
 						<li><a
-							href="http://<u:url user="${user }" myMenu="true"/>/index">我的主页</a></li>
+							href="<u:url user="${user }" myMenu="true"/>/index">我的主页</a></li>
 					</sec:authorize>
 				</ul>
 				<sec:authorize ifAnyGranted="ROLE_USER,ROLE_OAUTH">
 					<ul class="nav navbar-nav navbar-right">
-						<li><a href="http://<u:url/>/logout">退出</a></li>
+						<li><a href="<u:url/>/logout">退出</a></li>
 					</ul>
 				</sec:authorize>
 				<ul class="nav navbar-nav navbar-right">

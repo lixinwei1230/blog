@@ -11,7 +11,7 @@
 			      </div>
 			      <div class="media-body">
 			        <h4 class="media-heading">
-			      	  	<a href="http://${urlHelper.getUrlBySpace(blog.space)}/blog/${blog.id}" target="_blank">
+			      	  	<a href="${urlHelper.getUrlBySpace(blog.space)}/blog/${blog.id}" target="_blank">
 				        	<#if blog.title?length gt 15>
 							    ${blog.title?substring(0,15)}...
 							    <#else>
@@ -38,7 +38,7 @@
 				</tr>
 				<#list blogs as blog>
 				    <tr>
-				    	<td><a href="http://${urlHelper.getUrlBySpace(blog.space)}/blog/${blog.id}" target="_blank">
+				    	<td><a href="${urlHelper.getUrlBySpace(blog.space)}/blog/${blog.id}" target="_blank">
 				    	<#if blog.title?length gt 15>
 						    ${blog.title?substring(0,15)}...
 						    <#else>

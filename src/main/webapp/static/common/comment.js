@@ -206,11 +206,11 @@ function getCommentHtml(comment){
 		}else{
 			avatar = '<img class="media-object" src="'+contextPath+'/static/imgs/guest_64.png" style="width:64px;height:64px"/>';
 		}
-		html += '<a href="http://'+getUrlByUser(comment.user, false)+'/index">'+avatar+'</a>';
+		html += '<a href="'+getUrlByUser(comment.user, false)+'/index">'+avatar+'</a>';
 	}
 	html += '</div>';
 	html += '<div class="media-body">';
-	var name = comment.isAnonymous ? '匿名用户' : '<a href="http://'+getUrlByUser(comment.user, false)+'/index">'+comment.user.nickname+'</a>';
+	var name = comment.isAnonymous ? '匿名用户' : '<a href="'+getUrlByUser(comment.user, false)+'/index">'+comment.user.nickname+'</a>';
 	html += '<h4 class="media-heading" id="media-heading"><strong>'+name+'</strong></h4>';
 	html += '<h5><strong>'+comment.title+'</strong></h5>';
 	html += comment.content;
@@ -252,12 +252,12 @@ function getReplyHtml(reply){
 		}else{
 			avatar = '<img class="media-object" src="'+contextPath+'/static/imgs/guest_64.png" style="width:64px;height:64px"/>';
 		}
-		html += '<a href="http://'+getUrlByUser(reply.user, false)+'/index">'+avatar+'</a>';
+		html += '<a href="'+getUrlByUser(reply.user, false)+'/index">'+avatar+'</a>';
 	}
 	html += '</div>';
 	html += '<div class="media-body">';
-	var name = reply.isAnonymous ? '匿名用户' : '<a href="http://'+getUrlByUser(reply.user, false)+'/index">'+reply.user.nickname+'</a>';
-	var replyTo = reply.replyTo == null ? '匿名用户' : '<a href="http://'+getUrlByUser(reply.replyTo, false)+'/index">'+reply.replyTo.nickname+'</a>';
+	var name = reply.isAnonymous ? '匿名用户' : '<a href="'+getUrlByUser(reply.user, false)+'/index">'+reply.user.nickname+'</a>';
+	var replyTo = reply.replyTo == null ? '匿名用户' : '<a href="'+getUrlByUser(reply.replyTo, false)+'/index">'+reply.replyTo.nickname+'</a>';
 	html += '<div class="media-heading" id="media-heading"><strong>'+name+'</strong>@<strong>'+replyTo+'</strong></div>';
 	html += '<h5><strong>'+reply.title+'</strong></h5>';
 	html += reply.content;

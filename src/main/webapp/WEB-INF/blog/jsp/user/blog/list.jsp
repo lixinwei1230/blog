@@ -43,7 +43,7 @@
 									<c:if test="${blog.level > 0 }">
 						【置顶】
 						</c:if>
-									<a href="http://<u:url space="${space }"/>/blog/${blog.id}"><c:out
+									<a href="<u:url space="${space }"/>/blog/${blog.id}"><c:out
 											value="${blog.title }" /></a>
 								</h4>
 								<c:set var="tags" value="${blog.tags }" scope="page" />
@@ -52,14 +52,14 @@
 										<span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
 										<c:forEach var="tag" items="${tags }">
 											<span style="margin-right: 10px"><a
-												href="http://<u:url space="${space }"/>/blog/list/1?tagIds=${tag.id}">${tag.name }</a></span>
+												href="<u:url space="${space }"/>/blog/list/1?tagIds=${tag.id}">${tag.name }</a></span>
 										</c:forEach>
 									</div>
 								</c:if>
 								<div style="margin-top: 5px; margin-bottom: 10px">
 									<span title="<spring:message code="page.blog.category" />"
 										class="glyphicon glyphicon-book" aria-hidden="true"></span>&nbsp;<a
-										href="http://<u:url space="${space }"/>/blog/list/1?category.id=${blog.category.id}">${blog.category.name }</a>
+										href="<u:url space="${space }"/>/blog/list/1?category.id=${blog.category.id}">${blog.category.name }</a>
 								</div>
 								<div style="margin-top: 5px; margin-bottom: 10px">
 									<span title="<spring:message code="page.blog.writeDate" />"
@@ -71,7 +71,7 @@
 									<span title="<spring:message code="page.blog.hitTimes" />"
 										class="glyphicon glyphicon-fire" aria-hidden="true"></span>&nbsp;${blog.hits }
 									&nbsp;&nbsp;<a
-										href="http://<u:url space="${space }"/>/blog/${blog.id}#comment-container">
+										href="<u:url space="${space }"/>/blog/${blog.id}#comment-container">
 										<span class="glyphicon glyphicon-comment"
 										title="<spring:message code="page.blog.comments" />"
 										aria-hidden="true"></span>
@@ -97,11 +97,11 @@
 								<c:if test="${page.currentPage != i }">
 									<li><c:choose>
 											<c:when test="${pageContext.request.queryString == null}">
-												<a href="http://<u:url space="${space }"/>/blog/list/${i }">${i }</a>
+												<a href="<u:url space="${space }"/>/blog/list/${i }">${i }</a>
 											</c:when>
 											<c:otherwise>
 												<a
-													href="http://<u:url space="${space }"/>/blog/list/${i }?${pageContext.request.queryString}">${i }</a>
+													href="<u:url space="${space }"/>/blog/list/${i }?${pageContext.request.queryString}">${i }</a>
 											</c:otherwise>
 										</c:choose></li>
 								</c:if>
@@ -114,11 +114,11 @@
 				<jsp:include page="/WEB-INF/user_right_column.jsp" />
 				<div>
 					<div class="alert alert-info">
-						<a href="http://<u:url space="${space }"/>/blog/rss"
+						<a href="<u:url space="${space }"/>/blog/rss"
 							target="_blank">RSS订阅</a>
 					</div>
 					<c:set value="${not empty param['category.id']}" var="hasCategory" />
-					<form action="http://<u:url space="${space }"/>/blog/list/1"
+					<form action="<u:url space="${space }"/>/blog/list/1"
 						id="blog-search-form">
 						<div style="margin-bottom: 15px">
 							<div class="form-group">

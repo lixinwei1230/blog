@@ -57,7 +57,7 @@
 					<div class="form-group">
 						<label>第三方登录</label>
 						<div>
-							<a href="http://<u:url/>/oauth2/qq/login"><img
+							<a href="<u:url/>/oauth2/qq/login"><img
 								src="${ctx }/static/imgs/oauth_qq.png" />QQ登录</a>
 						</div>
 					</div>
@@ -72,7 +72,7 @@
 				</form>
 			</fieldset>
 			<div style="text-align: right; margin-top: 10px">
-				还没有账号？<a href="http://<u:url/>/register">立即注册</a>
+				还没有账号？<a href="<u:url/>/register">立即注册</a>
 			</div>
 		</div>
 	</div>

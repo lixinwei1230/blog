@@ -476,7 +476,7 @@
 			temporarySaveFlag = false;
 			post(url,data,function(result){
 				if(result.success){
-					window.location.href = 'http://${spaceLinkPrefix}/blog/'+result.result;
+					window.location.href = '${spaceLinkPrefix}/blog/'+result.result;
 				}else{
 					$.messager.popup(result.result);
 					temporarySaveFlag = true;

@@ -48,7 +48,7 @@
 						【转载】
 						</c:if>
 									<a
-										href="http://<u:url space="${blog.space }"/>/blog/${blog.id}"><c:out
+										href="<u:url space="${blog.space }"/>/blog/${blog.id}"><c:out
 											value="${blog.title }" /> </a>
 								</h4>
 								<c:set var="tags" value="${blog.tags }" scope="page" />
@@ -65,7 +65,7 @@
 								<div style="margin-top: 5px; margin-bottom: 10px">
 									<span title="<spring:message code="page.blog.category" />"
 										class="glyphicon glyphicon-book" aria-hidden="true"></span>&nbsp;<a
-										href="http://<u:url space="${blog.space }"/>/blog/list/1?category.id=${blog.category.id}">${blog.category.name
+										href="<u:url space="${blog.space }"/>/blog/list/1?category.id=${blog.category.id}">${blog.category.name
 										}</a>
 								</div>
 								<div style="margin-top: 5px; margin-bottom: 10px">
@@ -78,7 +78,7 @@
 									<span title="<spring:message code="page.blog.hitTimes" />"
 										class="glyphicon glyphicon-fire" aria-hidden="true"></span>&nbsp;${blog.hits
 									} &nbsp;&nbsp;<a
-										href="http://<u:url space="${blog.space }"/>/blog/${blog.id}#comment-container">
+										href="<u:url space="${blog.space }"/>/blog/${blog.id}#comment-container">
 										<span class="glyphicon glyphicon-comment"
 										title="<spring:message code="page.blog.comments" />"
 										aria-hidden="true"></span> </a>&nbsp;${blog.comments }
@@ -140,7 +140,7 @@
 								<div class="form-group">
 									<label>第三方登录</label>
 									<div>
-										<a href="http://<u:url/>/oauth2/qq/login"><img
+										<a href="<u:url/>/oauth2/qq/login"><img
 											src="${ctx }/static/imgs/oauth_qq.png" />QQ登录</a>
 									</div>
 								</div>

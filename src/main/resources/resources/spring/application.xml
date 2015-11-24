@@ -103,10 +103,11 @@
 		</property>
 	</bean>
 
-	<bean id="urlHelper" class="me.qyh.web.tag.url.UglyUrlHelper">
+	<bean id="urlHelper" class="me.qyh.web.tag.url.UrlHelper">
 		<constructor-arg index="0" value="${domainAndPort}" />
 		<constructor-arg index="1" value="${enableSpaceDomain}" />
 		<constructor-arg index="2" value="#{servletContext.contextPath}" />
+		<constructor-arg index="3" value="${protocal}" />
 	</bean>
 
 	<bean id="freeMarkers" class="me.qyh.helper.freemaker.WebFreemarkers" />
@@ -263,7 +264,6 @@
 
 	<bean id="innerFileStore" class="me.qyh.upload.server.inner.InnerFileStore">
 		<property name="id" value="1" />
-		<property name="protocal" value="http"/>
 		<property name="uploadRequestUrl" value="upload" />
 		<property name="writeRequestUrl" value="write" />
 		<property name="deleteRequestUrl" value="clean/file/deletePhysical"/>
@@ -271,7 +271,6 @@
 
 	<bean id="avatarStore" class="me.qyh.upload.server.inner.InnerFileStore">
 		<property name="id" value="-1" />
-		<property name="protocal" value="http"/>
 		<property name="uploadRequestUrl" value="my/avatar/upload" />
 		<property name="writeRequestUrl" value="avatar" />
 		<property name="deleteRequestUrl" value="clean/avatar/deletePhysical"/>

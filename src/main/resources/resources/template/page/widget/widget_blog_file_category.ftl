@@ -7,7 +7,7 @@
 		<table class="table">
 			<#list files as file>
 			    <tr>
-			    	<td><a href="http://${urlHelper.getUrlByUser(user,false)}/blog/list/1?category.id=${file.category.id }">${file.category.name }</a></td>
+			    	<td><a href="${urlHelper.getUrlByUser(user,false)}/blog/list/1?category.id=${file.category.id }">${file.category.name }</a></td>
 			    	<td>${file.count}</td>
 			    </tr>
 			</#list>

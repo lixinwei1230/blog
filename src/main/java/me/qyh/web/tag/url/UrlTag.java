@@ -29,6 +29,7 @@ public class UrlTag extends BodyTagSupport {
 	private Space space;
 	private boolean myMenu;
 	private String var;
+	private String protocal;
 
 	@Override
 	public int doStartTag() throws JspException {
@@ -38,13 +39,14 @@ public class UrlTag extends BodyTagSupport {
 			PageContext pc = this.pageContext;
 			ServletContext sc = pc.getServletContext();
 			UrlHelper helper = Webs.getUrlHelper(sc);
+			String protocal = this.protocal == null ? helper.getProtocal() : this.protocal;
 			String url = "";
 			if (user != null) {
-				url = helper.getUrlByUser(user, myMenu);
+				url = helper.getUrlByUser(user, myMenu , protocal);
 			} else if (space != null) {
-				url = helper.getUrlBySpace(space);
+				url = helper.getUrlBySpace(space , protocal);
 			} else {
-				url = helper.getUrl();
+				url = helper.getUrl( protocal);
 			}
 			if (var != null) {
 				pageContext.setAttribute(var, url);
@@ -77,4 +79,5 @@ public class UrlTag extends BodyTagSupport {
 	public void setVar(String var) {
 		this.var = var;
 	}
+
 }

@@ -15,12 +15,12 @@
 					<span class="sr-only"></span> <span class="icon-bar"></span> <span
 						class="icon-bar"></span> <span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="http://<u:url user="${user }"/>/index">${user.nickname }</a>
+				<a class="navbar-brand" href="<u:url user="${user }"/>/index">${user.nickname }</a>
 			</div>
 			<div id="navbar" class="navbar-collapse collapse">
 				<c:if test="${user.hasRole('ROLE_SPACE') }">
 					<ul class="nav navbar-nav">
-						<li><a href="http://<u:url space="${space }"/>/blog/list/1">博客</a></li>
+						<li><a href="<u:url space="${space }"/>/blog/list/1">博客</a></li>
 					</ul>
 				</c:if>
 				<sec:authorize ifAnyGranted="ROLE_USER,ROLE_OAUTH" var="login" />
@@ -29,18 +29,18 @@
 						<sec:authentication property='principal' var="user" />
 						<ul class="nav navbar-nav navbar-right">
 							<li><a
-								href="http://<u:url user="${user }" myMenu="true"/>/index">我的主页</a></li>
+								href="<u:url user="${user }" myMenu="true"/>/index">我的主页</a></li>
 						</ul>
 						<ul class="nav navbar-nav navbar-right">
 							<li><a
-								href="http://<u:url user="${user }" myMenu="true"/>/message/receive/list/1?isRead=false"><spring:message
+								href="<u:url user="${user }" myMenu="true"/>/message/receive/list/1?isRead=false"><spring:message
 										code="page.menu.message" /><span class="badge"
 									id="toReadMessageBadge">0</span></a></li>
 						</ul>
 					</c:when>
 					<c:otherwise>
 						<ul class="nav navbar-nav navbar-right">
-							<li><a href="http://<u:url/>">主页</a></li>
+							<li><a href="<u:url/>">主页</a></li>
 						</ul>
 					</c:otherwise>
 				</c:choose>

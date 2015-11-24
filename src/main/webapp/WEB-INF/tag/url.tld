@@ -15,6 +15,11 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
+			<name>protocal</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
 			<name>space</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>

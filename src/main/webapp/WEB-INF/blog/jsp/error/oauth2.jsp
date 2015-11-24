@@ -38,13 +38,13 @@
 	<script type="text/javascript">
 		function toLogin(type){
 			if(type == "QQ")
-				window.location.href = "http://"+getUrl()+"/oauth2/qq/login";
+				window.location.href = getUrl()+"/oauth2/qq/login";
 			else{
-				window.location.href = "http://"+getUrl()+"/login";
+				window.location.href = getUrl()+"/login";
 			}
 		}
 		function toHomePage(){
-			window.location.href = "http://"+getUrl();
+			window.location.href = getUrl();
 		}
 	</script>
 </body>

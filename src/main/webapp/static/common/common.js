@@ -294,7 +294,7 @@ function writeUserInfo(type,_this,users){
 		name = user.nickname;
 	}
 	if(mode && mode == 'simple'){
-		_this.html('<a href="http://'+getUrlByUser(user, false)+'/index">' +name + '</a>');
+		_this.html('<a href="'+getUrlByUser(user, false)+'/index">' +name + '</a>');
 	}else{
 		var avatar = "";
 		if(user.avatar){
@@ -302,7 +302,7 @@ function writeUserInfo(type,_this,users){
 		}else{
 			avatar = '<img alt="'+name+'" src="'+contextPath+'/static/imgs/guest_64.png" title="'+name+'" class="img-circle"/>'
 		}
-		_this.html('<a href="http://'+getUrlByUser(user, false)+'/index">'+avatar+'</a>');
+		_this.html('<a href="'+getUrlByUser(user, false)+'/index">'+avatar+'</a>');
 	}
 }
 

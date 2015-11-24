@@ -2,9 +2,13 @@ var domainAndPort = $("#domainAndPort").val();
 var domain = $("#domain").val();
 var contextPath = $("#contextPath").val();
 var enableSpaceDomain = $("#enableSpaceDomain").val() == "true";
+var protocal = $("#protocal").val();
 var appendContextPath = contextPath != "" && contextPath != "/";
 function getUrl(){
-	return domainAndPort + (appendContextPath ? contextPath : "");
+	return _getUrl(protocal);
+}
+function _getUrl(protocal){
+	return protocal + "://" + domainAndPort + (appendContextPath ? contextPath : "");
 }
 function getRootDomain(){
 	if(domain.indexOf('.') != -1){
@@ -17,10 +21,12 @@ function getRootDomain(){
 	return "";
 }
 function getUrlBySpace(space){
+	return _getUrlBySpace(space, protocal);
+}
+function _getUrlBySpace(space,protocal){
 	var url = "";
 	if(enableSpaceDomain)
 	{
-		//start with www.
 		if(domainAndPort.indexOf("www.") == 0){
 			url = space.id + domainAndPort.substring(domainAndPort.indexOf("."));
 		}else{
@@ -30,7 +36,7 @@ function getUrlBySpace(space){
 		{
 			url += contextPath;
 		}
-		return url;
+		return protocal +"://" +url;
 	}
 	url = domainAndPort;
 	if(appendContextPath)
@@ -41,31 +47,34 @@ function getUrlBySpace(space){
 	{
 		url += "/space/"+space.id;
 	}
-	return url;
+	return protocal +"://" +url;
 }
 function getUrlByUser(user,myMenu){
+	return _getUrlByUser(user, myMenu, protocal);
+}
+function _getUrlByUser(user,myMenu,protocal){
 	var space = user.space;
 	if(myMenu)
 	{
 		if(space && space != null && enableSpaceDomain)
 		{
-			return getUrlBySpace(space) + "/my";
+			return getUrlBySpace(space,protocal) + "/my";
 		}
 		else
 		{
-			return domainAndPort + "/my";
+			return protocal + "://"+domainAndPort + "/my";
 		}
 	}
 	else
 	{
 		if(space && space != null)
 		{
-			return getUrlBySpace(space);
+			return getUrlBySpace(space,protocal);
 		}
 		else
 		{
-			return appendContextPath ? domainAndPort + contextPath +"/user/"+user.id
-										: 	domainAndPort + "/user/"+user.id;
+			return protocal + "://" +(appendContextPath ? domainAndPort + contextPath +"/user/"+user.id
+										: 	domainAndPort + "/user/"+user.id);
 		}
 	}
 }
