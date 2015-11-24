@@ -46,6 +46,6 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
 			Webs.writeInfo(response, objectWriter, new Info(false, msg));
 		}
 		request.getSession().setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION, msg);
-		response.sendRedirect(request.getScheme() + "://" + urlHelper.getUrl() + defaultFailureUrl);
+		response.sendRedirect(urlHelper.getUrl() + defaultFailureUrl);
 	}
 }

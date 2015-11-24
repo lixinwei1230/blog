@@ -35,7 +35,7 @@ public class MyAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint
 	@Override
 	protected String buildRedirectUrlToLoginPage(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException authException) {
-		return request.getScheme() + "://" + urlHelper.getUrl() + getLoginFormUrl();
+		return urlHelper.getUrl() + getLoginFormUrl();
 	}
 
 }

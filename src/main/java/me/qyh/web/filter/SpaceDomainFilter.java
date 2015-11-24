@@ -44,7 +44,7 @@ public class SpaceDomainFilter extends OncePerRequestFilter {
 
 		if (maybeSpaceUrl(uri)) {
 			String space = getSpaceFromUri(uri);
-			response.sendRedirect(request.getScheme() + "://" + buildSpaceUrlWithPort(helper, space));
+			response.sendRedirect(helper.getProtocal() + "://" + buildSpaceUrlWithPort(helper, space));
 			return;
 		}
 
@@ -60,7 +60,7 @@ public class SpaceDomainFilter extends OncePerRequestFilter {
 				Space _space = current.getSpace();
 				if (_space == null || !_space.getId().equals(space)) {
 					// 跳转到用户主页
-					String spaceUrl = request.getScheme() + "://" + helper.getUrlByUser(current, true) + "/index";
+					String spaceUrl = helper.getUrlByUser(current, true) + "/index";
 					response.sendRedirect(spaceUrl);
 					return;
 				}

@@ -41,7 +41,7 @@ public class MyLogoutSuccessHandler implements LogoutSuccessHandler {
 					JsonEncoding.UTF8);
 			objectWriter.writeValue(jsonGenerator, new Info(true));
 		} else {
-			response.sendRedirect(request.getScheme() + "://" + urlHelper.getUrl() + logoutPath);
+			response.sendRedirect(urlHelper.getUrl() + logoutPath);
 		}
 	}
 

@@ -33,7 +33,7 @@ public class SpaceBlogRssFeedView extends AbstractRssFeedView {
 
 		feed.setTitle(space.getId());
 		feed.setDescription(space.getId());
-		feed.setLink(request.getScheme() + "://" + helper.getUrlBySpace(space));
+		feed.setLink(helper.getUrlBySpace(space));
 
 		super.buildFeedMetadata(model, feed, request);
 	}
@@ -59,7 +59,7 @@ public class SpaceBlogRssFeedView extends AbstractRssFeedView {
 			item.setContent(content);
 
 			item.setTitle(blog.getTitle());
-			item.setLink(request.getScheme() + "://" + helper.getUrlBySpace(space) + "/blog/" + blog.getId());
+			item.setLink(helper.getUrlBySpace(space) + "/blog/" + blog.getId());
 			item.setPubDate(blog.getWriteDate());
 
 			items.add(item);
