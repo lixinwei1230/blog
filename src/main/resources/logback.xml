@@ -21,13 +21,18 @@
 			</Pattern>
 			<charset>UTF-8</charset>
 		</encoder>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
 	</appender>
 	
-	<appender name="warningDailyRollingFileAppender"
+	<appender name="warnDailyRollingFileAppender"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<File>c:/logs/blog/warning.log</File>
+		<File>c:/logs/blog/warn.log</File>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<FileNamePattern>c:/logs/blog/warning.%d{yyyy-MM-dd}.log</FileNamePattern>
+			<FileNamePattern>c:/logs/blog/warn.%d{yyyy-MM-dd}.log</FileNamePattern>
 			<maxHistory>30</maxHistory>
 		</rollingPolicy>
 		<encoder>
@@ -35,6 +40,11 @@
 			</Pattern>
 			<charset>UTF-8</charset>
 		</encoder>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>WARN</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
 	</appender>
 
 	<appender name="mlogDailyRollingFileAppender"
@@ -79,15 +89,7 @@
 
 	<root>
 		<level value="INFO" />
-	</root>
-	
-	<root>
-		<level value="WARNING" />
-		<appender-ref ref="warningDailyRollingFileAppender" />
-	</root>
-	
-	<root>
-		<level value="ERROR" />
+		<appender-ref ref="warnDailyRollingFileAppender" />
 		<appender-ref ref="errorDailyRollingFileAppender" />
 	</root>
 </configuration>
