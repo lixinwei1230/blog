@@ -55,7 +55,7 @@ public abstract class FileWriteController extends BaseController {
 		File seek = seek(path);
 		if (Webs.isWebImage(seek.getName())) {
 			response.setContentType(URLConnection.guessContentTypeFromName(seek.getName()));
-			String etag = Webs.generatorETag(path);
+			String etag = Webs.generatorETag(path + seek.lastModified());
 			if (request.checkNotModified(etag)) {
 				return;
 			}
@@ -65,9 +65,10 @@ public abstract class FileWriteController extends BaseController {
 				throw new SystemException(
 						String.format("%s:创建文件夹%s失败", this.getClass().getName(), cacheFolder.getAbsolutePath()));
 			}
-			if (supportWebp(request.getRequest(),seek)) {
+			if (supportWebp(request.getRequest(), seek)) {
 				response.setContentType(WEBP_CONTENT_TYPE);
-				String absPath = cacheFolder.getAbsolutePath() + File.separator + seek.getName();
+				String absPath = cacheFolder.getAbsolutePath() + File.separator
+						+ Files.appendFilename(seek.getName(), seek.lastModified() + "");
 				File webp = new File(absPath + "." + WEBP);
 				if (!webp.exists()) {
 					try {
@@ -81,7 +82,8 @@ public abstract class FileWriteController extends BaseController {
 
 			ImageZoomMatcher zm = config.getZoomMatcher();
 			if (zm != null && zm.zoom(size, seek)) {
-				File dest = new File(cacheFolder, Files.appendFilename(seek.getName(), "_" + size));
+				File dest = new File(cacheFolder,
+						Files.appendFilename(seek.getName(), "_" + seek.lastModified() + "_" + size));
 				if (dest.exists()) {
 					seek = dest;
 				} else {
@@ -123,17 +125,15 @@ public abstract class FileWriteController extends BaseController {
 		return new File(destPath);
 	}
 
-	protected boolean supportWebp(HttpServletRequest request,File file) {
+	protected boolean supportWebp(HttpServletRequest request, File file) {
 		Cookie cookie = WebUtils.getCookie(request, WEBP_SUPPORT_COOKIE);
 		if (cookie != null && "true".equalsIgnoreCase(cookie.getValue())) {
 			String ext = Files.getFileExtension(file);
-			return "jpg".equalsIgnoreCase(ext)
-					|| "jpeg".equalsIgnoreCase(ext)
-					|| "png".equalsIgnoreCase(ext);
+			return "jpg".equalsIgnoreCase(ext) || "jpeg".equalsIgnoreCase(ext) || "png".equalsIgnoreCase(ext);
 		}
 		return false;
 	}
-	
+
 	protected abstract FileWriteConfig getWriteConfig();
 
 }
