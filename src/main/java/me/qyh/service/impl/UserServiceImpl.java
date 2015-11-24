@@ -1,6 +1,7 @@
 package me.qyh.service.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.UUID;
 
 import javax.mail.MessagingException;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -259,20 +261,29 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 					String.format("%s:创建文件夹:%s失败", this.getClass().getName(), folder.getAbsolutePath()));
 		}
 		boolean croped = false;
+		boolean oldAvatar = (file instanceof AvatarFile);
 		String absPath = folder.getAbsolutePath() + File.separator + file.getName();
 		try {
 			ImageInfo info = im4javas.getImageInfo(file.getAbsolutePath());
 			croped = (info.getWidth() != crop.getW() || info.getHeight() != crop.getH());
 			if (croped) {
-				im4javas.crop(file.getAbsolutePath(), absPath, crop.getX(), crop.getY(), crop.getW(), crop.getH());
+				try {
+					im4javas.crop(file.getAbsolutePath(), absPath, crop.getX(), crop.getY(), crop.getW(), crop.getH());
+				} catch (Exception e) {
+					throw new LogicException("error.avatar.badCrop");
+				}
+			} else if(!oldAvatar){
+				try {
+					FileUtils.copyFile(file, new File(absPath));
+				} catch (IOException e) {
+					throw new SystemException(e.getMessage(), e);
+				}
 			}
 		} catch (BadImageException e) {
 			throw new LogicException("error.upload.badImage");
-		} catch (Exception e) {
-			throw new LogicException("error.avatar.badCrop");
 		}
 		MyFile avatar = null;
-		if (!(file instanceof AvatarFile)) {
+		if (!oldAvatar) {
 			File cropFile = croped ? new File(absPath) : file;
 			avatar = new MyFile(user, cropFile.length(), Files.getFileExtension(file.getName()), file.getName(),
 					new Date(), avatarStore, FileStatus.NORMAL, relativePath, file.getName(), false);
