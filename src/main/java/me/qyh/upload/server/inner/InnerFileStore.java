@@ -28,12 +28,12 @@ public class InnerFileStore implements FileStore , InitializingBean {
 
 	@Override
 	public String seekPrefix() {
-		return urlHelper.getProtocal() + "://" + urlHelper.getDomainAndPort() + "/" + writeRequestUrl;
+		return urlHelper.getUrl() + "/" + writeRequestUrl;
 	}
 
 	@Override
 	public String deleteUrl() {
-		return urlHelper.getProtocal() + "://" + urlHelper.getDomainAndPort() + "/" + deleteRequestUrl;
+		return urlHelper.getUrl() + "/" + deleteRequestUrl;
 	}
 
 	@Override

@@ -21,13 +21,11 @@ public class MyContextLoaderListener extends ContextLoaderListener {
 
 		UrlHelper helper = super.getCurrentWebApplicationContext().getBean(UrlHelper.class);
 
+		ServletContext sc = event.getServletContext();
+		Class<? extends Filter> spaceDomainFilter = SpaceDomainFilter.class;
+		sc.addFilter(spaceDomainFilter.getName(), spaceDomainFilter)
+				.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
 		if (helper.isEnableSpaceDomain()) {
-			// 如果开启space域名，则增加SpaceDomainFilter
-			ServletContext sc = event.getServletContext();
-			Class<? extends Filter> spaceDomainFilter = SpaceDomainFilter.class;
-			sc.addFilter(spaceDomainFilter.getName(), spaceDomainFilter)
-					.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
-
 			String domain = helper.getDomain();
 			if (domain.startsWith("www.")) {
 				domain = domain.substring(domain.indexOf("."));
@@ -37,6 +35,7 @@ public class MyContextLoaderListener extends ContextLoaderListener {
 			SessionCookieConfig config = sc.getSessionCookieConfig();
 			config.setDomain(domain);
 		}
+
 	}
 
 }
