@@ -10,6 +10,7 @@ import javax.servlet.SessionCookieConfig;
 
 import org.springframework.web.context.ContextLoaderListener;
 
+import me.qyh.utils.Validators;
 import me.qyh.web.filter.SpaceDomainFilter;
 import me.qyh.web.tag.url.UrlHelper;
 
@@ -18,15 +19,15 @@ public class MyContextLoaderListener extends ContextLoaderListener {
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
 		super.contextInitialized(event);
-
 		UrlHelper helper = super.getCurrentWebApplicationContext().getBean(UrlHelper.class);
-
+		String domain = helper.getDomain();
 		ServletContext sc = event.getServletContext();
-		Class<? extends Filter> spaceDomainFilter = SpaceDomainFilter.class;
-		sc.addFilter(spaceDomainFilter.getName(), spaceDomainFilter)
-				.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
+		if(!(Validators.validateIp(domain) || "localhost".equals(domain))){
+			Class<? extends Filter> spaceDomainFilter = SpaceDomainFilter.class;
+			sc.addFilter(spaceDomainFilter.getName(), spaceDomainFilter)
+					.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
+		}
 		if (helper.isEnableSpaceDomain()) {
-			String domain = helper.getDomain();
 			if (domain.startsWith("www.")) {
 				domain = domain.substring(domain.indexOf("."));
 			} else {
