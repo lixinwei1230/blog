@@ -86,7 +86,7 @@ public class SpaceDomainFilter extends OncePerRequestFilter {
 		} else if (maybeSpaceDomain) {
 			// mhlx.qyh.me == > qyh.me/space/mhlx
 			String space = getSpaceFromDomain(domain);
-			String url = helper.getUrl() + "/space/" + space + uri;
+			String url = helper.getUrl() + (isForwardUri(pathMatcher, uri) ? "/space/" + space : "") + uri;
 			response.sendRedirect(url);
 			return;
 		} else if (!domain.equalsIgnoreCase(helper.getDomain())) {
