@@ -2,13 +2,13 @@ var domainAndPort = $("#domainAndPort").val();
 var domain = $("#domain").val();
 var contextPath = $("#contextPath").val();
 var enableSpaceDomain = $("#enableSpaceDomain").val() == "true";
-var protocal = $("#protocal").val();
+var protocol = $("#protocol").val();
 var appendContextPath = contextPath != "" && contextPath != "/";
 function getUrl(){
-	return _getUrl(protocal);
+	return _getUrl(protocol);
 }
-function _getUrl(protocal){
-	return protocal + "://" + domainAndPort + (appendContextPath ? contextPath : "");
+function _getUrl(protocol){
+	return protocol + "://" + domainAndPort + (appendContextPath ? contextPath : "");
 }
 function getRootDomain(){
 	if(domain.indexOf('.') != -1){
@@ -21,9 +21,9 @@ function getRootDomain(){
 	return "";
 }
 function getUrlBySpace(space){
-	return _getUrlBySpace(space, protocal);
+	return _getUrlBySpace(space, protocol);
 }
-function _getUrlBySpace(space,protocal){
+function _getUrlBySpace(space,protocol){
 	var url = "";
 	if(enableSpaceDomain)
 	{
@@ -36,7 +36,7 @@ function _getUrlBySpace(space,protocal){
 		{
 			url += contextPath;
 		}
-		return protocal +"://" +url;
+		return protocol +"://" +url;
 	}
 	url = domainAndPort;
 	if(appendContextPath)
@@ -47,33 +47,33 @@ function _getUrlBySpace(space,protocal){
 	{
 		url += "/space/"+space.id;
 	}
-	return protocal +"://" +url;
+	return protocol +"://" +url;
 }
 function getUrlByUser(user,myMenu){
-	return _getUrlByUser(user, myMenu, protocal);
+	return _getUrlByUser(user, myMenu, protocol);
 }
-function _getUrlByUser(user,myMenu,protocal){
+function _getUrlByUser(user,myMenu,protocol){
 	var space = user.space;
 	if(myMenu)
 	{
 		if(space && space != null && enableSpaceDomain)
 		{
-			return getUrlBySpace(space,protocal) + "/my";
+			return getUrlBySpace(space,protocol) + "/my";
 		}
 		else
 		{
-			return protocal + "://"+domainAndPort + "/my";
+			return protocol + "://"+domainAndPort + "/my";
 		}
 	}
 	else
 	{
 		if(space && space != null)
 		{
-			return getUrlBySpace(space,protocal);
+			return getUrlBySpace(space,protocol);
 		}
 		else
 		{
-			return protocal + "://" +(appendContextPath ? domainAndPort + contextPath +"/user/"+user.id
+			return protocol + "://" +(appendContextPath ? domainAndPort + contextPath +"/user/"+user.id
 										: 	domainAndPort + "/user/"+user.id);
 		}
 	}

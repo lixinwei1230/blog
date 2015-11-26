@@ -13,14 +13,14 @@ public class UrlHelper implements InitializingBean{
 	private boolean enableSpaceDomain;
 	private String contextPath;
 	private String domain;
-	private String protocal;
+	private String protocol;
 
-	public UrlHelper(String domainAndPort, boolean enableSpaceDomain, String contextPath , String protocal) {
+	public UrlHelper(String domainAndPort, boolean enableSpaceDomain, String contextPath , String protocol) {
 		super();
 		this.domainAndPort = domainAndPort;
 		this.enableSpaceDomain = enableSpaceDomain;
 		this.contextPath = contextPath;
-		this.protocal = protocal;
+		this.protocol = protocol;
 
 		String domain = "";
 		if (domainAndPort.indexOf(":") != -1) {
@@ -32,39 +32,39 @@ public class UrlHelper implements InitializingBean{
 	}
 
 	public String getUrl() {
-		return getUrl(protocal);
+		return getUrl(protocol);
 	}
 	
-	public String getUrl(String protocal){
-		return protocal + "://" + domainAndPort + contextPath;
+	public String getUrl(String protocol){
+		return protocol + "://" + domainAndPort + contextPath;
 	}
 	
 	public String getUrlByUser(User user, boolean myMenu) {
-		return getUrlByUser(user, myMenu, protocal);
+		return getUrlByUser(user, myMenu, protocol);
 	}
 
-	public String getUrlByUser(User user, boolean myMenu , String protocal) {
+	public String getUrlByUser(User user, boolean myMenu , String protocol) {
 		Space space = user.getSpace();
 		if (myMenu) {
 			if (space != null && enableSpaceDomain) {
-				return getUrlBySpace(space,protocal) + "/my";
+				return getUrlBySpace(space,protocol) + "/my";
 			} else {
-				return protocal + "://" + domainAndPort + contextPath + "/my";
+				return protocol + "://" + domainAndPort + contextPath + "/my";
 			}
 		} else {
 			if (space != null) {
-				return getUrlBySpace(space,protocal);
+				return getUrlBySpace(space,protocol);
 			} else {
-				return protocal + "://" + domainAndPort + contextPath + "/user/" + user.getId();
+				return protocol + "://" + domainAndPort + contextPath + "/user/" + user.getId();
 			}
 		}
 	}
 	
 	public String getUrlBySpace(Space space) {
-		return getUrlBySpace(space, protocal);
+		return getUrlBySpace(space, protocol);
 	}
 
-	public String getUrlBySpace(Space space,String protocal) {
+	public String getUrlBySpace(Space space,String protocol) {
 		String url = "";
 		if (enableSpaceDomain) {
 			if (domainAndPort.startsWith("www.")) {
@@ -72,9 +72,9 @@ public class UrlHelper implements InitializingBean{
 			} else {
 				url = space.getId() + "." + domainAndPort;
 			}
-			return protocal + "://" + url + contextPath;
+			return protocol + "://" + url + contextPath;
 		}
-		return protocal + "://" + domainAndPort + contextPath + "/space/" + space.getId();
+		return protocol + "://" + domainAndPort + contextPath + "/space/" + space.getId();
 	}
 
 	public String getDomainAndPort() {
@@ -93,8 +93,8 @@ public class UrlHelper implements InitializingBean{
 		return domain;
 	}
 
-	public String getProtocal() {
-		return protocal;
+	public String getProtocol() {
+		return protocol;
 	}
 
 	@Override
@@ -102,8 +102,8 @@ public class UrlHelper implements InitializingBean{
 		if(Validators.isEmptyOrNull(domainAndPort,true)){
 			throw new SystemException("domainAndPort不能为空");
 		}
-		if(Validators.isEmptyOrNull(protocal,true)){
-			throw new SystemException("protocal不能为空");
+		if(Validators.isEmptyOrNull(protocol,true)){
+			throw new SystemException("protocol不能为空");
 		}
 		if(contextPath == null){
 			throw new SystemException("contextPath不能为null");

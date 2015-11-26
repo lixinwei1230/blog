@@ -6,7 +6,7 @@
 	value="${urlHelper.domainAndPort }" />
 <input type="hidden" id="domain" value="${urlHelper.domain }" />
 <input type="hidden" id="contextPath" value="${urlHelper.contextPath }" />
-<input type="hidden" id="protocal" value="${urlHelper.protocal }" />
+<input type="hidden" id="protocol" value="${urlHelper.protocol }" />
 <input type="hidden" id="enableSpaceDomain"
 	value="${urlHelper.enableSpaceDomain }" />
 <sec:authorize ifAnyGranted="ROLE_USER,ROLE_OAUTH" var="isLogin" />

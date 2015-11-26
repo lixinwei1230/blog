@@ -107,7 +107,7 @@
 		<constructor-arg index="0" value="${domainAndPort}" />
 		<constructor-arg index="1" value="${enableSpaceDomain}" />
 		<constructor-arg index="2" value="#{servletContext.contextPath}" />
-		<constructor-arg index="3" value="${protocal}" />
+		<constructor-arg index="3" value="${protocol}" />
 	</bean>
 
 	<bean id="freeMarkers" class="me.qyh.helper.freemaker.WebFreemarkers" />

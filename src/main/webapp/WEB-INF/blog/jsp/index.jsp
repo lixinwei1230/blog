@@ -155,9 +155,10 @@
 						</fieldset>
 					</div>
 				</c:if>
-				<div class="text-center">
-					<a href="http://stackoverflow.com/" target="_blank" rel="external nofollow"><img src="${ctx }/static/imgs/stackoverflow-150.png" class="img-responsive center-block"/></a>
-					<a href="https://github.com/" target="_blank" rel="external nofollow" ><img title="github" src="${ctx }/static/imgs/github-150.png" class="img-responsive center-block" style="margin-bottom:20px"/></a>
+				<div class="alert alert-warning">
+					只在新版的chrome浏览器开发测试，别的浏览器不会做测试和支持<br/>
+					用chrome浏览器、andriod 4+访问时，图片格式可能会被转化成webp格式 <br/>
+					鄙视IE浏览器(包括EDGE)
 				</div>
 			</div>
 		</div>

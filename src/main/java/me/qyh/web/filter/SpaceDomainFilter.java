@@ -115,7 +115,7 @@ public class SpaceDomainFilter extends OncePerRequestFilter {
 		} else {
 			spaceDomainAndPort = space + "." + domainAndPort;
 		}
-		return helper.getProtocal() + "://" + spaceDomainAndPort + helper.getContextPath();
+		return helper.getProtocol() + "://" + spaceDomainAndPort + helper.getContextPath();
 	}
 
 	private boolean maybeSpaceUrl(String uri) {
