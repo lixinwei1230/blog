@@ -24,8 +24,8 @@
 					</ul>
 				</c:if>
 				<sec:authorize ifAnyGranted="ROLE_USER,ROLE_OAUTH" var="login" />
-				<c:choose>
-					<c:when test="${login }">
+			
+					<c:if test="${login }">
 						<sec:authentication property='principal' var="user" />
 						<ul class="nav navbar-nav navbar-right">
 							<li><a
@@ -37,13 +37,10 @@
 										code="page.menu.message" /><span class="badge"
 									id="toReadMessageBadge">0</span></a></li>
 						</ul>
-					</c:when>
-					<c:otherwise>
-						<ul class="nav navbar-nav navbar-right">
+					</c:if>
+					<ul class="nav navbar-nav navbar-right">
 							<li><a href="<u:url/>">主页</a></li>
 						</ul>
-					</c:otherwise>
-				</c:choose>
 				<ul class="nav navbar-nav navbar-right">
 					<li><a href="https://github.com/mhlx/blog" target="_blank">GitHub</a></li>
 				</ul>

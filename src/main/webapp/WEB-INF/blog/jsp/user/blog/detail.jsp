@@ -28,6 +28,12 @@
 			<div class="col-lg-8 col-md-8 col-sm-8 text">
 				<h3>
 					<c:out value="${blog.title }" />
+					<sec:authorize ifAnyGranted="ROLE_SPACE">
+						<sec:authentication property='principal.space.id' var="spaceId" />
+						<c:if test="${blog.space.id == spaceId}">
+							<a href="${ctx}/my/blog/update/${blog.id}"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+						</c:if>
+					</sec:authorize>
 				</h3>
 				<c:set var="tags" value="${blog.tags }" scope="page" />
 				<c:if test="${not empty tags }">
@@ -46,6 +52,7 @@
 				<div id="editor-container"></div>
 				<div id="comment-container"></div>
 			</div>
+<script src="http://connect.qq.com/widget/loader/loader.js" widget="shareqq" charset="utf-8"></script>
 			<div class="col-lg-4 col-md-4 col-sm-4 text">
 				<jsp:include page="/WEB-INF/user_right_column.jsp" />
 			</div>
@@ -75,7 +82,7 @@ $(document).ready(function(){
  	 		var att = $(this);
  	 		var text = att.text();
  	 		if($.trim(text) == ""){
- 	 			text = "é™„ä»¶ç»„"+i;
+ 	 			text = "¸½¼þ×é"+i;
  	 		}
  	 		var url = att.attr("att-url");
  	 		html += '<div><a target="_blank" href="${ctx}'+url+'">'+i+"."+text+'</a></div>';
