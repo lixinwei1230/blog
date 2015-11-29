@@ -72,26 +72,6 @@ $(document).ready(function(){
 	var ids = [];
 	$("pre").addClass("prettyprint");
  	prettyPrint();
- 	
- 	var atts = $("span[att-url]");
- 	if(atts.length > 0){
- 		var html = '<div class="well">';
- 		html += '<div><span class="glyphicon glyphicon-paperclip" aria-hidden="true"></span><div>';
- 		var i=1;
- 		atts.each(function(){
- 	 		var att = $(this);
- 	 		var text = att.text();
- 	 		if($.trim(text) == ""){
- 	 			text = "¸½¼þ×é"+i;
- 	 		}
- 	 		var url = att.attr("att-url");
- 	 		html += '<div><a target="_blank" href="${ctx}'+url+'">'+i+"."+text+'</a></div>';
- 	 		att.remove();
- 	 		i++;
- 	 	});
- 	 	html += '</div>';
- 	 	$("#attContainer").html(html);
- 	}
 	$("#comment-container").comment({
 		scopeId:function(){
 			return '${blog.id}';
@@ -116,7 +96,7 @@ if(spaceId == '${blog.space.id}'){
 </sec:authorize>
 <script type="text/javascript">
 var cookieId = "blog_${blog.id}";
-if(hit){
+if(hit && COOKIE_SUPPORT){
 	var value = getCookie(cookieId);
 	if(!value || value == null || value == ""){
 		$.post("${ctx}/blog/hit/${blog.id}",{},function callBack(data){
