@@ -49,7 +49,7 @@ import me.qyh.entity.tag.WebTagCount;
 import me.qyh.exception.LogicException;
 import me.qyh.exception.SystemException;
 import me.qyh.helper.cache.SignCache;
-import me.qyh.helper.cache.SignCacheEvit;
+import me.qyh.helper.cache.SignCacheEvict;
 import me.qyh.pageparam.BlogPageParam;
 import me.qyh.pageparam.CommentPageParam;
 import me.qyh.pageparam.Page;
@@ -226,7 +226,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-	@SignCacheEvit(cacheName = "blogCache", cacheKey = "'blog-'+#id")
+	@SignCacheEvict(cacheName = "blogCache", cacheKey = "'blog-'+#id")
 	public void deleteBlogLogic(Integer id) throws LogicException {
 
 		Blog blog = loadBlog(id);
@@ -246,7 +246,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-	@SignCacheEvit(cacheName = "blogCache", cacheKey = "'blog-'+#toUpdate.id")
+	@SignCacheEvict(cacheName = "blogCache", cacheKey = "'blog-'+#toUpdate.id")
 	public void updateBlog(Blog toUpdate) throws LogicException {
 		Blog db = loadBlog(toUpdate.getId());
 

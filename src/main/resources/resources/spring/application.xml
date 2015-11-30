@@ -256,10 +256,10 @@
 	<aop:config>
 		<aop:pointcut id="signCachePoint"
 			expression="@annotation(me.qyh.helper.cache.SignCache)" />
-		<aop:pointcut id="signCacheEvitPoint"
-			expression="@annotation(me.qyh.helper.cache.SignCacheEvit)" />
+		<aop:pointcut id="signCacheEvictPoint"
+			expression="@annotation(me.qyh.helper.cache.SignCacheEvict)" />
 		<aop:advisor pointcut-ref="signCachePoint" advice-ref="signCacheInterceptor" />
-		<aop:advisor pointcut-ref="signCacheEvitPoint" advice-ref="signCacheEvitInterceptor" />
+		<aop:advisor pointcut-ref="signCacheEvictPoint" advice-ref="signCacheEvictInterceptor" />
 	</aop:config>
 
 	<bean id="innerFileStore" class="me.qyh.upload.server.inner.InnerFileStore">

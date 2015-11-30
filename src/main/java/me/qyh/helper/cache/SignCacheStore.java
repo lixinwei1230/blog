@@ -1,46 +1,49 @@
 package me.qyh.helper.cache;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import me.qyh.exception.SystemException;
 
-import org.apache.commons.lang.SerializationUtils;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SignCacheStore {
-
-	private Map<Object, Sign> map = new ConcurrentHashMap<Object, Sign>(256);
-
-	public void addSign(Object key, Sign sign) {
-		map.put(key, sign);
+public class SignCacheStore implements  InitializingBean{
+	
+	private static final String SIGN_CACHE = "signCache";
+	private String name = SIGN_CACHE;
+	
+	@Autowired
+	private CacheManager cacheManager;
+	private Cache cache;
+	
+	public Sign getSign(Object key){
+		return cache.get(key, Sign.class);
 	}
-
-	public Sign getSign(Object key) {
-		return map.get(key);
+	
+	public void put(Object key,Sign sign){
+		cache.put(key, sign);
 	}
-
-	public void remove(Object key) {
-		map.remove(key);
+	
+	public void evict(Object key){
+		cache.evict(key);
 	}
-
-	public synchronized void clear() {
-		long now = new Date().getTime();
-		List<Object> deletes = new ArrayList<Object>();
-		for (Map.Entry<Object, Sign> m : map.entrySet()) {
-			Sign sign = m.getValue();
-			if (sign != null) {
-				Sign cloned = (Sign) SerializationUtils.clone(sign);
-				if (!cloned.addHit(now)) {
-					deletes.add(m.getKey());
-				}
-			}
+	
+	public void clear(){
+		cache.clear();
+	}
+	
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.cache = cacheManager.getCache(name);
+		if(cache == null){
+			throw new SystemException("无法找到名为"+name+"的缓存");
 		}
-		for (Object delete : deletes) {
-			map.remove(delete);
-		}
 	}
-
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 }

@@ -3,6 +3,8 @@ package me.qyh.helper.cache;
 import java.lang.reflect.Method;
 import java.util.Date;
 
+import me.qyh.exception.SystemException;
+
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +16,13 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
 
-import me.qyh.exception.SystemException;
-
 @Component
 public class SignCacheInterceptor implements MethodInterceptor {
+	
+	private static final String PROCEED_RESULT = "result";
 
 	@Autowired
 	private CacheManager cacheManager;
-
 	@Autowired
 	private SignCacheStore signCacheStore;
 
@@ -39,7 +40,7 @@ public class SignCacheInterceptor implements MethodInterceptor {
 				return cached.get();
 			}
 			Object result = invocation.proceed();
-			context.setVariable("result", result);
+			context.setVariable(PROCEED_RESULT, result);
 			Object condition = parser.parseExpression(signCache.condition()).getValue(context);
 			if (condition == null || !(condition instanceof Boolean)) {
 				throw new SystemException("SignCache Annotation中的condition表达式不能为空，并且必须是布尔表达式");
@@ -47,14 +48,14 @@ public class SignCacheInterceptor implements MethodInterceptor {
 			if (result != null && (Boolean) condition) {
 				Sign sign = signCacheStore.getSign(cacheKey);
 				if (sign == null) {
-					signCacheStore.addSign(cacheKey, new Sign(signCache.periodSec(), signCache.hits()));
+					signCacheStore.put(cacheKey, new Sign(signCache.periodSec(), signCache.hits()));
 				} else {
 					long now = new Date().getTime();
 					if (!sign.addHit(now)) {
-						signCacheStore.remove(cacheKey);
+						signCacheStore.evict(cacheKey);
 					} else if (sign.cache()) {
 						cache.put(cacheKey, result);
-						signCacheStore.remove(cacheKey);
+						signCacheStore.evict(cacheKey);
 					}
 				}
 			}
@@ -62,5 +63,4 @@ public class SignCacheInterceptor implements MethodInterceptor {
 		}
 		return invocation.proceed();
 	}
-
 }

@@ -23,4 +23,8 @@
 	<cache name="widgetCache" maxElementsInMemory="500" eternal="false"
 		timeToIdleSeconds="300" timeToLiveSeconds="600" overflowToDisk="true" />
 
+	<!--userd for signCache -->
+	<cache name="signCache" maxElementsInMemory="500" eternal="false"
+		timeToIdleSeconds="300" timeToLiveSeconds="600" overflowToDisk="true" />
+
 </ehcache>  

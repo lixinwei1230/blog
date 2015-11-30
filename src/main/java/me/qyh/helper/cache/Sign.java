@@ -36,5 +36,9 @@ public class Sign implements java.io.Serializable {
 		this.periodSec = periodSec;
 		this.hits = hits;
 	}
+	
+	public Sign(){
+		
+	}
 
 }

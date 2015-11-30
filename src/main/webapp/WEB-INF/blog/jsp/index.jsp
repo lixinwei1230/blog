@@ -10,10 +10,10 @@
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="_csrf" content="${_csrf.token}" />
 <meta name="_csrf_header" content="${_csrf.headerName}" />
-<meta property="qc:admins" content="15477774336110655" />
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="page" />
 <link href="${ctx}/static/plugins/bootstrap/3.3.5/css/bootstrap.min.css"
 	rel="stylesheet">
@@ -47,8 +47,7 @@
 									<c:if test="${blog.from == 'COPIED' }">
 						【转载】
 						</c:if>
-									<a
-										href="<u:url space="${blog.space }"/>/blog/${blog.id}"><c:out
+									<a href="<u:url space="${blog.space }"/>/blog/${blog.id}"><c:out
 											value="${blog.title }" /> </a>
 								</h4>
 								<c:set var="tags" value="${blog.tags }" scope="page" />
@@ -77,11 +76,13 @@
 								<div style="margin-top: 5px; margin-bottom: 10px">
 									<span title="<spring:message code="page.blog.hitTimes" />"
 										class="glyphicon glyphicon-fire" aria-hidden="true"></span>&nbsp;${blog.hits
-									} &nbsp;&nbsp;<a
+									}
+									&nbsp;&nbsp;<a
 										href="<u:url space="${blog.space }"/>/blog/${blog.id}#comment-container">
 										<span class="glyphicon glyphicon-comment"
 										title="<spring:message code="page.blog.comments" />"
-										aria-hidden="true"></span> </a>&nbsp;${blog.comments }
+										aria-hidden="true"></span>
+									</a>&nbsp;${blog.comments }
 								</div>
 								<div>
 									<c:out value="${blog.summary }..." />
@@ -155,10 +156,24 @@
 						</fieldset>
 					</div>
 				</c:if>
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title">友情链接</h3>
+					</div>
+					<div class="table-responsive">
+						<table class="table">
+							<tbody>
+								<tr>
+									<td><a
+										href="http://w.midea.com/shop/index?id=100510&sellerid=220844&from=timeline&isappinstalled=0">某人的微店</a></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
 				<div class="alert alert-warning">
-					只在新版的chrome浏览器开发测试，别的浏览器不会做测试和支持<br/>
-					用chrome浏览器、andriod 4+访问时，图片格式可能会被转化成webp格式 <br/>
-					鄙视IE浏览器(包括EDGE)
+					只在新版的chrome浏览器开发测试，别的浏览器不会做测试和支持<br /> 用chrome浏览器、andriod
+					4+访问时，图片格式可能会被转化成webp格式 <br /> 鄙视IE浏览器(包括EDGE)
 				</div>
 			</div>
 		</div>
