@@ -52,7 +52,6 @@
 				<div id="editor-container"></div>
 				<div id="comment-container"></div>
 			</div>
-<script src="http://connect.qq.com/widget/loader/loader.js" widget="shareqq" charset="utf-8"></script>
 			<div class="col-lg-4 col-md-4 col-sm-4 text">
 				<jsp:include page="/WEB-INF/user_right_column.jsp" />
 			</div>

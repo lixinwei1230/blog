@@ -1,7 +1,6 @@
 package me.qyh.helper.cache;
 
 import java.lang.reflect.Method;
-import java.util.Date;
 
 import me.qyh.exception.SystemException;
 
@@ -50,10 +49,10 @@ public class SignCacheInterceptor implements MethodInterceptor {
 				if (sign == null) {
 					signCacheStore.put(cacheKey, new Sign(signCache.periodSec(), signCache.hits()));
 				} else {
-					long now = new Date().getTime();
+					long now = System.currentTimeMillis();
 					if (!sign.addHit(now)) {
 						signCacheStore.evict(cacheKey);
-					} else if (sign.cache()) {
+					} else if (sign.cache(now)) {
 						cache.put(cacheKey, result);
 						signCacheStore.evict(cacheKey);
 					}
