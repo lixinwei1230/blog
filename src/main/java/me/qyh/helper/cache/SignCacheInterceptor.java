@@ -52,6 +52,7 @@ public class SignCacheInterceptor implements MethodInterceptor {
 					long now = System.currentTimeMillis();
 					if (!sign.addHit(now)) {
 						signCacheStore.evict(cacheKey);
+						signCacheStore.put(cacheKey, new Sign(signCache.periodSec(), signCache.hits()));
 					} else if (sign.cache(now)) {
 						cache.put(cacheKey, result);
 						signCacheStore.evict(cacheKey);
