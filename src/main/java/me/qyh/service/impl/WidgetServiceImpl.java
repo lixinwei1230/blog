@@ -52,7 +52,7 @@ public class WidgetServiceImpl extends BaseServiceImpl implements WidgetService 
 	@Override
 	@Transactional(readOnly = true)
 	public Widget getPreviewWidget(Integer id, WidgetType type) throws LogicException {
-		User current = UserContext.getUser();
+		User current = userServer.getUserById(UserContext.getUser().getId());
 		switch (type) {
 		case SYSTEM:
 			SystemWidgetHandler swh = getHandler(id);

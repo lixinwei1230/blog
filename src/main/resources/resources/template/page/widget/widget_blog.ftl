@@ -7,8 +7,6 @@
 		<div class="panel-body">
 			<#list blogs as blog>
 				<div class="media">
-			      <div class="media-left user-info"  space-id="${blog.space.id }">
-			      </div>
 			      <div class="media-body">
 			        <h4 class="media-heading">
 			      	  	<a href="${urlHelper.getUrlBySpace(blog.space)}/blog/${blog.id}" target="_blank">
@@ -26,31 +24,37 @@
 			      </div>
 			    </div>
 			</#list>
+			<div class="alert alert-info"><#if config.space ?exists><a href="${urlHelper.getUrlBySpace(config.space)}/blog/list/1"><#else><a href="${urlHelper.getUrl()}/blog/list/1"></#if>查看更多</a></div>
 		</div>
 	</#if>
   	<#if config.mode.name() == 'LIST'>
 		<div class="table-responsive">
 			<table class="table">
-				<tr>
-					<th>博客标题</th>
-					<th>日期</th>
-					<th>作者</th>
-				</tr>
-				<#list blogs as blog>
-				    <tr>
-				    	<td><a href="${urlHelper.getUrlBySpace(blog.space)}/blog/${blog.id}" target="_blank">
-				    	<#if blog.title?length gt 15>
-						    ${blog.title?substring(0,15)}...
-						    <#else>
-						    ${blog.title}
-						</#if>
-				    	</a></td>
-				    	<td>
-				    		${(blog.writeDate?string("yyyy-MM-dd HH:mm"))!}
-				    	</td>
-				    	<td class="user-info" info-mode="simple" space-id="${blog.space.id }" ></td>
-				    </tr>
-				</#list>
+				<tbody>
+					<tr>
+						<th>博客标题</th>
+						<th>日期</th>
+					</tr>
+					<#list blogs as blog>
+					    <tr>
+					    	<td><a href="${urlHelper.getUrlBySpace(blog.space)}/blog/${blog.id}" target="_blank">
+					    	<#if blog.title?length gt 15>
+							    ${blog.title?substring(0,15)}...
+							    <#else>
+							    ${blog.title}
+							</#if>
+					    	</a></td>
+					    	<td>
+					    		${(blog.writeDate?string("yyyy-MM-dd HH:mm"))!}
+					    	</td>
+					    </tr>
+					</#list>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="2"><#if config.space ?exists><a href="${urlHelper.getUrlBySpace(config.space)}/blog/list/1"><#else><a href="${urlHelper.getUrl()}/blog/list/1"></#if>查看更多</a></td>
+					</tr>
+				</tfoot>
 			</table>
 		</div>
 	</#if>

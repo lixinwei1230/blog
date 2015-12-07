@@ -47,10 +47,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<update id="update">
 		UPDATE widget_blogwidgetconfig
-		SET
-		<if test="space != null">
-			space_id = #{space.id},
-		</if>
+		SET space_id = #{space.id},
 		<if test="mode != null">
 			display_mode =
 			#{mode,javaType=BlogWidgetDisplayMode,typeHandler=EnumOrdinalTypeHandler},

@@ -14,6 +14,7 @@ import me.qyh.entity.Space;
 import me.qyh.entity.User;
 import me.qyh.entity.blog.Blog;
 import me.qyh.exception.LogicException;
+import me.qyh.exception.SpaceDisabledException;
 import me.qyh.helper.freemaker.WebFreemarkers;
 import me.qyh.page.LocationWidget;
 import me.qyh.page.widget.SystemWidget;
@@ -21,6 +22,7 @@ import me.qyh.page.widget.config.WidgetConfig;
 import me.qyh.page.widget.config.support.BlogWidgetConfig;
 import me.qyh.pageparam.BlogPageParam;
 import me.qyh.server.SpaceServer;
+import me.qyh.utils.Validators;
 
 public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 
@@ -39,8 +41,9 @@ public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 
 	@Override
 	public void storeWidgetConfig(WidgetConfig config) throws LogicException {
-
-		blogWidgetConfigDao.insert((BlogWidgetConfig) config);
+		BlogWidgetConfig bc = (BlogWidgetConfig)config;
+		setSpace(bc);
+		blogWidgetConfigDao.insert(bc);
 	}
 
 	@Override
@@ -82,11 +85,14 @@ public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 			param.setScopes(Scopes.PUBLIC);
 		} else {
 			if (owner.equals(visitor)) {
-				param.setScopes(spaceServer.getScopes(owner, config.getSpace()));
+				param.setScopes(spaceServer.getScopes(owner, configSpace));
 			} else {
 				param.setScopes(Scopes.PUBLIC);
 			}
 		}
+		
+		param.setIgnoreLevel(true);
+		param.setRecommend(configSpace == null);
 
 		return param;
 	}
@@ -134,7 +140,9 @@ public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 
 	@Override
 	public void updateWidgetConfig(WidgetConfig config) throws LogicException {
-		blogWidgetConfigDao.update((BlogWidgetConfig) config);
+		BlogWidgetConfig bc = (BlogWidgetConfig)config;
+		setSpace(bc);
+		blogWidgetConfigDao.update(bc);
 	}
 
 	@Override
@@ -145,6 +153,19 @@ public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 		}
 
 		return db;
+	}
+	
+	private void setSpace(BlogWidgetConfig bc) throws LogicException{
+		Space space = bc.getSpace();
+		if(space == null || Validators.isEmptyOrNull(space.getId(),true)){
+			bc.setSpace(null);
+		}else{
+			try{
+				spaceServer.getSpaceById(space.getId());
+			}catch (SpaceDisabledException e) {
+				throw new LogicException(e.getI18nMessage());
+			}
+		}
 	}
 
 }
