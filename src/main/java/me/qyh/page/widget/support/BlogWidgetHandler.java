@@ -83,16 +83,17 @@ public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 
 		if (configSpace == null) {
 			param.setScopes(Scopes.PUBLIC);
+			param.setRecommend(true);
 		} else {
 			if (owner.equals(visitor)) {
 				param.setScopes(spaceServer.getScopes(owner, configSpace));
 			} else {
 				param.setScopes(Scopes.PUBLIC);
 			}
+			param.setRecommend(null);
 		}
 		
 		param.setIgnoreLevel(true);
-		param.setRecommend(configSpace == null);
 
 		return param;
 	}
