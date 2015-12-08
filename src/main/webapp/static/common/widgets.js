@@ -1,3 +1,4 @@
+
 var userWidget = {handler:function handleConfig(lwId,config,widgetId,btn){
 	var html = '<div class="row" style="margin-bottom: 15px">'
 	html += '<div class="col-lg-12 col-sm-12 col-xs-12 col-md-12" style="margin-bottom:10px">';
@@ -58,6 +59,15 @@ var blogWidget = {id:"1",handler:function handleConfig(lwId,config,widgetId,btn)
 	}
 	html += '<option value="true" >是</option><option value="false" >否</option></select>';			
 	html += '</div></div>';
+	html += '<div class="col-lg-12 col-sm-12 col-xs-12 col-md-12" style="margin-bottom:10px">';
+	html += '<div class="col-lg-4 col-sm-12 col-xs-12 col-md-4"><label>目标主页</label></div>';
+	html += '<div class="col-lg-8 col-sm-12 col-md-8 col-xs-12">';
+	var space = config.space;
+	if(!space || space == null){
+		space = {"id":""};
+	}
+	html += '<input type="text" class="form-control" value="'+space.id+'" name="space.id"/>';
+	html += '</div></div>';
 	html += '<div class="col-lg-12 col-sm-12 col-xs-12 col-md-12">';
 	html += '<div class="col-lg-4 col-sm-12 col-xs-12 col-md-4"><label>展现模式</label></div>';
 	html += '<div class="col-lg-8 col-sm-12 col-md-8 col-xs-12">';
@@ -78,6 +88,7 @@ var blogWidget = {id:"1",handler:function handleConfig(lwId,config,widgetId,btn)
 		data.mode = $("#configForm").find("select[name='mode']").val();
 		data.widget = {"id":lwId};
 		data.hidden=$("#configForm").find("select[name='hidden']").val();
+		data.space = {"id":$("#configForm").find("input[name='space.id']").val()}
 		btn.button("loading");
 		post(root+"/my/page/config/update?widgetSign=blog",data,function callBack(data){
 			if(data.success){
