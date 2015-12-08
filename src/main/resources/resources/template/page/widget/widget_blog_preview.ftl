@@ -12,9 +12,13 @@
 			        <h4 class="media-heading">
 			      	  	<a href="${urlHelper.getUrlBySpace(blog.space)}/blog/${blog.id}" target="_blank">
 				        	<#if blog.title?length gt 15>
-							    ${blog.title?substring(0,15)}...
+							   <#escape x as x?html>
+								 ${blog.title?substring(0,15)}...
+								</#escape>
 							    <#else>
-							    ${blog.title}
+							   <#escape x as x?html>
+								 ${blog.title}
+								</#escape>
 							</#if>
 						</a>
 			        </h4>
@@ -38,9 +42,13 @@
 				    <tr>
 				    	<td><a href="${urlHelper.getUrlBySpace(blog.space)}/blog/${blog.id}" target="_blank">
 				    	<#if blog.title?length gt 15>
-						    ${blog.title?substring(0,15)}...
-						    <#else>
-						    ${blog.title}
+						   <#escape x as x?html>
+								 ${blog.title?substring(0,15)}...
+								</#escape>
+							    <#else>
+							   <#escape x as x?html>
+								 ${blog.title}
+								</#escape>
 						</#if>
 				    	</a></td>
 				    	<td>
