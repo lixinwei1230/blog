@@ -92,7 +92,7 @@
 				<!-- Servlet > 3.1中 org.springframework.security.web.authentication.session.ChangeSessionIdAuthenticationStrategy 
 					是更好的选择 -->
 				<b:bean
-					class="org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy">
+					class="org.springframework.security.web.authentication.session.ChangeSessionIdAuthenticationStrategy">
 				</b:bean>
 			</b:list>
 		</b:constructor-arg>
