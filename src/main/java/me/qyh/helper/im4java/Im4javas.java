@@ -1,8 +1,15 @@
 package me.qyh.helper.im4java;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+
+import org.apache.commons.io.IOUtils;
 import org.im4java.core.ConvertCmd;
 import org.im4java.core.IMOperation;
 import org.im4java.core.IdentifyCmd;
@@ -20,6 +27,8 @@ public class Im4javas implements InitializingBean {
 
 	private static final String IMAGEPREFIX = "image/";
 	private static final boolean windows = (System.getProperty("os.name").toLowerCase().indexOf("win") != -1);
+	private static final String GIF = "GIF";
+	
 	@Value("${config.magick.path}")
 	private String magickPath;
 
@@ -28,7 +37,7 @@ public class Im4javas implements InitializingBean {
 		op.addImage();
 		op.thumbnail(size);
 		op.addImage();
-		getConvertCmd().run(op, absPath, destPath);
+		getConvertCmd().run(op, absPath +"[0]", destPath);
 	}
 
 	public void strip(String absPath) throws Exception {
@@ -45,7 +54,7 @@ public class Im4javas implements InitializingBean {
 		op.addImage();
 		op.crop(width, height, x, y);
 		op.addImage();
-		getConvertCmd().run(op, absPath, destPath);
+		getConvertCmd().run(op, absPath + "[0]", destPath);
 	}
 
 	public void writeFirstFrameOfGif(String absPath, String destPath) throws Exception {
@@ -85,6 +94,24 @@ public class Im4javas implements InitializingBean {
 
 	public static boolean maybeImage(String contentType) {
 		return Validators.isEmptyOrNull(contentType, true) ? false : contentType.startsWith(IMAGEPREFIX);
+	}
+	
+	/**
+	 * 获取gif的帧数
+	 * @param gif
+	 * @return
+	 * @throws IOException
+	 */
+	public static int getNumImages(File gif) throws IOException{
+		ImageInputStream in = null;
+		try{
+			ImageReader ir = ImageIO.getImageReadersBySuffix(GIF).next();
+			in = ImageIO.createImageInputStream(gif);
+			ir.setInput(in);
+			return ir.getNumImages(true);
+		}finally{
+			IOUtils.closeQuietly(in);
+		}
 	}
 
 	public class ImageInfo {

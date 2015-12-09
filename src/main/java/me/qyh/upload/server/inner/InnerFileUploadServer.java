@@ -30,7 +30,7 @@ import me.qyh.upload.server.UploadedResult;
 import me.qyh.utils.Files;
 import me.qyh.utils.Strings;
 
-public class InnerFileUploadServer implements UploadServer{
+public class InnerFileUploadServer implements UploadServer {
 
 	@Autowired
 	private ConfigServer configServer;
@@ -46,6 +46,7 @@ public class InnerFileUploadServer implements UploadServer{
 	private static final String IMAGEPREFIX = "image/";
 	private static final String GIF = "gif";
 	private static final String JPEG = "jpeg";
+	private static final String PNG = "png";
 
 	/**
 	 * 如果不在同一系统的话 首先需要通过 FileServer 获取要上传的服务器的上传地址。 然后用户将文件post到该地址。
@@ -131,20 +132,42 @@ public class InnerFileUploadServer implements UploadServer{
 								String.format("将文件%s修改为%s后缀失败", _file.getAbsolutePath(), ii.getType().toLowerCase()));
 					}
 					_file = rename;
-					if(!GIF.equalsIgnoreCase(ii.getType())){
+					if (!GIF.equalsIgnoreCase(ii.getType())) {
 						try {
 							im4javas.strip(_file.getAbsolutePath());
 						} catch (Exception e) {
-							throw new SystemException(e.getMessage(),e);
+							throw new SystemException(e.getMessage(), e);
 						}
 					}
 					contentType = IMAGEPREFIX + ii.getType().toLowerCase();
+					if (GIF.equalsIgnoreCase(ii.getType())) {
+						try {
+							int numImages = Im4javas.getNumImages(_file);
+							// 只有1帧
+							if (numImages == 1) {
+								File png = new File(_file.getParent(), Files.getFilename(_file.getName()) + "." + PNG);
+								try {
+									im4javas.format(PNG, _file.getAbsolutePath(), png.getAbsolutePath());
+								} catch (Exception e) {
+									throw new SystemException(e.getMessage(), e);
+								}
+								if (!_file.renameTo(png)) {
+									throw new SystemException(
+											String.format("将文件%s修改为%s后缀失败", _file.getAbsolutePath(), PNG));
+								}
+								_file = png;
+								contentType = IMAGEPREFIX + PNG;
+							}
+						} catch (IOException e) {
+							throw new SystemException(e.getMessage(), e);
+						}
+					}
 				} catch (BadImageException e) {
 					info.addError(originalFilename, new I18NMessage("error.upload.badImage"));
 					continue;
 				}
 			}
-			boolean needCover = needCover(contentType);
+			boolean needCover = needCover(contentType, _file);
 			MyFile cover = null;
 			Date now = new Date();
 			if (needCover) {
@@ -167,17 +190,16 @@ public class InnerFileUploadServer implements UploadServer{
 			fileDao.insert(mf);
 
 			info.addSuccess(originalFilename, _file.length());
-
 		}
 		return info;
 	}
 
 	@Override
 	public Object deleteFile(String... paths) throws LogicException {
-		if(paths != null && paths.length > 0){
-			for(String path : paths){
+		if (paths != null && paths.length > 0) {
+			for (String path : paths) {
 				File file = new File(absPath + path);
-				if(file.exists() && file.canExecute()){
+				if (file.exists() && file.canExecute()) {
 					FileUtils.deleteQuietly(file);
 				}
 			}
@@ -193,13 +215,13 @@ public class InnerFileUploadServer implements UploadServer{
 		}
 		return file;
 	}
-	
+
 	private boolean maybeImage(String contentType) {
 		return contentType != null && contentType.startsWith(IMAGEPREFIX);
 	}
 
-	private boolean needCover(String contentType) {
-		return contentType != null && contentType.endsWith(GIF);
+	private boolean needCover(String contentType, File file) {
+		return (contentType != null && contentType.endsWith(GIF));
 	}
 
 	private long calculateTotalSize(List<MultipartFile> files) {
