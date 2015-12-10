@@ -23,5 +23,8 @@ public interface BlogDao extends BaseDao<Blog, Integer> {
 	List<BlogCategoryFile> selectCategoryFile(BlogFilesQueryBean bean);
 
 	void updateRecommend(Blog blog);
-
+	
+	Blog getPreviousBlog(@Param("id") Integer id,@Param("param") BlogPageParam param);
+	
+	Blog getNextBlog(@Param("id") Integer id,@Param("param") BlogPageParam param);
 }

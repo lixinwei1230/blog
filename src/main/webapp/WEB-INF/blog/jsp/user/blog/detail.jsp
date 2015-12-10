@@ -27,6 +27,7 @@
 		<div class="row">
 			<div class="col-lg-8 col-md-8 col-sm-8 text">
 				<h3>
+					<c:out value="${referer }"/>
 					<c:out value="${blog.title }" />
 					<sec:authorize ifAnyGranted="ROLE_SPACE">
 						<sec:authentication property='principal.space.id' var="spaceId" />
@@ -48,6 +49,7 @@
 				<div id="blog-content" style="margin-bottom: 20px">
 					${blog.content }</div>
 				<div class="clearfix">&nbsp;</div>
+				<div id="around"></div>
 				<div id="attContainer"></div>
 				<div id="editor-container"></div>
 				<div id="comment-container"></div>
@@ -78,6 +80,23 @@ $(document).ready(function(){
 		scope:"Blog",
 		comment_container : "comment-container",
 		editor_container : 'editor-container'
+	});
+	var blogId = '${blog.id}';
+	$.get('${ctx}/blog/'+blogId+'/around',{"space.id":'${space.id}'},function callBack(data){
+		var blogs = data.result;
+		if(blogs.length > 0){
+			var html = '<div class="alert alert-info">';
+			for(var i=0;i<blogs.length;i++){
+				var blog = blogs[i];
+				if(blog.id > blogId){
+					html += '<p>下一篇：<a href="${ctx}/space/${space.id}/blog/'+blog.id+'">'+blog.title+"</a></p>";
+				}else{
+					html += '<p>上一篇：<a href="${ctx}/space/${space.id}/blog/'+blog.id+'">'+blog.title+"</a></p>";
+				}
+			}
+			html += '</div>';
+			$("#around").html(html);
+		}
 	});
 });
 $(window).load(function(){

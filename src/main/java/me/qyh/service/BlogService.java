@@ -41,5 +41,7 @@ public interface BlogService {
 	void handleTemporaryBlog(Blog blog) throws LogicException;
 
 	Blog getBlog(Integer id) throws LogicException;
+	
+	List<Blog> findAroundBlogs(Integer id, BlogPageParam param);
 
 }

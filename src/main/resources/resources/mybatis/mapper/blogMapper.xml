@@ -302,5 +302,103 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<delete id="deleteById">
 		DELETE FROM blog WHERE id = #{id}
 	</delete>
+	
+	<select id="getPreviousBlog" resultType="Blog">
+		SELECT b.id,b.title,b.write_date AS writeDate FROM blog b
+		<if test="param.tagIds != null and !param.tagIds.isEmpty()">
+			LEFT OUTER JOIN blog_tag bt ON bt.blog = b.id
+		</if>
+		WHERE b.id  <![CDATA[ < ]]> #{id}
+		<if test="param.recommend != null">
+			AND recommend = #{param.recommend}
+		</if>
+		<if test="param.space != null">
+			AND b.space_id = #{param.space.id}
+		</if>
+		<if test="param.from != null">
+			AND blog_from = #{param.from,javaType=BlogFrom,typeHandler=EnumOrdinalTypeHandler}
+		</if>
+		<if test="param.status != null">
+			AND blog_status = #{param.status,javaType=BlogStatus,typeHandler=EnumOrdinalTypeHandler}
+		</if>
+		<if test="param.title != null and param.title != ''">
+			AND title LIKE CONCAT('%', #{param.title},'%')
+		</if>
+		<if test="param.category != null and param.category.id != null">
+			AND category = #{param.category.id}
+		</if>
+		<if test="param.scopes != null and !param.scopes.isEmpty()">
+			AND
+			(
+			<foreach collection="param.scopes.scopes" item="s" open="" separator="OR"
+				close="">
+				scope = #{s,javaType=Scope,typeHandler=EnumOrdinalTypeHandler}
+			</foreach>
+			)
+		</if>
+		<if test="param.begin != null and param.end != null">
+			AND write_date BETWEEN #{param.begin} AND #{param.end}
+		</if>
+		<if test="param.tagIds != null and !param.tagIds.isEmpty()">
+			AND bt.tag_id IN
+			(
+			<foreach collection="param.tagIds" item="t" open="" separator=","
+				close="">
+				#{t}
+			</foreach>
+			)
+		</if>
+		ORDER BY b.id DESC
+		LIMIT 0,1
+	</select>
+	
+	<select id="getNextBlog" resultType="Blog">
+		SELECT b.id,b.title,b.write_date AS writeDate FROM blog b
+		<if test="param.tagIds != null and !param.tagIds.isEmpty()">
+			LEFT OUTER JOIN blog_tag bt ON bt.blog = b.id
+		</if>
+		WHERE b.id  > #{id}
+		<if test="param.recommend != null">
+			AND recommend = #{param.recommend}
+		</if>
+		<if test="param.space != null">
+			AND b.space_id = #{param.space.id}
+		</if>
+		<if test="param.from != null">
+			AND blog_from = #{param.from,javaType=BlogFrom,typeHandler=EnumOrdinalTypeHandler}
+		</if>
+		<if test="param.status != null">
+			AND blog_status = #{param.status,javaType=BlogStatus,typeHandler=EnumOrdinalTypeHandler}
+		</if>
+		<if test="param.title != null and param.title != ''">
+			AND title LIKE CONCAT('%', #{param.title},'%')
+		</if>
+		<if test="param.category != null and param.category.id != null">
+			AND category = #{param.category.id}
+		</if>
+		<if test="param.scopes != null and !param.scopes.isEmpty()">
+			AND
+			(
+			<foreach collection="param.scopes.scopes" item="s" open="" separator="OR"
+				close="">
+				scope = #{s,javaType=Scope,typeHandler=EnumOrdinalTypeHandler}
+			</foreach>
+			)
+		</if>
+		<if test="param.begin != null and param.end != null">
+			AND write_date BETWEEN #{param.begin} AND #{param.end}
+		</if>
+		<if test="param.tagIds != null and !param.tagIds.isEmpty()">
+			AND bt.tag_id IN
+			(
+			<foreach collection="param.tagIds" item="t" open="" separator=","
+				close="">
+				#{t}
+			</foreach>
+			)
+		</if>
+		ORDER BY b.id ASC
+		LIMIT 0,1
+	</select>
 
 </mapper>

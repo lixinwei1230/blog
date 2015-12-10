@@ -15,6 +15,7 @@ import me.qyh.entity.blog.BlogStatus;
 import me.qyh.exception.LogicException;
 import me.qyh.pageparam.BlogPageParam;
 import me.qyh.service.BlogService;
+import me.qyh.web.InvalidParamException;
 
 @Controller
 @RequestMapping("blog")
@@ -30,6 +31,16 @@ public class BlogController extends BaseController {
 	public Info hit(@PathVariable("id") int id) {
 		blogService.updateHits(id, 1);
 		return new Info(true);
+	}
+	
+	@RequestMapping(value = "{id}/around")
+	@ResponseBody
+	public Info aroudBlogs(BlogPageParam param,@PathVariable("id") int id){
+		if(id < 0){
+			throw new InvalidParamException();
+		}
+		param.setStatus(BlogStatus.NORMAL);
+		return new Info(true,blogService.findAroundBlogs(id, param));
 	}
 
 	@RequestMapping(value = "list/{currentPage}")

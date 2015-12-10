@@ -205,14 +205,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	@Override
 	@Transactional(readOnly = true)
 	public Page<Blog> findBlogs(BlogPageParam param) {
-		Scopes max = spaceServer.getScopes(UserContext.getUser(), param.getSpace());
-		if (!max.contains(param.getScopes())) {
-			param.setScopes(max);
-		}
-		Set<Integer> tagIds = param.getTagIds();
-		if (!Validators.isEmptyOrNull(tagIds) && tagIds.size() > tagsMaxSizeWhenSearch) {
-			param.setTagIds(new HashSet<Integer>(new ArrayList<Integer>(tagIds).subList(0, tagsMaxSizeWhenSearch)));
-		}
+		validBlogPageParam(param);
 		List<Blog> datas = blogDao.selectPage(param);
 		if (!datas.isEmpty()) {
 			for (Blog data : datas) {
@@ -374,6 +367,22 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 			temporaryBlogDao.update(tBlog);
 		}
 	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<Blog> findAroundBlogs(Integer id,BlogPageParam param) {
+		validBlogPageParam(param);
+		List<Blog> blogs = new ArrayList<Blog>();
+		Blog previous = blogDao.getPreviousBlog(id, param);
+		Blog next = blogDao.getNextBlog(id, param);
+		if(previous != null){
+			blogs.add(previous);
+		}
+		if(next != null){
+			blogs.add(next);
+		}
+		return blogs;
+	}
 
 	private int getComments(Blog blog) {
 		CommentScope scope = commentScopeDao.selectByScopeAndScopeId(Blog.class.getSimpleName(),
@@ -527,6 +536,17 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 			if (count >= limit.getLimit()) {
 				throw new LogicException("error.frequency.limit.blog");
 			}
+		}
+	}
+	
+	private void validBlogPageParam(BlogPageParam param){
+		Scopes max = spaceServer.getScopes(UserContext.getUser(), param.getSpace());
+		if (!max.contains(param.getScopes())) {
+			param.setScopes(max);
+		}
+		Set<Integer> tagIds = param.getTagIds();
+		if (!Validators.isEmptyOrNull(tagIds) && tagIds.size() > tagsMaxSizeWhenSearch) {
+			param.setTagIds(new HashSet<Integer>(new ArrayList<Integer>(tagIds).subList(0, tagsMaxSizeWhenSearch)));
 		}
 	}
 }
