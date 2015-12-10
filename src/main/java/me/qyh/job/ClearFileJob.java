@@ -3,15 +3,19 @@ package me.qyh.job;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import me.qyh.dao.FileDao;
 import me.qyh.entity.FileStatus;
@@ -21,11 +25,18 @@ import me.qyh.pageparam.Page;
 import me.qyh.upload.server.FileStore;
 import me.qyh.utils.Times;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
 /**
  * 清理文件的定时任务
  * 
  * @author mhlx
- *
+ * 
  */
 public class ClearFileJob {
 
@@ -38,6 +49,9 @@ public class ClearFileJob {
 	@Value("${config.image.thumb.cachedir}")
 	private String imageCacheDir;
 
+	private static final Logger logger = LoggerFactory
+			.getLogger(ClearFileJob.class);
+
 	private Page<MyFile> findMyFiles(MyFilePageParam param) {
 		List<MyFile> datas = fileDao.selectPage(param);
 		int count = fileDao.selectCount(param);
@@ -46,7 +60,9 @@ public class ClearFileJob {
 
 	private void deleteMyFile(MyFile file) {
 		FileStore store = file.getStore();
-		sendPost(store.deleteUrl() + "?path=" + file.getSeekPath() + "&key=" + store.delKey());
+		String url = store.deleteUrl() + "?path=" + file.getSeekPath()
+				+ "&key=" + store.delKey();
+		sendPost(url , store.protocol());
 	}
 
 	public synchronized void doJob() {
@@ -79,18 +95,35 @@ public class ClearFileJob {
 		}
 	}
 
-	private String sendPost(String url) {
+	private String sendPost(String url , String protocol) {
+		if ("https".equalsIgnoreCase(protocol)) {
+			try {
+				trustAllHttpsCertificates();
+			} catch (Exception e) {
+				logger.error(e.getMessage(),e);
+			}
+			HostnameVerifier hv = new HostnameVerifier() {
+				@Override
+				public boolean verify(String str, SSLSession session) {
+					return true;
+				}
+			};
+			HttpsURLConnection.setDefaultHostnameVerifier(hv); 
+		}
 		BufferedReader in = null;
 		String result = "";
+		HttpURLConnection conn = null; 
 		try {
 			URL realUrl = new URL(url);
-			URLConnection conn = realUrl.openConnection();
+			conn = (HttpURLConnection)realUrl.openConnection();
 			conn.setRequestProperty("accept", "*/*");
 			conn.setRequestProperty("connection", "Keep-Alive");
-			conn.setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+			conn.setRequestProperty("user-agent",
+					"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
 			conn.setDoOutput(true);
 			conn.setDoInput(true);
-			in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
+			in = new BufferedReader(new InputStreamReader(
+					conn.getInputStream(), "utf-8"));
 			String line;
 			while ((line = in.readLine()) != null) {
 				result += line;
@@ -98,7 +131,47 @@ public class ClearFileJob {
 		} catch (Exception e) {
 		} finally {
 			IOUtils.closeQuietly(in);
+			if(conn != null){
+				conn.disconnect();
+			}
 		}
 		return result;
+	}
+
+	private static void trustAllHttpsCertificates() throws Exception {
+		TrustManager[] trustAllCerts = new javax.net.ssl.TrustManager[1];
+		TrustManager tm = new miTM();
+		trustAllCerts[0] = tm;
+		SSLContext sc = SSLContext.getInstance("SSL");
+		sc.init(null, trustAllCerts, null);
+		HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+	}
+
+	static class miTM implements TrustManager, X509TrustManager {
+		public X509Certificate[] getAcceptedIssuers() {
+			return null;
+		}
+
+		public boolean isServerTrusted(
+				X509Certificate[] certs) {
+			return true;
+		}
+
+		public boolean isClientTrusted(
+				X509Certificate[] certs) {
+			return true;
+		}
+
+		public void checkServerTrusted(
+				X509Certificate[] certs, String authType)
+				throws CertificateException {
+			return;
+		}
+
+		public void checkClientTrusted(
+				X509Certificate[] certs, String authType)
+				throws CertificateException {
+			return;
+		}
 	}
 }

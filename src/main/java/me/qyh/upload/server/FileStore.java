@@ -26,5 +26,7 @@ public interface FileStore {
 	String deleteUrl();
 	
 	String delKey();
+	
+	String protocol();
 
 }

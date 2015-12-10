@@ -8,13 +8,16 @@ import me.qyh.utils.Strings;
 import me.qyh.web.tag.url.UrlHelper;
 
 public class InnerFileStore implements FileStore , InitializingBean {
+	
+	private static final String DEFAULT_PROTOCOL = "http";
 
 	private String uploadRequestUrl;
 	private String writeRequestUrl;
 	private Integer id;
 	private String deleteRequestUrl;
 	private String delKey;
-
+	private String protocol = DEFAULT_PROTOCOL;
+	
 	@Autowired
 	private UrlHelper urlHelper;
 
@@ -63,7 +66,16 @@ public class InnerFileStore implements FileStore , InitializingBean {
 	}
 
 	@Override
+	public String protocol() {
+		return protocol;
+	}
+
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		delKey = Strings.getMd5(Strings.getMd5(id + deleteRequestUrl));
+	}
+
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
 	}
 }

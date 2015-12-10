@@ -5,11 +5,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.multipart.MultipartFile;
-
 import me.qyh.bean.I18NMessage;
 import me.qyh.config.ConfigServer;
 import me.qyh.config.FileUploadConfig;
@@ -30,6 +25,13 @@ import me.qyh.upload.server.UploadedResult;
 import me.qyh.utils.Files;
 import me.qyh.utils.Strings;
 
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.multipart.MultipartFile;
+
 public class InnerFileUploadServer implements UploadServer {
 
 	@Autowired
@@ -47,6 +49,7 @@ public class InnerFileUploadServer implements UploadServer {
 	private static final String GIF = "gif";
 	private static final String JPEG = "jpeg";
 	private static final String PNG = "png";
+	private static final Logger logger = LoggerFactory.getLogger(InnerFileUploadServer.class);
 
 	/**
 	 * 如果不在同一系统的话 首先需要通过 FileServer 获取要上传的服务器的上传地址。 然后用户将文件post到该地址。
@@ -103,7 +106,7 @@ public class InnerFileUploadServer implements UploadServer {
 			File _file = new File(folder, newFilename);
 			try {
 				file.transferTo(_file);
-			} catch (IllegalStateException | IOException e1) {
+			} catch (Exception e1) {
 				throw new SystemException(e1);
 			}
 			String contentType = file.getContentType();
@@ -145,17 +148,16 @@ public class InnerFileUploadServer implements UploadServer {
 							int numImages = Im4javas.getNumImages(_file);
 							// 只有1帧
 							if (numImages == 1) {
-								File png = new File(_file.getParent(), Files.getFilename(_file.getName()) + "." + PNG);
 								try {
-									im4javas.format(PNG, _file.getAbsolutePath(), png.getAbsolutePath());
+									im4javas.format(PNG, _file.getAbsolutePath(), _file.getAbsolutePath());
+									boolean deleteFlag = FileUtils.deleteQuietly(_file);
+									if(!deleteFlag){
+										logger.warn("删除文件失败，文件路径为:{},存储器ID为:{}",_file.getAbsolutePath(),innerFileStore.id());
+									}
 								} catch (Exception e) {
 									throw new SystemException(e.getMessage(), e);
 								}
-								if (!_file.renameTo(png)) {
-									throw new SystemException(
-											String.format("将文件%s修改为%s后缀失败", _file.getAbsolutePath(), PNG));
-								}
-								_file = png;
+								_file =  new File(_file.getParent(), _file.getName() + "." + PNG);
 								contentType = IMAGEPREFIX + PNG;
 							}
 						} catch (IOException e) {
