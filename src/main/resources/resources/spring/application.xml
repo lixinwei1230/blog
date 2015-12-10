@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:security="http://www.springframework.org/schema/security"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
@@ -33,7 +33,7 @@
 		location="classpath:resources/mybatis/dbconn.properties,
 			classpath:resources/mail.properties,
 			classpath:resources/config.properties,
-			classpath:resources/appConfig.properties" />
+			classpath:resources/webConfig.properties" />
 
 	<bean id="cacheManagerFactory"
 		class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"
@@ -216,7 +216,7 @@
 			<ref bean="clearFileJob" />
 		</property>
 		<property name="cronExpression">
-			<value>0 0 1 * * ?</value>
+			<value>0 0 3 * * ?</value>
 		</property>
 	</bean>
 
@@ -267,6 +267,7 @@
 		<property name="uploadRequestUrl" value="upload" />
 		<property name="writeRequestUrl" value="write" />
 		<property name="deleteRequestUrl" value="clean/file/deletePhysical"/>
+		<property name="protocol" value="https"/>
 	</bean>
 
 	<bean id="avatarStore" class="me.qyh.upload.server.inner.InnerFileStore">
@@ -274,6 +275,7 @@
 		<property name="uploadRequestUrl" value="my/avatar/upload" />
 		<property name="writeRequestUrl" value="avatar" />
 		<property name="deleteRequestUrl" value="clean/avatar/deletePhysical"/>
+		<property name="protocol" value="https"/>
 	</bean>
 
 	<bean id="innerFileUploadServer" class="me.qyh.upload.server.inner.InnerFileUploadServer"/>
