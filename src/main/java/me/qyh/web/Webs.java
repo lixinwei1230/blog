@@ -27,6 +27,7 @@ public final class Webs {
 
 	public static final String rootPath = System.getProperty("webapp.root");
 	private static final String URL_HELPER = "urlHelper";
+	private static final String REFERER = "Referer";
 
 	public static boolean isAjaxRequest(HttpServletRequest request) {
 		return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
@@ -92,5 +93,9 @@ public final class Webs {
 
 	public static boolean isSafeFilePath(String path) {
 		return (!Validators.isEmptyOrNull(path, true) && path.indexOf("..") == -1);
+	}
+	
+	public static String getReferer(HttpServletRequest request){
+		return request.getHeader(REFERER);
 	}
 }

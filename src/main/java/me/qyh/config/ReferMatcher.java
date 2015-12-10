@@ -10,6 +10,7 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import me.qyh.utils.Validators;
+import me.qyh.web.Webs;
 import me.qyh.web.tag.url.UrlHelper;
 
 @Component("fileWriteMatcher")
@@ -25,11 +26,11 @@ public class ReferMatcher implements RequestMatcher, InitializingBean {
 
 	private static final String LOCALHOST = "localhost";
 	private static final String LOCALIP = "127.0.0.1";
-	private static final String REFERER = "Referer";
+	
 
 	@Override
 	public boolean matches(HttpServletRequest request) {
-		String referer = request.getHeader(REFERER);
+		String referer = Webs.getReferer(request);
 		if (referer == null) {
 			return enableNull;
 		}
