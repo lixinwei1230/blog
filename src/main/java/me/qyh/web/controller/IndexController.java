@@ -26,6 +26,7 @@ public class IndexController extends BaseController {
 		param.setPageSize(pageSize);
 		param.setStatus(BlogStatus.NORMAL);
 		param.setRecommend(true);
+		param.setIgnoreLevel(true);
 		
 		model.addAttribute(PAGE, blogService.findBlogs(param));
 
