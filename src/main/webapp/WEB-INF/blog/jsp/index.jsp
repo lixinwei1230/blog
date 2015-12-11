@@ -99,28 +99,6 @@
 						</div>
 					</c:otherwise>
 				</c:choose>
-
-				<c:if test="${page.totalPage >1 }">
-					<div>
-						<ul class="pagination">
-							<c:forEach begin="${page.listbegin }" end="${page.listend-1 }"
-								var="i">
-								<c:if test="${page.currentPage != i }">
-									<li><c:choose>
-											<c:when test="${pageContext.request.queryString == null}">
-												<a href="${ctx }/blog/list/${i }">${i }</a>
-											</c:when>
-											<c:otherwise>
-												<a
-													href="${ctx }/blog/list/${i }?${pageContext.request.queryString}">${i
-													}</a>
-											</c:otherwise>
-										</c:choose></li>
-								</c:if>
-							</c:forEach>
-						</ul>
-					</div>
-				</c:if>
 			</div>
 			<div class="col-lg-4 col-md-4 col-sm-4 text">
 				<sec:authorize ifAnyGranted="ROLE_USER,ROLE_OAUTH" var="isLogin" />

@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -21,21 +20,15 @@ public class IndexController extends BaseController {
 	private int pageSize;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String index() {
-		return "forward:blog/list/1";
-	}
-
-	@RequestMapping(value = "blog/list/{currentPage}", method = RequestMethod.GET)
-	public String index(@PathVariable("currentPage") int currentPage, BlogPageParam param, ModelMap model) {
-		param.setCurrentPage(currentPage);
+	public String index(ModelMap model) {
+		BlogPageParam param = new BlogPageParam();
+		param.setCurrentPage(1);
 		param.setPageSize(pageSize);
 		param.setStatus(BlogStatus.NORMAL);
 		param.setRecommend(true);
-		param.validate();
-
+		
 		model.addAttribute(PAGE, blogService.findBlogs(param));
 
 		return "index";
 	}
-
 }

@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import me.qyh.bean.Info;
-import me.qyh.entity.blog.BlogFrom;
 import me.qyh.entity.blog.BlogStatus;
 import me.qyh.exception.LogicException;
 import me.qyh.pageparam.BlogPageParam;
@@ -32,31 +31,30 @@ public class BlogController extends BaseController {
 		blogService.updateHits(id, 1);
 		return new Info(true);
 	}
-	
+
 	@RequestMapping(value = "{id}/around")
 	@ResponseBody
-	public Info aroudBlogs(BlogPageParam param,@PathVariable("id") int id){
-		if(id < 0){
+	public Info aroudBlogs(BlogPageParam param, @PathVariable("id") int id) {
+		if (id < 0) {
 			throw new InvalidParamException();
 		}
 		param.setStatus(BlogStatus.NORMAL);
-		return new Info(true,blogService.findAroundBlogs(id, param));
+		return new Info(true, blogService.findAroundBlogs(id, param));
 	}
 
-	@RequestMapping(value = "list/{currentPage}")
+	@RequestMapping(value = "list/{currentPage}", method = RequestMethod.GET)
 	public String list(@PathVariable("currentPage") int currentPage, BlogPageParam param, ModelMap model)
 			throws LogicException {
 
 		param.setCurrentPage(currentPage);
 		param.setPageSize(pageSize);
 		param.setStatus(BlogStatus.NORMAL);
-		param.setFrom(BlogFrom.ORIGINAL);
-		param.setRecommend(true);
+		param.setIgnoreLevel(true);
 		param.validate();
 
 		model.addAttribute(PAGE, blogService.findBlogs(param));
 
-		return "blog/list";
+		return "blog/index";
 	}
 
 }
