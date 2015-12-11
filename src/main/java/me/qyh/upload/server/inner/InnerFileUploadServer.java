@@ -26,8 +26,6 @@ import me.qyh.utils.Files;
 import me.qyh.utils.Strings;
 
 import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,6 +40,8 @@ public class InnerFileUploadServer implements UploadServer {
 	private InnerFileStore innerFileStore;
 	@Value("${config.file.absPath}")
 	private String absPath;
+	@Value("${config.tempdir}")
+	private String tempDir;
 	@Autowired
 	private Im4javas im4javas;
 
@@ -49,7 +49,6 @@ public class InnerFileUploadServer implements UploadServer {
 	private static final String GIF = "gif";
 	private static final String JPEG = "jpeg";
 	private static final String PNG = "png";
-	private static final Logger logger = LoggerFactory.getLogger(InnerFileUploadServer.class);
 
 	/**
 	 * 如果不在同一系统的话 首先需要通过 FileServer 获取要上传的服务器的上传地址。 然后用户将文件post到该地址。
@@ -99,11 +98,11 @@ public class InnerFileUploadServer implements UploadServer {
 			String newFilename = Strings.uuid() + "." + extension;
 			String relativePath = Files.ymd();
 
-			File folder = new File(absPath + relativePath);
-			if (!folder.exists() && !folder.mkdirs()) {
-				throw new SystemException(this.getClass().getName() + ":无法创建目录:" + folder.getPath());
+			File temp = new File(tempDir + relativePath);
+			if (!temp.exists() && !temp.mkdirs()) {
+				throw new SystemException(this.getClass().getName() + ":无法创建目录:" + temp.getPath());
 			}
-			File _file = new File(folder, newFilename);
+			File _file = new File(temp, newFilename);
 			try {
 				file.transferTo(_file);
 			} catch (Exception e1) {
@@ -150,10 +149,6 @@ public class InnerFileUploadServer implements UploadServer {
 							if (numImages == 1) {
 								try {
 									im4javas.format(PNG, _file.getAbsolutePath(), _file.getAbsolutePath());
-									boolean deleteFlag = FileUtils.deleteQuietly(_file);
-									if(!deleteFlag){
-										logger.warn("删除文件失败，文件路径为:{},存储器ID为:{}",_file.getAbsolutePath(),innerFileStore.id());
-									}
 								} catch (Exception e) {
 									throw new SystemException(e.getMessage(), e);
 								}
@@ -172,9 +167,10 @@ public class InnerFileUploadServer implements UploadServer {
 			boolean needCover = needCover(contentType, _file);
 			MyFile cover = null;
 			Date now = new Date();
+			File _cover = null;
 			if (needCover) {
 				String coverName = Files.getFilename(newFilename) + "." + JPEG;
-				File _cover = new File(folder, coverName);
+				_cover = new File(temp, coverName);
 				try {
 					im4javas.writeFirstFrameOfGif(_file.getAbsolutePath(), _cover.getAbsolutePath());
 				} catch (Exception e) {
@@ -192,6 +188,19 @@ public class InnerFileUploadServer implements UploadServer {
 			fileDao.insert(mf);
 
 			info.addSuccess(originalFilename, _file.length());
+			
+			File folder = new File(absPath + relativePath);
+			if (!folder.exists() && !folder.mkdirs()) {
+				throw new SystemException(this.getClass().getName() + ":无法创建目录:" + folder.getPath());
+			}
+			try{
+				FileUtils.copyFile(_file, new File(folder,_file.getName()));
+				if(needCover){
+					FileUtils.copyFile(_cover, new File(folder,_cover.getName()));
+				}
+			}catch (IOException e) {
+				throw new SystemException(e.getMessage(), e);
+			}
 		}
 		return info;
 	}
@@ -233,5 +242,4 @@ public class InnerFileUploadServer implements UploadServer {
 		}
 		return total;
 	}
-
 }

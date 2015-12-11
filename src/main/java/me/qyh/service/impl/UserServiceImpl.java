@@ -263,6 +263,21 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 		boolean croped = false;
 		boolean oldAvatar = (file instanceof AvatarFile);
 		String absPath = folder.getAbsolutePath() + File.separator + file.getName();
+		MyFile avatar = null;
+		if (!oldAvatar) {
+			File cropFile = croped ? new File(absPath) : file;
+			avatar = new MyFile(user, cropFile.length(), Files.getFileExtension(file.getName()), file.getName(),
+					new Date(), avatarStore, FileStatus.NORMAL, relativePath, file.getName(), false);
+			fileDao.insert(avatar);
+		} else {
+			avatar = ((AvatarFile) file).getMyFile();
+			super.doAuthencation(user, avatar.getUser());
+			if (croped) {
+				if (!file.setLastModified(System.currentTimeMillis())) {
+					logger.warn("用户:{}更新了头像，但是无法改变物理文件:{}的最后操作时间，这将会导致无法刷新用户头像缓存", user, file);
+				}
+			}
+		}
 		try {
 			ImageInfo info = im4javas.getImageInfo(file.getAbsolutePath());
 			croped = (info.getWidth() != crop.getW() || info.getHeight() != crop.getH());
@@ -281,21 +296,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 			}
 		} catch (BadImageException e) {
 			throw new LogicException("error.upload.badImage");
-		}
-		MyFile avatar = null;
-		if (!oldAvatar) {
-			File cropFile = croped ? new File(absPath) : file;
-			avatar = new MyFile(user, cropFile.length(), Files.getFileExtension(file.getName()), file.getName(),
-					new Date(), avatarStore, FileStatus.NORMAL, relativePath, file.getName(), false);
-			fileDao.insert(avatar);
-		} else {
-			avatar = ((AvatarFile) file).getMyFile();
-			super.doAuthencation(user, avatar.getUser());
-			if (croped) {
-				if (!file.setLastModified(System.currentTimeMillis())) {
-					logger.warn("用户:{}更新了头像，但是无法改变物理文件:{}的最后操作时间，这将会导致无法刷新用户头像缓存", user, file);
-				}
-			}
 		}
 
 		user.setAvatar(avatar);
