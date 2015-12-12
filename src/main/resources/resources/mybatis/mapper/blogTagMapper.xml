@@ -4,7 +4,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="me.qyh.dao.BlogTagDao">
 
-	<resultMap type="WebTag" id="WebTagDetail">
+	<resultMap type="Tag" id="TagDetail">
 		<id property="id" column="id" />
 		<result property="name" column="tag_name" />
 		<result property="createDate" column="create_date" />
@@ -19,10 +19,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		DELETE FROM blog_tag WHERE blog = #{id}
 	</delete>
 
-	<select id="selectByBlog" resultMap="WebTagDetail">
+	<select id="selectByBlog" resultMap="TagDetail">
 		SELECT wt.id,tag_name FROM
 		blog_tag bt
-		LEFT OUTER JOIN web_tag wt ON bt.tag_id = wt.id
+		LEFT OUTER JOIN tag wt ON bt.tag_id = wt.id
 		WHERE blog = #{id}
 	</select>
 

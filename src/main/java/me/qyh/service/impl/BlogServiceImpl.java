@@ -7,18 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
-
 import me.qyh.bean.Scopes;
 import me.qyh.config.BlogConfig;
 import me.qyh.config.ConfigServer;
@@ -28,11 +16,9 @@ import me.qyh.dao.BlogDao;
 import me.qyh.dao.BlogTagDao;
 import me.qyh.dao.CommentDao;
 import me.qyh.dao.CommentScopeDao;
+import me.qyh.dao.TagDao;
 import me.qyh.dao.TemporaryBlogDao;
-import me.qyh.dao.UserTagCountDao;
 import me.qyh.dao.UserTagDao;
-import me.qyh.dao.WebTagCountDao;
-import me.qyh.dao.WebTagDao;
 import me.qyh.entity.CommentScope;
 import me.qyh.entity.Space;
 import me.qyh.entity.User;
@@ -41,11 +27,8 @@ import me.qyh.entity.blog.BlogCategory;
 import me.qyh.entity.blog.BlogStatus;
 import me.qyh.entity.blog.BlogTag;
 import me.qyh.entity.blog.TemporaryBlog;
-import me.qyh.entity.tag.TagModule;
+import me.qyh.entity.tag.Tag;
 import me.qyh.entity.tag.UserTag;
-import me.qyh.entity.tag.UserTagCount;
-import me.qyh.entity.tag.WebTag;
-import me.qyh.entity.tag.WebTagCount;
 import me.qyh.exception.LogicException;
 import me.qyh.exception.SystemException;
 import me.qyh.helper.cache.SignCache;
@@ -60,6 +43,18 @@ import me.qyh.service.BlogService;
 import me.qyh.utils.Strings;
 import me.qyh.utils.Validators;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
+
 @Service("blogService")
 public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 
@@ -70,13 +65,9 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	@Autowired
 	private BlogTagDao blogTagDao;
 	@Autowired
-	private WebTagDao webTagDao;
-	@Autowired
-	private WebTagCountDao webTagCountDao;
+	private TagDao tagDao;
 	@Autowired
 	private UserTagDao userTagDao;
-	@Autowired
-	private UserTagCountDao userTagCountDao;
 	@Autowired
 	private CommentDao commentDao;
 	@Autowired
@@ -158,7 +149,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		BlogConfig config = configServer.getBlogConfig(user);
 		blog.setContent(config.getClean().handle(blog.getContent()));
 		blog.setComments(getComments(blog));
-		blog.setTags(new HashSet<WebTag>(getWebTag(blog)));
+		blog.setTags(new HashSet<Tag>(getTag(blog)));
 
 		return blog;
 	}
@@ -209,7 +200,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		List<Blog> datas = blogDao.selectPage(param);
 		if (!datas.isEmpty()) {
 			for (Blog data : datas) {
-				data.setTags(new HashSet<WebTag>(getWebTag(data)));
+				data.setTags(new HashSet<Tag>(getTag(data)));
 				data.setComments(getComments(data));
 			}
 		}
@@ -231,10 +222,6 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 
 		blog.setStatus(BlogStatus.RECYCLER);
 		blogDao.update(blog);
-
-		List<WebTag> tags = getWebTag(blog);
-		updateTagCount(tags, blog, -1);
-
 	}
 
 	@Override
@@ -256,9 +243,8 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		setBlogSummray(toUpdate, summaryLength);
 		blogDao.update(toUpdate);
 
-		List<WebTag> oldTags = getWebTag(db);
+		List<Tag> oldTags = getTag(db);
 		if (!oldTags.isEmpty()) {
-			updateTagCount(oldTags, db, -1);
 			blogTagDao.deleteByBlog(db);
 		}
 		insertBlogTag(toUpdate);
@@ -305,8 +291,6 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 
 		blog.setStatus(BlogStatus.NORMAL);
 		blogDao.update(blog);
-		List<WebTag> tags = getWebTag(blog);
-		updateTagCount(tags, blog, 1);
 	}
 
 	@Override
@@ -399,41 +383,30 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		return commentDao.selectCount(param);
 	}
 
-	private List<WebTag> getWebTag(Blog blog) {
+	private List<Tag> getTag(Blog blog) {
 		return blogTagDao.selectByBlog(blog);
 	}
 
 	private void insertBlogTag(Blog blog) {
-		Set<WebTag> tags = blog.getTags();
-		if (!tags.isEmpty()) {
-			for (WebTag tag : tags) {
-				String tagName = tag.getName().trim();
-				String handledTagName = this.handleTagName(tagName);
-				WebTag db = webTagDao.selectByName(handledTagName);
+		Set<Tag> tags = blog.getTags();
+		if (!Validators.isEmptyOrNull(tags)) {
+			for (Tag tag : tags) {
+				String handledTagName = this.handleTagName(tag);
+				Tag db = tagDao.selectByName(handledTagName);
 				if (db == null) {
-
 					tag.setCreateDate(new Date());
-					webTagDao.insert(tag);
-					webTagCountDao.insert(new WebTagCount(tag, TagModule.BLOG, blog.getIsPrivate() ? 0 : 1));
+					tagDao.insert(tag);
 				} else {
 					tag.setId(db.getId());
-					if (!blog.getIsPrivate()) {
-						webTagCountDao.updateCount(db, TagModule.BLOG, 1);
-					}
 				}
 
 				User user = UserContext.getUser();
-				UserTag ut = userTagDao.selectByName(handledTagName, user);
+				UserTag ut = userTagDao.selectByTag(tag,user);
 				if (ut == null) {
 					UserTag _ut = new UserTag();
-					_ut.setName(tagName);
 					_ut.setUser(user);
 					_ut.setTag(tag);
-					_ut.setCreateDate(new Date());
 					userTagDao.insert(_ut);
-					userTagCountDao.insert(new UserTagCount(_ut, TagModule.BLOG, 1));
-				} else {
-					userTagCountDao.updateCount(ut, TagModule.BLOG, 1);
 				}
 			}
 
@@ -444,8 +417,8 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		}
 	}
 
-	protected String handleTagName(String name) {
-		return Strings.deleteWhitespace(name).toUpperCase();
+	protected String handleTagName(Tag tag) {
+		return Strings.deleteWhitespace(tag.getName()).toUpperCase();
 	}
 
 	private void insertBlogCategory(BlogCategory category) throws LogicException {
@@ -496,16 +469,6 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		return blog;
 	}
 
-	private void updateTagCount(List<WebTag> tags, Blog blog, int count) {
-		for (WebTag tag : tags) {
-			if (!blog.getIsPrivate()) {
-				webTagCountDao.updateCount(tag, TagModule.BLOG, count);
-			}
-			userTagCountDao.updateCount(userTagDao.selectByName(tag.getName(), UserContext.getUser()), TagModule.BLOG,
-					count);
-		}
-	}
-
 	private boolean isBlogDeleted(Blog blog) {
 		return (blog == null || blog.isDeleted());
 	}
@@ -544,9 +507,9 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		if (!max.contains(param.getScopes())) {
 			param.setScopes(max);
 		}
-		Set<Integer> tagIds = param.getTagIds();
-		if (!Validators.isEmptyOrNull(tagIds) && tagIds.size() > tagsMaxSizeWhenSearch) {
-			param.setTagIds(new HashSet<Integer>(new ArrayList<Integer>(tagIds).subList(0, tagsMaxSizeWhenSearch)));
+		Set<String> tags = param.getTags();
+		if (!Validators.isEmptyOrNull(tags) && tags.size() > tagsMaxSizeWhenSearch) {
+			param.setTags(new HashSet<String>(new ArrayList<String>(tags).subList(0, tagsMaxSizeWhenSearch)));
 		}
 	}
 }

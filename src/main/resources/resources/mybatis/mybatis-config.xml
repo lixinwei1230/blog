@@ -43,11 +43,8 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-co
 		<typeAlias type="me.qyh.entity.Space" alias="Space" />
 		<typeAlias type="me.qyh.entity.SpaceStatus" alias="SpaceStatus" />
 
-		<typeAlias type="me.qyh.entity.tag.WebTag" alias="WebTag" />
+		<typeAlias type="me.qyh.entity.tag.Tag" alias="Tag" />
 		<typeAlias type="me.qyh.entity.tag.UserTag" alias="UserTag" />
-		<typeAlias type="me.qyh.entity.tag.UserTagCount" alias="UserTagCount" />
-		<typeAlias type="me.qyh.entity.tag.WebTagCount" alias="WebTagCount" />
-		<typeAlias type="me.qyh.entity.tag.TagModule" alias="TagModule" />
 
 		<typeAlias type="me.qyh.page.widget.UserWidget" alias="UserWidget" />
 		<typeAlias type="me.qyh.page.widget.WidgetType" alias="WidgetType" />
@@ -87,10 +84,8 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-co
 
 		<mapper resource="resources/mybatis/mapper/spaceMapper.xml" />
 
-		<mapper resource="resources/mybatis/mapper/webTagMapper.xml" />
+		<mapper resource="resources/mybatis/mapper/tagMapper.xml" />
 		<mapper resource="resources/mybatis/mapper/userTagMapper.xml" />
-		<mapper resource="resources/mybatis/mapper/webTagCountMapper.xml" />
-		<mapper resource="resources/mybatis/mapper/userTagCountMapper.xml" />
 		<mapper resource="resources/mybatis/mapper/blogTagMapper.xml" />
 
 		<mapper resource="resources/mybatis/mapper/userWidgetMapper.xml" />

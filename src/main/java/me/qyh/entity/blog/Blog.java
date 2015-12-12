@@ -7,6 +7,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import me.qyh.entity.Id;
+import me.qyh.entity.Scope;
+import me.qyh.entity.Space;
+import me.qyh.entity.tag.Tag;
+import me.qyh.helper.htmlclean.JsonHtmlXssSerializer;
+
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,12 +21,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-
-import me.qyh.entity.Id;
-import me.qyh.entity.Scope;
-import me.qyh.entity.Space;
-import me.qyh.entity.tag.WebTag;
-import me.qyh.helper.htmlclean.JsonHtmlXssSerializer;
 
 /**
  * 博客
@@ -43,7 +43,7 @@ public class Blog extends Id {
 	private Date writeDate;// 撰写日期
 	private BlogCategory category;// 博客分类
 	private Scope scope;// 博客可见度
-	private Set<WebTag> tags = new HashSet<WebTag>();// 博客标签
+	private Set<Tag> tags = new HashSet<Tag>();// 博客标签
 	private int hits;// 博客点击数
 	private BlogFrom from;// 博客评论数
 	private String summary;// 博客摘要
@@ -79,7 +79,7 @@ public class Blog extends Id {
 						SimpleBeanPropertyFilter.filterOutAllExcept("category", "scope", "tags", "from", "commentScope",
 								"level"))
 				.addFilter("blogCategoryFilter", SimpleBeanPropertyFilter.filterOutAllExcept("id"))
-				.addFilter("webTagFilter", SimpleBeanPropertyFilter.filterOutAllExcept("name"));
+				.addFilter("tagFilter", SimpleBeanPropertyFilter.filterOutAllExcept("name"));
 		tBlog.setJson(writer.with(filters).writeValueAsString(this));
 		return tBlog;
 	}
@@ -94,7 +94,7 @@ public class Blog extends Id {
 			return Collections.emptyList();
 		}
 		List<BlogTag> blogTags = new ArrayList<BlogTag>(tags.size());
-		for (WebTag tag : tags) {
+		for (Tag tag : tags) {
 			blogTags.add(new BlogTag(this, tag));
 		}
 		return blogTags;
@@ -198,11 +198,11 @@ public class Blog extends Id {
 		this.status = status;
 	}
 
-	public Set<WebTag> getTags() {
+	public Set<Tag> getTags() {
 		return tags;
 	}
 
-	public void setTags(Set<WebTag> tags) {
+	public void setTags(Set<Tag> tags) {
 		this.tags = tags;
 	}
 

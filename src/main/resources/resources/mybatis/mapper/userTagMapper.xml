@@ -6,13 +6,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<resultMap type="UserTag" id="UserTagDetail">
 		<id property="id" column="id" />
-		<result property="name" column="tag_name" />
-		<result property="createDate" column="create_date" />
 		<association property="user" javaType="User">
 			<id column="user_id" property="id" />
 		</association>
 		<association property="tag" javaType="UserTag">
 			<id column="tag_id" property="id" />
+			<result column="tag_name" property="name"/>
 		</association>
 	</resultMap>
 
@@ -21,89 +20,46 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		INTO
 		user_tag
 		(
-		tag_name,
-		create_date,
 		user_id,
 		tag_id
 		)
 		VALUES
 		(
-		#{name},
-		#{createDate},
 		#{user.id},
 		#{tag.id}
 		)
 	</insert>
 
-	<select id="selectByName" resultMap="UserTagDetail">
-		SELECT
-		id,tag_name,create_date,user_id,tag_id
-		FROM user_tag WHERE
-		REPLACE(UPPER(tag_name),' ','') = #{name}
-		AND user_id = #{user.id}
-	</select>
-
 	<select id="selectPage" resultMap="UserTagDetail">
-		SELECT st.id,st.tag_name,st.create_date,user_id,st.tag_id
-		FROM user_tag
-		st
-		<choose>
-			<when test="owner">
-				LEFT OUTER JOIN user_tag_count utc ON st.id = utc.tag_id
-			</when>
-			<otherwise>
-				LEFT OUTER JOIN web_tag_count utc ON st.tag_id = utc.tag_id
-			</otherwise>
-		</choose>
+		SELECT st.id,t.tag_name,user_id,st.tag_id
+		FROM user_tag st
+		LEFT OUTER JOIN tag t ON st.tag_id = t.id
 		<where>
 			<if test="user != null">
 				user_id = #{user.id}
 			</if>
-			<if test="module != null">
-				AND utc.module =
-				#{module,javaType=TagModule,typeHandler=EnumOrdinalTypeHandler}
-			</if>
 			<if test="name != null and name != ''">
 				AND tag_name LIKE CONCAT('%', #{name},'%')
 			</if>
-			AND utc.refrences_count > 0
 		</where>
-		<if test="module != null">
-			ORDER BY utc.refrences_count DESC,st.id DESC
-		</if>
 		LIMIT #{offset},#{pageSize}
 	</select>
 
 	<select id="selectCount" resultType="int">
 		SELECT COUNT(st.id)
 		FROM user_tag st
-		<choose>
-			<when test="owner">
-				LEFT OUTER JOIN user_tag_count utc ON st.id = utc.tag_id
-			</when>
-			<otherwise>
-				LEFT OUTER JOIN web_tag_count utc ON st.tag_id = utc.tag_id
-			</otherwise>
-		</choose>
+		LEFT OUTER JOIN tag t ON st.tag_id = t.id
 		<where>
 			<if test="user != null">
 				user_id = #{user.id}
 			</if>
-			<if test="module != null">
-				AND utc.module =
-				#{module,javaType=TagModule,typeHandler=EnumOrdinalTypeHandler}
-			</if>
 			<if test="name != null and name != ''">
 				AND tag_name LIKE CONCAT('%', #{name},'%')
 			</if>
-			AND utc.refrences_count > 0
 		</where>
 	</select>
-
-	<select id="selectById" resultMap="UserTagDetail">
-		SELECT
-		id,tag_name,create_date,user_id,tag_id FROM user_tag
-		WHERE id = #{id}
+	
+	<select id="selectByTag" resultMap="UserTagDetail">
+		SELECT id FROM user_tag WHERE user_id = #{user.id} AND tag_id = #{tag.id}
 	</select>
-
 </mapper>

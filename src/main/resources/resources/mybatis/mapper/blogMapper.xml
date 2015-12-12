@@ -85,11 +85,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		SELECT
 		DISTINCT(b.id),b.summary,b.write_date,b.title,b.hits,b.blog_from,b.blog_level,
 		b.category,b.space_id,bc.category_name,scope,b.comment_scope,b.recommend
-		FROM blog
-		b
+		FROM blog b
 		LEFT OUTER JOIN blog_category bc ON b.category = bc.id
-		<if test="tagIds != null and !tagIds.isEmpty()">
+		<if test="tags != null and !tags.isEmpty()">
 			LEFT OUTER JOIN blog_tag bt ON bt.blog = b.id
+			LEFT OUTER JOIN tag t ON bt.tag_id = t.id
 		</if>
 		<where>
 			<if test="recommend != null">
@@ -125,13 +125,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="begin != null and end != null">
 				AND write_date BETWEEN #{begin} AND #{end}
 			</if>
-			<if test="tagIds != null and !tagIds.isEmpty()">
-				AND bt.tag_id IN
-				(
-				<foreach collection="tagIds" item="t" open="" separator=","
-					close="">
-					#{t}
-				</foreach>
+			<if test="tags != null and !tags.isEmpty()">
+				AND(
+				 <foreach collection="tags" item="t" open=""
+				    separator="or" close="">
+				    t.tag_name LIKE CONCAT('%', #{t},'%')
+				  </foreach>
 				)
 			</if>
 		</where>
@@ -149,8 +148,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="selectCount" resultType="int">
 		SELECT COUNT(DISTINCT(b.id))
 		FROM blog b
-		<if test="tagIds != null and !tagIds.isEmpty()">
+		<if test="tags != null and !tags.isEmpty()">
 			LEFT OUTER JOIN blog_tag bt ON bt.blog = b.id
+			LEFT OUTER JOIN tag t ON bt.tag_id = t.id
 		</if>
 		<where>
 			<if test="recommend != null">
@@ -186,13 +186,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="begin != null and end != null">
 				AND write_date BETWEEN #{begin} AND #{end}
 			</if>
-			<if test="tagIds != null and !tagIds.isEmpty()">
-				AND bt.tag_id IN
-				(
-				<foreach collection="tagIds" item="t" open="" separator=","
-					close="">
-					#{t}
-				</foreach>
+			<if test="tags != null and !tags.isEmpty()">
+				AND(
+				 <foreach collection="tags" item="t" open=""
+				    separator="or" close="">
+				    t.tag_name LIKE CONCAT('%', #{t},'%')
+				  </foreach>
 				)
 			</if>
 		</where>
@@ -305,8 +304,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<select id="getPreviousBlog" resultType="Blog">
 		SELECT b.id,b.title,b.write_date AS writeDate FROM blog b
-		<if test="param.tagIds != null and !param.tagIds.isEmpty()">
+		<if test="param.tags != null and !param.tags.isEmpty()">
 			LEFT OUTER JOIN blog_tag bt ON bt.blog = b.id
+			LEFT OUTER JOIN tag t ON bt.tag_id = t.id
 		</if>
 		WHERE b.id  <![CDATA[ < ]]> #{id}
 		<if test="param.recommend != null">
@@ -339,13 +339,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<if test="param.begin != null and param.end != null">
 			AND write_date BETWEEN #{param.begin} AND #{param.end}
 		</if>
-		<if test="param.tagIds != null and !param.tagIds.isEmpty()">
-			AND bt.tag_id IN
-			(
-			<foreach collection="param.tagIds" item="t" open="" separator=","
-				close="">
-				#{t}
-			</foreach>
+		<if test="param.tags != null and !param.tags.isEmpty()">
+			AND(
+			 <foreach collection="param.tags" item="t" open=""
+			    separator="or" close="">
+			    t.tag_name LIKE CONCAT('%', #{t},'%')
+			  </foreach>
 			)
 		</if>
 		ORDER BY b.id DESC
@@ -354,8 +353,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<select id="getNextBlog" resultType="Blog">
 		SELECT b.id,b.title,b.write_date AS writeDate FROM blog b
-		<if test="param.tagIds != null and !param.tagIds.isEmpty()">
+		<if test="param.tags != null and !param.tags.isEmpty()">
 			LEFT OUTER JOIN blog_tag bt ON bt.blog = b.id
+			LEFT OUTER JOIN tag t ON bt.tag_id = t.id
 		</if>
 		WHERE b.id  > #{id}
 		<if test="param.recommend != null">
@@ -388,13 +388,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<if test="param.begin != null and param.end != null">
 			AND write_date BETWEEN #{param.begin} AND #{param.end}
 		</if>
-		<if test="param.tagIds != null and !param.tagIds.isEmpty()">
-			AND bt.tag_id IN
-			(
-			<foreach collection="param.tagIds" item="t" open="" separator=","
-				close="">
-				#{t}
-			</foreach>
+		<if test="param.tags != null and !param.tags.isEmpty()">
+			AND(
+			 <foreach collection="param.tags" item="t" open=""
+			    separator="or" close="">
+			    t.tag_name LIKE CONCAT('%', #{t},'%')
+			  </foreach>
 			)
 		</if>
 		ORDER BY b.id ASC

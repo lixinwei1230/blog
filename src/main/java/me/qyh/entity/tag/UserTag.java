@@ -1,8 +1,9 @@
 package me.qyh.entity.tag;
 
+import me.qyh.entity.Id;
 import me.qyh.entity.User;
 
-public class UserTag extends WebTag {
+public class UserTag extends Id{
 
 	/**
 	 * 
@@ -10,15 +11,7 @@ public class UserTag extends WebTag {
 	private static final long serialVersionUID = 1L;
 
 	private User user;
-	private WebTag tag;
-
-	public WebTag getTag() {
-		return tag;
-	}
-
-	public void setTag(WebTag tag) {
-		this.tag = tag;
-	}
+	private Tag tag;
 
 	public User getUser() {
 		return user;
@@ -27,4 +20,13 @@ public class UserTag extends WebTag {
 	public void setUser(User user) {
 		this.user = user;
 	}
+
+	public Tag getTag() {
+		return tag;
+	}
+
+	public void setTag(Tag tag) {
+		this.tag = tag;
+	}
+	
 }

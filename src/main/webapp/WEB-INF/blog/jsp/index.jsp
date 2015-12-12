@@ -56,7 +56,7 @@
 										<span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
 										<c:forEach var="tag" items="${tags }">
 											<span style="margin-right: 10px"><a
-												href="${ctx }/blog/list/1?tagIds=${tag.id}">${tag.name }</a>
+												href="${ctx }/blog/list/1?tags=${tag.name}">${tag.name }</a>
 											</span>
 										</c:forEach>
 									</div>
@@ -99,6 +99,11 @@
 						</div>
 					</c:otherwise>
 				</c:choose>
+				<c:if test="${page.totalPage >1 }">
+					<div class="alert alert-info">
+						<a href="${ctx }/blog/list/1?recommend=true">查看更多</a>
+					</div>
+				</c:if>
 			</div>
 			<div class="col-lg-4 col-md-4 col-sm-4 text">
 				<sec:authorize ifAnyGranted="ROLE_USER,ROLE_OAUTH" var="isLogin" />

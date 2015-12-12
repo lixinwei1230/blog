@@ -18,7 +18,7 @@ public class UserTagController extends BaseController {
 
 	@Autowired
 	private TagService tagService;
-	@Value("${config.pagesize.spaceTag}")
+	@Value("${config.pagesize.userTag}")
 	private int pageSize;
 
 	@RequestMapping(value = "list/{currentPage}", method = RequestMethod.GET)

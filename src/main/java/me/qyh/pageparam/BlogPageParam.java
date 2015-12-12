@@ -27,7 +27,7 @@ public class BlogPageParam extends PageParam {
 	private Date begin;
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date end;
-	private Set<Integer> tagIds = new HashSet<Integer>();
+	private Set<String> tags = new HashSet<String>();
 	private BlogFrom from;
 	private BlogStatus status = BlogStatus.NORMAL;
 	private boolean ignoreLevel;// 忽略博客的排序值
@@ -85,12 +85,12 @@ public class BlogPageParam extends PageParam {
 		this.end = end;
 	}
 
-	public Set<Integer> getTagIds() {
-		return tagIds;
+	public Set<String> getTags() {
+		return tags;
 	}
 
-	public void setTagIds(Set<Integer> tagIds) {
-		this.tagIds = tagIds;
+	public void setTags(Set<String> tags) {
+		this.tags = tags;
 	}
 
 	public BlogFrom getFrom() {

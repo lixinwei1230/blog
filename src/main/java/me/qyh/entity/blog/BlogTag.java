@@ -1,7 +1,7 @@
 package me.qyh.entity.blog;
 
 import me.qyh.entity.Id;
-import me.qyh.entity.tag.WebTag;
+import me.qyh.entity.tag.Tag;
 
 /**
  * 博客 标签关联
@@ -17,7 +17,7 @@ public class BlogTag extends Id {
 	private static final long serialVersionUID = 1L;
 
 	private Blog blog;
-	private WebTag tag;
+	private Tag tag;
 
 	public Blog getBlog() {
 		return blog;
@@ -27,15 +27,15 @@ public class BlogTag extends Id {
 		this.blog = blog;
 	}
 
-	public WebTag getTag() {
+	public Tag getTag() {
 		return tag;
 	}
 
-	public void setWebTag(WebTag tag) {
+	public void setTag(Tag tag) {
 		this.tag = tag;
 	}
 
-	public BlogTag(Blog blog, WebTag tag) {
+	public BlogTag(Blog blog, Tag tag) {
 		this.blog = blog;
 		this.tag = tag;
 	}

@@ -52,7 +52,7 @@
 										<span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
 										<c:forEach var="tag" items="${tags }">
 											<span style="margin-right: 10px"><a
-												href="<u:url space="${space }"/>/blog/list/1?tagIds=${tag.id}">${tag.name }</a></span>
+												href="<u:url space="${space }"/>/blog/list/1?tags=${tag.name}">${tag.name }</a></span>
 										</c:forEach>
 									</div>
 								</c:if>
@@ -142,19 +142,6 @@
 								<label>博客标题</label> <input type="text" class="form-control"
 									name="title" value="<c:out value="${param['title'] }"/>" />
 							</div>
-							<div class="form-group">
-								<div class="input-group">
-									<input type="text" class="form-control" id="tag-search-input"
-										placeholder="标签搜索"> <span class="input-group-btn">
-										<button class="btn btn-default" id="tag-search-btn"
-											onclick="writeTag()" type="button">
-											<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-										</button>
-									</span>
-								</div>
-								<div id="tagsContainer" style="margin-top: 10px"></div>
-							</div>
-							<input type="hidden" name="tagIds" id="search-tagIds" />
 							<div style="text-align: right">
 								<button class="btn btn-primary" style="" type="button"
 									id="search-blog-btn">查询</button>
@@ -167,62 +154,5 @@
 	</div>
 	<jsp:include page="/WEB-INF/foot.jsp"></jsp:include>
 	<jsp:include page="/WEB-INF/scripts.jsp"></jsp:include>
-	<script type="text/javascript">
-		var maxTag = 5;
-		var searchTags = [];
-		$(document).ready(function(){
-			var tagId = getUrlParam("tagIds");
-			if(tagId != null){
-				var tagIds = tagId.split(",");
-				for(var i=0;i<tagIds.length;i++){
-					searchTags.push(tagIds[i]);
-				}
-			}
-			writeTag();
-			$("#search-blog-btn").click(function(){
-				if(searchTags.length > 0){
-					$("#search-tagIds").val(searchTags.toString());
-				}
-				$("#blog-search-form").submit();
-			});
-		});
-		function writeTag(){
-			var tagSearchInput = $("#tag-search-input");
-			var name = tagSearchInput.val();
-			$.get("${ctx}/tag/user/list/1",{module:'BLOG',name:name,"user.id":'${user.id}'},function callBack(data){
-				var datas = data.result.datas;
-				var html = '<table class="table">';
-				if(datas.length > 0 ){
-					html += '<tbody>';
-					for(var i=0;i<datas.length;i++){
-						var tag = datas[i];
-						var index = inArray(tag.tag.id,searchTags);
-						var addOrRemove = (index == -1) ? '<a href="javascript:void(0)" onclick="addSearchTag('+tag.tag.id+',$(this))"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>' : '<a href="javascript:void(0)" onclick="removeSearchTag('+tag.tag.id+',$(this))"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></a>';
-						html += '<tr><td>'+tag.name+'</td><td>'+addOrRemove+'</td></div>';
-					}
-					html += '</tbody>';
-				}
-				html += '</table>'
-				$("#tagsContainer").html(html);
-			});
-		}
-		function addSearchTag(id,o){
-			if(searchTags.length >= maxTag){
-				return ;
-			}
-			var index = inArray(id,searchTags);
-			if(index == -1){
-				searchTags.push(id);
-				o.parent().html('<a href="javascript:void(0)" onclick="removeSearchTag('+id+',$(this))"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span>')
-			}
-		}
-		function removeSearchTag(id,o){
-			var index = inArray(id,searchTags);
-			if(index != -1){
-				searchTags.splice(index,1);
-			}
-			o.parent().html('<a href="javascript:void(0)" onclick="addSearchTag('+id+',$(this))"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>');
-		}
-	</script>
 </body>
 </html>
