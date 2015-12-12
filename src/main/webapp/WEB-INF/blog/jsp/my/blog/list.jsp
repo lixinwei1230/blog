@@ -222,7 +222,7 @@
 			$("#scopes").change(function(){
 				var scope = $(this).val();
 				if(scope != ""){
-					window.location.href = "${ctx}/my/blog/list/1?scopes="+scope;
+					window.location.href = "${ctx}/my/blog/list/1?scopes.scopes="+scope;
 				}else{
 					window.location.href = "${ctx}/my/blog/list/1";
 				}
