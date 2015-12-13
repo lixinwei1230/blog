@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import me.qyh.bean.I18NMessage;
 import me.qyh.entity.User;
 import me.qyh.exception.LogicException;
 import me.qyh.oauth2.entity.OauthType;
@@ -20,7 +19,6 @@ import me.qyh.oauth2.exception.Oauth2Exception;
 import me.qyh.oauth2.qq.AccessToken;
 import me.qyh.oauth2.qq.OpenId;
 import me.qyh.oauth2.qq.QQOauth2;
-import me.qyh.oauth2.security.Oauth2AutoLogin;
 import me.qyh.oauth2.security.OauthPrincipal;
 import me.qyh.oauth2.service.OauthService;
 import me.qyh.utils.Strings;
@@ -35,8 +33,6 @@ public class QQOauth2Controller extends BaseOauthController {
 	private QQOauth2 qqOauth2;
 	@Autowired
 	private OauthService oauthService;
-	@Autowired
-	private Oauth2AutoLogin autoLogin;
 
 	@RequestMapping(value = "login", method = RequestMethod.GET)
 	public String login(HttpServletRequest request, HttpServletResponse response) throws Oauth2ConnectionException {
@@ -72,11 +68,8 @@ public class QQOauth2Controller extends BaseOauthController {
 			return "redirect:/oauth/bind/index";
 		}
 
-		// 已经绑定账号则自动登录
-		autoLogin.autoLogin(principal, request, response);
-		ra.addFlashAttribute(SUCCESS, new I18NMessage("success.oauth", user.getNickname()));
-
-		return "redirect:/";
+		autoLogin(principal, request, response);
+		return null;
 	}
 
 	protected void putInfo(HttpSession session, OauthUser user, OauthPrincipal principal) {

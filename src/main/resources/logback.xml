@@ -62,26 +62,6 @@
 		</encoder>
 	</appender>
 
-	<appender name="loginDailyRollingFileAppender"
-		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<File>c:/logs/blog/login.log</File>
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<FileNamePattern>c:/logs/blog/login.%d{yyyy-MM-dd}.log</FileNamePattern>
-			<maxHistory>10</maxHistory>
-		</rollingPolicy>
-
-		<encoder>
-			<Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg %n
-			</Pattern>
-			<charset>UTF-8</charset>
-		</encoder>
-	</appender>
-	
-	<logger name="login" additivity="false">
-		<level value="INFO" />
-		<appender-ref ref="loginDailyRollingFileAppender" />
-	</logger>
-
 	<logger name="mlog" additivity="false">
 		<level value="INFO" />
 		<appender-ref ref="mlogDailyRollingFileAppender" />

@@ -38,6 +38,7 @@
 		<!-- <custom-filter ref="ajaxLoginFilter" before="FORM_LOGIN_FILTER" /> -->
 		<custom-filter ref="loginFilter" position="FORM_LOGIN_FILTER" />
 		<custom-filter ref="logoutFilter" position="LOGOUT_FILTER" />
+		<custom-filter ref="rememberMeFilter" after="FORM_LOGIN_FILTER"/>
 	</http>
 
 	<b:bean id="passwordEncoder"
@@ -136,6 +137,7 @@
 		class="org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter">
 		<b:property name="rememberMeServices" ref="rememberMeServices" />
 		<b:property name="authenticationManager" ref="authenticationManager" />
+		<!-- <b:property name="authenticationSuccessHandler" ref="loginSuccessHandler"/> -->
 	</b:bean>
 
 	<b:bean id="rememberMeAuthenticationProvider"

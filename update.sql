@@ -7,7 +7,11 @@ RENAME TABLE web_tag to tag;
 DROP TABLE user_tag_count;
 DROP TABLE web_tag_count;
 DROP TABLE user_tag;
-CREATE TABLE user_tag(id int NOT NULL PRIMARY KEY AUTO_INCREMENT,user_id INT NOT NULL,
+CREATE TABLE user_tag(id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,user_id INT NOT NULL,
 tag_id INT NOT NULL ,
 FOREIGN KEY(user_id) REFERENCES blog_user(id),
 FOREIGN KEY(tag_id) REFERENCES tag(id));
+
+CREATE TABLE login_info(id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,user_id INT NOT NULL,
+login_date DATETIME NOT NULL , remote_address VARCHAR(100) NOT NULL,
+FOREIGN KEY(user_id) REFERENCES blog_user(id));

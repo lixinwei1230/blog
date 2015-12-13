@@ -39,22 +39,16 @@ public class Oauth2AutoLogin {
 	 *            当前请求
 	 * @param response
 	 */
-	public void autoLogin(OauthPrincipal principal, HttpServletRequest request, HttpServletResponse response) {
+	public Authentication autoLogin(OauthPrincipal principal, HttpServletRequest request, HttpServletResponse response) {
 		Oauth2UserAuthencationToken token = new Oauth2UserAuthencationToken(principal);
 		token.setDetails(new WebAuthenticationDetails(request));
 		Authentication auth = authenticationManager.authenticate(token);
 		sessionAuthenticationStrategy.onAuthentication(auth, request, response);
 		SecurityContextHolder.getContext().setAuthentication(auth);
-	}
-
-	public void autoLogin(OauthPrincipal principal) {
-		Oauth2UserAuthencationToken token = new Oauth2UserAuthencationToken(principal);
-		Authentication auth = authenticationManager.authenticate(token);
-		SecurityContextHolder.getContext().setAuthentication(auth);
+		return auth;
 	}
 
 	public void setSessionAuthenticationStrategy(SessionAuthenticationStrategy sessionAuthenticationStrategy) {
 		this.sessionAuthenticationStrategy = sessionAuthenticationStrategy;
 	}
-
 }

@@ -18,10 +18,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import me.qyh.bean.I18NMessage;
 import me.qyh.bean.Info;
-import me.qyh.entity.User;
 import me.qyh.exception.LogicException;
 import me.qyh.oauth2.entity.OauthUser;
-import me.qyh.oauth2.security.Oauth2AutoLogin;
 import me.qyh.oauth2.security.OauthPrincipal;
 import me.qyh.oauth2.service.OauthService;
 import me.qyh.utils.Validators;
@@ -33,8 +31,6 @@ public class BindController extends BaseOauthController {
 
 	@Autowired
 	private OauthService oauthService;
-	@Autowired
-	private Oauth2AutoLogin oauthAutoLogin;
 	@Autowired
 	private MessageSource messageSource;
 
@@ -59,12 +55,9 @@ public class BindController extends BaseOauthController {
 			ra.addFlashAttribute(ERROR, new I18NMessage("error.oauth.needPrincipal"));
 			return "redirect:/login";
 		}
-		User user = oauthService.autoBind(principal, (OauthUser) session.getAttribute(OAUTH_USER));
-		session.invalidate();
-		oauthAutoLogin.autoLogin(principal, request, response);
-
-		ra.addFlashAttribute(SUCCESS, new I18NMessage("success.oauth", user.getNickname()));
-		return "redirect:/";
+		oauthService.autoBind(principal, (OauthUser) session.getAttribute(OAUTH_USER));
+		autoLogin(principal, request, response);
+		return null;
 	}
 
 	@Token
@@ -79,16 +72,10 @@ public class BindController extends BaseOauthController {
 			ra.addFlashAttribute(ERROR, new I18NMessage("error.oauth.needPrincipal"));
 			return "redirect:/login";
 		}
-
-		User user;
 		try {
-			user = oauthService.bind(principal, code, email, (OauthUser) session.getAttribute(OAUTH_USER));
-			// 登录前注销session
-			session.invalidate();
-			oauthAutoLogin.autoLogin(principal, request, response);
-
-			ra.addFlashAttribute(SUCCESS, new I18NMessage("success.oauth", user.getNickname()));
-			return "redirect:/";
+			oauthService.bind(principal, code, email, (OauthUser) session.getAttribute(OAUTH_USER));
+			autoLogin(principal, request, response);
+			return null;
 		} catch (LogicException e) {
 			model.addAttribute(ERROR, e.getI18nMessage());
 			model.addAttribute(SECRET_KEY, secretKey);
