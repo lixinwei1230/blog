@@ -1,8 +1,11 @@
 package me.qyh.service;
 
 import me.qyh.bean.Crop;
+import me.qyh.entity.LoginInfo;
 import me.qyh.entity.User;
 import me.qyh.exception.LogicException;
+import me.qyh.pageparam.LoginInfoPageParam;
+import me.qyh.pageparam.Page;
 
 public interface UserService {
 
@@ -23,5 +26,7 @@ public interface UserService {
 	void changeNickname(String nickname) throws LogicException;
 
 	void updateAvatar(Crop crop) throws LogicException;
+	
+	Page<LoginInfo> findLoginInfos(LoginInfoPageParam param);
 
 }

@@ -18,5 +18,25 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		INSERT INTO login_info(remote_address,login_date,user_id)
 		VALUES(#{remoteAddress},#{loginDate},#{user.id})
 	</insert>
+	
+	<select id="selectCount" resultType="int">
+		SELECT COUNT(id) FROM login_info
+		<where>
+			<if test="user != null">
+				user_id = #{user.id}
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectPage" resultMap="LoginInfoDetail">
+		SELECT id,remote_address,login_date,user_id FROM login_info
+		<where>
+			<if test="user != null">
+				user_id = #{user.id}
+			</if>
+		</where>
+		ORDER BY id DESC
+		LIMIT #{offset},#{pageSize}
+	</select>
 
 </mapper>

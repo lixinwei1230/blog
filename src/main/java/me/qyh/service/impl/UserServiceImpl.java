@@ -25,10 +25,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import me.qyh.bean.Crop;
 import me.qyh.dao.FileDao;
+import me.qyh.dao.LoginInfoDao;
 import me.qyh.dao.RoleDao;
 import me.qyh.dao.UserCodeDao;
 import me.qyh.dao.UserDao;
 import me.qyh.entity.FileStatus;
+import me.qyh.entity.LoginInfo;
 import me.qyh.entity.MyFile;
 import me.qyh.entity.Role;
 import me.qyh.entity.RoleEnum;
@@ -42,6 +44,8 @@ import me.qyh.helper.im4java.Im4javas;
 import me.qyh.helper.im4java.Im4javas.ImageInfo;
 import me.qyh.helper.mail.Mailer;
 import me.qyh.helper.mail.MimeMessageHelperHandler;
+import me.qyh.pageparam.LoginInfoPageParam;
+import me.qyh.pageparam.Page;
 import me.qyh.security.UserContext;
 import me.qyh.server.UserServer;
 import me.qyh.service.UserService;
@@ -87,6 +91,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 	private String absPath;
 	@Autowired
 	private Im4javas im4javas;
+	@Autowired
+	private LoginInfoDao loginInfoDao;
 
 	private static final String MAIL_ACTIVATE_TPL_PATH = "mail/activate.ftl";
 	private static final String MAIL_FINDPASSWORD_TPL_PATH = "mail/findPassword.ftl";
@@ -287,7 +293,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 				} catch (Exception e) {
 					throw new LogicException("error.avatar.badCrop");
 				}
-			} else if(!oldAvatar){
+			} else if (!oldAvatar) {
 				try {
 					FileUtils.copyFile(file, new File(absPath));
 				} catch (IOException e) {
@@ -300,6 +306,12 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 
 		user.setAvatar(avatar);
 		userDao.update(user);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Page<LoginInfo> findLoginInfos(LoginInfoPageParam param) {
+		return new Page<LoginInfo>(param, loginInfoDao.selectCount(param), loginInfoDao.selectPage(param));
 	}
 
 	private void sendRegisterMail(final User user, String activateCode) {
@@ -387,4 +399,5 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 			throw new LogicException("error.frequenceOperation", mailFrequency - (int) second);
 		}
 	}
+
 }
