@@ -209,7 +209,7 @@
 								name="end" value="<c:out value="${param['end'] }"/>" />
 						</div>
 						<div style="text-align: right">
-							<button class="btn btn-primary" style="" type="button"
+							<button class="btn btn-primary" style="" type="submit"
 								id="search-blog-btn">查询</button>
 						</div>
 					</div>
