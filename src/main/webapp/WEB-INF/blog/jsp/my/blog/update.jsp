@@ -61,17 +61,6 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-lg-12 col-sm-12 col-xs-12 col-md-12">
-					<button class="btn btn-primary"
-						style="float: right; margin-bottom: 5px; display: none"
-						id="remove-editor">
-						<spring:message code="page.blog.removeEditor" />
-					</button>
-					<button class="btn btn-primary"
-						style="float: right; margin-bottom: 5px" id="load-editor">
-						<spring:message code="page.blog.loadEditor" />
-					</button>
-				</div>
 				<div class="row" style="margin-bottom: 15px">
 					<div class="col-lg-12 col-sm-12 col-xs-12 col-md-12">
 						<div class="col-lg-2 col-sm-12 col-xs-12 col-md-2">
@@ -479,30 +468,19 @@
 	var editor ;
 	$(document).ready(function(){
 		writeCategorys();
-		$("#load-editor").click(function(){
-			editor = CKEDITOR.replace("editor");
-			CKEDITOR.config.enterMode=CKEDITOR.ENTER_BR;
-			CKEDITOR.config.height=600;
-			CKEDITOR.config.allowedContent=true;
-			CKEDITOR.config.extraPlugins = 'codemirror,mytable,mycode,mydiv,myfile';
-			CKEDITOR.config.shiftEnterMode=CKEDITOR.ENTER_P;
-			CKEDITOR.config.uploadUrl = '${uploadUrl}';
-			CKEDITOR.config.toolbar = [
-			    [ 'Source'],
-			    [ 'Undo', 'Redo','Bold' ],
-			    ['Mytable','Mycode','Mydiv','Myfile']
-			];
-			$(this).hide();
-			$("#remove-editor").show();
-		});
-		$("#remove-editor").click(function(){
-			var editor = CKEDITOR.instances["editor"];
-			if(editor){
-				editor.destroy();
-			}
-			$(this).hide();
-			$("#load-editor").show();
-		});
+		editor = CKEDITOR.replace("editor");
+		CKEDITOR.config.enterMode=CKEDITOR.ENTER_BR;
+		CKEDITOR.config.height=600;
+		CKEDITOR.config.allowedContent=true;
+		CKEDITOR.config.extraPlugins = 'codemirror,mytable,mycode,mydiv,myfile,mylink';
+		CKEDITOR.config.shiftEnterMode=CKEDITOR.ENTER_P;
+		CKEDITOR.config.uploadUrl = '${uploadUrl}';
+		CKEDITOR.config.toolbar = [
+		    [ 'Source'],
+		    [ 'Undo', 'Redo','Bold' ],
+		    ['Mytable','Mycode','Mydiv','Myfile','Mylink']
+		];
+		$(this).hide();
 		$("#tag-input").keydown(function(e){
 			if(e.keyCode==13){
 				var value = $(this).val();
