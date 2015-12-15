@@ -113,14 +113,14 @@ if(spaceId == '${blog.space.id}'){
 </script>
 </sec:authorize>
 <script type="text/javascript">
-var cookieId = "blog_${blog.id}";
-if(hit && COOKIE_SUPPORT){
-	var value = getCookie(cookieId);
-	if(!value || value == null || value == ""){
+var blogId = "blog_${blog.id}";
+if(hit ){
+	var item = sessionStorage.getItem(blogId);
+	if(!item || item == null){
 		$.post("${ctx}/blog/hit/${blog.id}",{},function callBack(data){
+			sessionStorage.setItem(blogId, 'true');
 		});
 	}
 }
-setCookie(cookieId,cookieId,60*60*12*1000);
 </script>
 </html>

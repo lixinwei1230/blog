@@ -1,5 +1,3 @@
-setRootCookie("COOKIE_SUPPORT", "true", 1000*5);
-var COOKIE_SUPPORT = (getCookie("COOKIE_SUPPORT") != null);
 var img = $("<img />").attr('src', contextPath + '/static/imgs/favicon.webp')
 	.on('load', function() {
 	    if (!(!this.complete || typeof this.naturalWidth == "undefined" || this.naturalWidth == 0)) {
