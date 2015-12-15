@@ -7,6 +7,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<resultMap type="WidgetConfig" id="WidgetConfigDetail">
 		<id property="id" column="id" />
 		<result column="hidden" property="hidden" />
+		<result property="scope" column="scope" typeHandler="EnumOrdinalTypeHandler" />
 		<association property="widget" javaType="LocationWidget">
 			<result column="widget_id" property="id" />
 		</association>
@@ -14,21 +15,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<insert id="insert">
 		INSERT INTO widget_config
-		(hidden,widget_id)
+		(hidden,widget_id,scope)
 		VALUES
 		(
 		#{hidden},
-		#{widget.id}
+		#{widget.id},
+		#{scope,javaType=Scope,typeHandler=EnumOrdinalTypeHandler}
 		)
 	</insert>
 
 	<select id="selectByLocationWidget" resultMap="WidgetConfigDetail">
 		SELECT
-		id,hidden,widget_id FROM widget_config WHERE widget_id = #{id}
+		id,hidden,widget_id,scope FROM widget_config WHERE widget_id = #{id}
 	</select>
 
 	<select id="selectById" resultMap="WidgetConfigDetail">
-		SELECT id,hidden,widget_id
+		SELECT id,hidden,widget_id,scope
 		FROM widget_config WHERE id = #{id}
 	</select>
 
@@ -39,6 +41,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<update id="update">
 		UPDATE widget_config
 		SET
+		<if test="scope != null">
+			scope = #{scope,javaType=Scope,typeHandler=EnumOrdinalTypeHandler},
+		</if>
 		hidden = #{hidden}
 		WHERE id = #{id}
 	</update>

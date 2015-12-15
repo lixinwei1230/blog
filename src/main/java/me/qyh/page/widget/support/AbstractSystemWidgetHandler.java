@@ -3,9 +3,7 @@ package me.qyh.page.widget.support;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import me.qyh.entity.User;
-import me.qyh.exception.LogicException;
 import me.qyh.helper.freemaker.WebFreemarkers;
-import me.qyh.page.LocationWidget;
 import me.qyh.page.widget.SystemWidget;
 import me.qyh.page.widget.SystemWidgetHandler;
 import me.qyh.server.UserServer;
@@ -15,7 +13,7 @@ public abstract class AbstractSystemWidgetHandler implements SystemWidgetHandler
 	protected final String CODE_CONFIG_NOT_EXISTS = "error.widget.config.notexists";
 
 	@Autowired
-	private WebFreemarkers freeMarkers;
+	protected WebFreemarkers freeMarkers;
 	@Autowired
 	protected UserServer userServer;
 	private SystemWidget simpleWidget = null;
@@ -31,14 +29,6 @@ public abstract class AbstractSystemWidgetHandler implements SystemWidgetHandler
 	}
 
 	@Override
-	public SystemWidget getWidget(LocationWidget widget, User owner, User visitor) throws LogicException {
-		return getWidget(widget, freeMarkers, owner, visitor);
-	}
-
-	abstract SystemWidget getWidget(LocationWidget widget, WebFreemarkers freeMarkers, User owner, User visitor)
-			throws LogicException;
-
-	@Override
 	public SystemWidget getSimpleWidget() {
 		return simpleWidget;
 	}
@@ -49,11 +39,11 @@ public abstract class AbstractSystemWidgetHandler implements SystemWidgetHandler
 
 		widget.setId(id);
 		widget.setName(name);
-		widget.setHtml(getPreviewHtml(user, freeMarkers));
+		widget.setHtml(getPreviewHtml(user));
 
 		return widget;
 	}
 
-	abstract String getPreviewHtml(User user, WebFreemarkers freeMarkers);
+	abstract String getPreviewHtml(User user);
 
 }

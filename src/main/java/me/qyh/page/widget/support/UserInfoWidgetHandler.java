@@ -10,7 +10,6 @@ import me.qyh.dao.BlogDao;
 import me.qyh.entity.RoleEnum;
 import me.qyh.entity.Space;
 import me.qyh.entity.User;
-import me.qyh.helper.freemaker.WebFreemarkers;
 import me.qyh.page.widget.config.WidgetConfig;
 import me.qyh.pageparam.BlogPageParam;
 
@@ -34,7 +33,7 @@ public class UserInfoWidgetHandler extends AbstractSimpleSystemWidgetHandler {
 	}
 
 	@Override
-	String getWidgetHtml(WidgetConfig config, User owner, User visitor, WebFreemarkers freeMarkers) {
+	public String getWidgetHtml(WidgetConfig config, User owner, User visitor) {
 
 		Map<String, Object> variables = new HashMap<String, Object>();
 
@@ -55,8 +54,8 @@ public class UserInfoWidgetHandler extends AbstractSimpleSystemWidgetHandler {
 	}
 
 	@Override
-	String getPreviewHtml(User user, WebFreemarkers freeMarkers) {
-		return getWidgetHtml(null, user, user, freeMarkers);
+	String getPreviewHtml(User user) {
+		return getWidgetHtml(null, user, user);
 	}
 
 }

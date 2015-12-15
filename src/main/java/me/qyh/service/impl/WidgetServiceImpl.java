@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import me.qyh.bean.Scopes;
 import me.qyh.config.ConfigServer;
 import me.qyh.config.PageConfig;
 import me.qyh.dao.LocationWidgetDao;
@@ -198,8 +199,11 @@ public class WidgetServiceImpl extends BaseServiceImpl implements WidgetService 
 
 	private Page getPage(Page page) throws LogicException {
 		User user = userServer.getUserById(page.getUser().getId());
+		User current = UserContext.getUser();
+		Scopes scopes = userServer.userRelationship(user, current);
 
 		List<LocationWidget> widgets = locationWidgetDao.selectByPage(page);
+		List<LocationWidget> results = new ArrayList<LocationWidget>();
 		PageConfig config = null;
 		HtmlContentHandler clean = null;
 		for (LocationWidget lw : widgets) {
@@ -223,9 +227,12 @@ public class WidgetServiceImpl extends BaseServiceImpl implements WidgetService 
 				lw.setWidget(userWidget);
 				break;
 			}
+			if(scopes.hasScope(lw.getWidget().getConfig().getScope())){
+				results.add(lw);
+			}
 		}
 
-		page.addLocationWidgets(widgets.toArray(new LocationWidget[widgets.size()]));
+		page.addLocationWidgets(results.toArray(new LocationWidget[results.size()]));
 
 		return page;
 	}

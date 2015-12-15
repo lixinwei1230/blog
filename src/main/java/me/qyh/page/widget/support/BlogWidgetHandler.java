@@ -15,7 +15,6 @@ import me.qyh.entity.User;
 import me.qyh.entity.blog.Blog;
 import me.qyh.exception.LogicException;
 import me.qyh.exception.SpaceDisabledException;
-import me.qyh.helper.freemaker.WebFreemarkers;
 import me.qyh.page.LocationWidget;
 import me.qyh.page.widget.SystemWidget;
 import me.qyh.page.widget.config.WidgetConfig;
@@ -60,7 +59,7 @@ public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 	}
 
 	@Override
-	String getPreviewHtml(User user, WebFreemarkers freeMarkers) {
+	String getPreviewHtml(User user) {
 		BlogWidgetConfig config = (BlogWidgetConfig) getDefaultWidgetConfig(user);
 
 		List<Blog> blogs = blogDao.selectPage(buildParam(config, user, user));
@@ -99,7 +98,7 @@ public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 	}
 
 	@Override
-	SystemWidget getWidget(LocationWidget widget, WebFreemarkers freeMarkers, User owner, User visitor)
+	public SystemWidget getWidget(LocationWidget widget, User owner, User visitor)
 			throws LogicException {
 		BlogWidgetConfig config = blogWidgetConfigDao.selectByLocationWidget(widget);
 		if (config == null) {

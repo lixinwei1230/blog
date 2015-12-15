@@ -1,6 +1,7 @@
 package me.qyh.page.widget.config;
 
 import me.qyh.entity.Id;
+import me.qyh.entity.Scope;
 import me.qyh.page.LocationWidget;
 
 public class WidgetConfig extends Id {
@@ -12,6 +13,7 @@ public class WidgetConfig extends Id {
 
 	private boolean hidden;
 	private LocationWidget widget;
+	private Scope scope = Scope.PUBLIC;
 
 	public boolean isHidden() {
 		return hidden;
@@ -29,4 +31,11 @@ public class WidgetConfig extends Id {
 		this.widget = widget;
 	}
 
+	public Scope getScope() {
+		return scope;
+	}
+
+	public void setScope(Scope scope) {
+		this.scope = scope;
+	}
 }

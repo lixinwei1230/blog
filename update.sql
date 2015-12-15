@@ -15,3 +15,6 @@ FOREIGN KEY(tag_id) REFERENCES tag(id));
 CREATE TABLE login_info(id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,user_id INT NOT NULL,
 login_date DATETIME NOT NULL , remote_address VARCHAR(100) NOT NULL,
 FOREIGN KEY(user_id) REFERENCES blog_user(id));
+
+ALTER TABLE widget_config ADD COLUMN scope INT NOT NULL DEFAULT 0;
+ALTER TABLE widget_blogwidgetconfig ADD COLUMN scope INT NOT NULL DEFAULT 0;

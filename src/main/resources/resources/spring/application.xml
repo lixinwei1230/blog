@@ -176,6 +176,10 @@
 					<constructor-arg index="0" value="4" />
 					<constructor-arg index="1" value="博客日期归档" />
 				</bean>
+				<bean class="me.qyh.page.widget.support.LoginInfoWidgetHandler">
+					<constructor-arg index="0" value="5" />
+					<constructor-arg index="1" value="登录信息" />
+				</bean>
 			</list>
 		</property>
 	</bean>

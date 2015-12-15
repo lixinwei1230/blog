@@ -11,12 +11,26 @@ var userWidget = {handler:function handleConfig(lwId,config,widgetId,btn){
 		html += '<option value="false" selected=selected>当前:否</option>';
 	}
 	html += '<option value="true" >是</option><option value="false" >否</option></select>';			
+	html += '</div></div>';
+	
+	html += '<div class="col-lg-12 col-sm-12 col-xs-12 col-md-12" style="margin-bottom:10px">';
+	html += '<div class="col-lg-4 col-sm-12 col-xs-12 col-md-4"><label>可见性</label></div>';
+	html += '<div class="col-lg-8 col-sm-12 col-md-8 col-xs-12">';
+	html += '<select class="form-control" name="scope">';
+	if(config.scope == 'PRIVATE'){
+		html += '<option value="PRIVATE" selected=selected>当前:私人</option>';
+	}else{
+		html += '<option value="PUBLIC" selected=selected>当前:公开</option>';
+	}
+	html += '<option value="PUBLIC" >公开</option><option value="PRIVATE" >私人</option></select>';			
 	html += '</div></div></div>';
+	
 	btn.unbind("click");
 	btn.bind("click",function(){
 		var data = {};
 		data.id = config.id;
 		data.widget = {"id":lwId};
+		data.scope = $("#configForm").find("select[name='scope']").val();
 		data.hidden=$("#configForm").find("select[name='hidden']").val();
 		btn.button("loading");
 		post(root+"/my/page/config/update?widgetSign=default",data,function callBack(data){
@@ -60,6 +74,17 @@ var blogWidget = {id:"1",handler:function handleConfig(lwId,config,widgetId,btn)
 	html += '<option value="true" >是</option><option value="false" >否</option></select>';			
 	html += '</div></div>';
 	html += '<div class="col-lg-12 col-sm-12 col-xs-12 col-md-12" style="margin-bottom:10px">';
+	html += '<div class="col-lg-4 col-sm-12 col-xs-12 col-md-4"><label>可见性</label></div>';
+	html += '<div class="col-lg-8 col-sm-12 col-md-8 col-xs-12">';
+	html += '<select class="form-control" name="scope">';
+	if(config.scope == 'PRIVATE'){
+		html += '<option value="PRIVATE" selected=selected>当前:私人</option>';
+	}else{
+		html += '<option value="PUBLIC" selected=selected>当前:公开</option>';
+	}
+	html += '<option value="PUBLIC" >公开</option><option value="PRIVATE" >私人</option></select>';			
+	html += '</div></div>';
+	html += '<div class="col-lg-12 col-sm-12 col-xs-12 col-md-12" style="margin-bottom:10px">';
 	html += '<div class="col-lg-4 col-sm-12 col-xs-12 col-md-4"><label>目标主页</label></div>';
 	html += '<div class="col-lg-8 col-sm-12 col-md-8 col-xs-12">';
 	var space = config.space;
@@ -87,6 +112,7 @@ var blogWidget = {id:"1",handler:function handleConfig(lwId,config,widgetId,btn)
 		data.id = config.id;
 		data.mode = $("#configForm").find("select[name='mode']").val();
 		data.widget = {"id":lwId};
+		data.scope = $("#configForm").find("select[name='scope']").val();
 		data.hidden=$("#configForm").find("select[name='hidden']").val();
 		data.space = {"id":$("#configForm").find("input[name='space.id']").val()}
 		btn.button("loading");
@@ -116,7 +142,7 @@ var blogWidget = {id:"1",handler:function handleConfig(lwId,config,widgetId,btn)
 	$("#configModal").modal("show");
 }}
 
-var widgets = [blogWidget,{id:2,handler:userWidget.handler},{id:3,handler:userWidget.handler},{id:4,handler:userWidget.handler}];
+var widgets = [blogWidget,{id:2,handler:userWidget.handler},{id:3,handler:userWidget.handler},{id:4,handler:userWidget.handler},{id:5,handler:userWidget.handler}];
 
 function handleWidget(lwId,config,widgetId,btn){
 	for(var i=0;i<widgets.length;i++){

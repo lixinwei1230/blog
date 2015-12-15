@@ -9,7 +9,6 @@ import me.qyh.bean.BlogFilesQueryBean;
 import me.qyh.dao.BlogDao;
 import me.qyh.entity.RoleEnum;
 import me.qyh.entity.User;
-import me.qyh.helper.freemaker.WebFreemarkers;
 import me.qyh.page.widget.config.WidgetConfig;
 
 /**
@@ -38,16 +37,16 @@ public class BlogCategoryFileWidgetHandler extends AbstractSimpleSystemWidgetHan
 	}
 
 	@Override
-	String getPreviewHtml(User user, WebFreemarkers freeMarkers) {
-		return parseHtml(user, user, freeMarkers);
+	String getPreviewHtml(User user) {
+		return parseHtml(user, user);
 	}
 
 	@Override
-	String getWidgetHtml(WidgetConfig config, User owner, User visitor, WebFreemarkers freeMarkers) {
-		return parseHtml(owner, visitor, freeMarkers);
+	String getWidgetHtml(WidgetConfig config, User owner, User visitor) {
+		return parseHtml(owner, visitor);
 	}
 
-	protected String parseHtml(User user, User visitor, WebFreemarkers freeMarkers) {
+	protected String parseHtml(User user, User visitor) {
 		BlogFilesQueryBean bean = new BlogFilesQueryBean();
 		bean.setSpace(user.getSpace());
 		bean.setScopes(userServer.userRelationship(user, visitor));

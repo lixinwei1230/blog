@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import me.qyh.dao.UserWidgetConfigDao;
 import me.qyh.entity.User;
 import me.qyh.exception.LogicException;
-import me.qyh.helper.freemaker.WebFreemarkers;
 import me.qyh.page.LocationWidget;
 import me.qyh.page.widget.SystemWidget;
 import me.qyh.page.widget.config.WidgetConfig;
@@ -56,8 +55,7 @@ public abstract class AbstractSimpleSystemWidgetHandler extends AbstractSystemWi
 	}
 
 	@Override
-	SystemWidget getWidget(LocationWidget widget, WebFreemarkers freeMarkers, User owner, User visitor)
-			throws LogicException {
+	public SystemWidget getWidget(LocationWidget widget, User owner, User visitor) throws LogicException {
 		WidgetConfig config = userWidgetConfigDao.selectByLocationWidget(widget);
 
 		if (config == null) {
@@ -68,11 +66,11 @@ public abstract class AbstractSimpleSystemWidgetHandler extends AbstractSystemWi
 		sw.setId(id);
 		sw.setName(name);
 		sw.setConfig(config);
-		sw.setHtml(getWidgetHtml(config, owner, visitor, freeMarkers));
+		sw.setHtml(getWidgetHtml(config, owner, visitor));
 
 		return sw;
 	}
 
-	abstract String getWidgetHtml(WidgetConfig config, User owner, User visitor, WebFreemarkers freeMarkers);
+	abstract String getWidgetHtml(WidgetConfig config, User owner, User visitor);
 
 }
