@@ -7,7 +7,7 @@
 		<table class="table">
 			<#list loginInfos as loginInfo>
 			    <tr>
-			    	<td>${loginInfo.remoteAddress}</td>
+			    	<td><a href="http://ip.taobao.com/ipSearch.php?ipAddr=${loginInfo.remoteAddress}" target="_blank">${loginInfo.remoteAddress}</a></td>
 			    	<td>${(loginInfo.loginDate?string("yyyy-MM-dd HH:mm"))!}</td>
 			    </tr>
 			</#list>
