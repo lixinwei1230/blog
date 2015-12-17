@@ -9,5 +9,5 @@ package me.qyh.oauth2.entity;
 public enum OauthType {
 
 	QQ, // qq
-	SINA_WEIBO
+	SINA
 }

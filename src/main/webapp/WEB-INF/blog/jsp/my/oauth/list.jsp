@@ -47,6 +47,9 @@
 													<c:when test="${oauth.type == 'QQ' }">
 												QQ
 											</c:when>
+											<c:when test="${oauth.type == 'SINA' }">
+												SINA
+											</c:when>
 												</c:choose></td>
 											<td><fmt:formatDate value="${oauth.createDate }"
 													pattern="yyyy-MM-dd HH:mm" /></td>
@@ -79,7 +82,7 @@
 				var flag = true;
 				if(flag){
 					flag = false;
-					post(contextPath+"/my/oauth/unbind",{"type":type},function(data){
+					post(contextPath+"/my/oauth/unbind?type="+type,{},function(data){
 						if(data.success){
 							$.messager.popup("解除绑定成功");
 							window.location.reload();

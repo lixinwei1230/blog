@@ -1,4 +1,4 @@
-package me.qyh.oauth2.qq;
+package me.qyh.oauth2.support;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

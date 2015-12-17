@@ -1,4 +1,4 @@
-package me.qyh.oauth2.qq;
+package me.qyh.oauth2.support;
 
 import java.io.IOException;
 import java.net.URI;
@@ -7,6 +7,13 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectReader;
 
 import me.qyh.oauth2.AccessToken;
 import me.qyh.oauth2.Oauth2;
@@ -18,24 +25,15 @@ import me.qyh.oauth2.exception.Oauth2Exception;
 import me.qyh.oauth2.exception.Oauth2InvalidAccessTokenException;
 import me.qyh.oauth2.security.OauthPrincipal;
 import me.qyh.utils.Validators;
-
-import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectReader;
+import me.qyh.web.tag.url.UrlHelper;
 
 public class QQOauth2Impl implements Oauth2, InitializingBean {
 
-	private static final String RESPONSE_TYPE = "code";
-	private static final String GRANT_TYPE = "authorization_code";
-
 	@Autowired
 	private ObjectReader reader;
+	@Autowired
+	private UrlHelper urlHelper;
+
 	private String openIdUrl;
 	private String appId;
 	private String appKey;
@@ -58,33 +56,19 @@ public class QQOauth2Impl implements Oauth2, InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
-		params.add("response_type", RESPONSE_TYPE);
-		params.add("client_id", appId);
-		params.add("redirect_uri", redirectUri);
+		this.redirectUri = urlHelper.getUrl() + redirectUri;
+		authorizationCodeUrl = String.format(authorizationCodeUrl, "code", appId, redirectUri);
 		if (!Validators.isEmptyOrNull(scopes)) {
 			StringBuilder sb = new StringBuilder();
 			for (String scope : scopes) {
 				sb.append(scope).append(",");
 			}
 			sb.deleteCharAt(sb.length() - 1);
-			params.add("scope", sb.toString());
+			authorizationCodeUrl += ("&scope" + sb.toString());
 		}
-		authorizationCodeUrl = UriComponentsBuilder.fromHttpUrl(authorizationCodeUrl).queryParams(params).build(true)
-				.toUriString();
 
-		params.clear();
-		params.add("grant_type", GRANT_TYPE);
-		params.add("client_id", appId);
-		params.add("client_secret", appKey);
-		params.add("redirect_uri", redirectUri);
-		authorizationUrl = UriComponentsBuilder.fromHttpUrl(authorizationUrl).queryParams(params).build(true)
-				.toUriString();
-
-		params.clear();
-		params.add("oauth_consumer_key", appId);
-		params.add("format", "json");
-		userInfoUrl = UriComponentsBuilder.fromHttpUrl(userInfoUrl).queryParams(params).build(true).toString();
+		authorizationUrl = String.format(authorizationUrl, "authorization_code", appId, appKey, redirectUri);
+		userInfoUrl = String.format(userInfoUrl, appId);
 	}
 
 	private OpenId getOpenId(AccessToken token) {
@@ -112,7 +96,6 @@ public class QQOauth2Impl implements Oauth2, InitializingBean {
 			throw new Oauth2InvalidAccessTokenException(OauthType.QQ, "获取的token为空，可能取消了接入或者遭遇csrf攻击");
 		}
 		token.setExpireIn(Long.parseLong(result.getResult("expires_in")));
-		token.setRefreshToken(result.getResult("refresh_token"));
 		return token;
 	}
 
@@ -259,6 +242,6 @@ public class QQOauth2Impl implements Oauth2, InitializingBean {
 	@Override
 	public OauthPrincipal getOauthPrincipal(String code) {
 		AccessToken token = getAccessToken(code);
-		return new OauthPrincipal(getOpenId(token).getOpenId(), OauthType.QQ,token);
+		return new OauthPrincipal(getOpenId(token).getOpenId(), OauthType.QQ, token);
 	}
 }

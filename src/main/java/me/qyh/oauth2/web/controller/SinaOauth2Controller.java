@@ -1,0 +1,27 @@
+package me.qyh.oauth2.web.controller;
+
+import me.qyh.oauth2.Oauth2;
+import me.qyh.oauth2.entity.OauthType;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+@RequestMapping("oauth2/sina")
+public class SinaOauth2Controller extends OauthAuthorizeController {
+
+	@Autowired
+	private Oauth2 sinaOauth2;
+
+	@Override
+	OauthType oauthType() {
+		return OauthType.SINA;
+	}
+
+	@Override
+	Oauth2 oauth2() {
+		return sinaOauth2;
+	}
+
+}

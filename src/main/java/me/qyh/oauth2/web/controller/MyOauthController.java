@@ -31,7 +31,7 @@ public class MyOauthController extends BaseController {
 	@RequestMapping(value = "unbind", method = RequestMethod.POST)
 	@ResponseBody
 	public Info unbind(@RequestParam(value = "type", defaultValue = "QQ") OauthType type) throws LogicException {
-		oauthService.unbind(UserContext.getUser(), OauthType.QQ);
+		oauthService.unbind(UserContext.getUser(), type);
 		return new Info(true);
 	}
 

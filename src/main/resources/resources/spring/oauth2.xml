@@ -21,14 +21,35 @@
 						     http://www.springframework.org/schema/task 
 						     http://www.springframework.org/schema/task/spring-task-4.0.xsd">
 
-	<bean id="qqOauth2Impl" class="me.qyh.oauth2.qq.QQOauth2Impl">
+	<bean id="qqOauth2" class="me.qyh.oauth2.support.QQOauth2Impl">
 		<property name="appId" value="101243309" />
 		<property name="appKey" value="851b2a4a5638562a2321c4891d470ba9" />
-		<property name="authorizationCodeUrl" value="https://graph.qq.com/oauth2.0/authorize" />
-		<property name="authorizationUrl" value="https://graph.qq.com/oauth2.0/token" />
-		<property name="redirectUri" value="http://www.qyh.me/oauth2/qq/success" />
+		<property name="authorizationCodeUrl">
+			<value><![CDATA[https://graph.qq.com/oauth2.0/authorize?response_type=%s&client_id=%s&redirect_uri=%s]]></value>
+		</property>
+		<property name="authorizationUrl">
+			<value><![CDATA[https://graph.qq.com/oauth2.0/token?grant_type=%s&client_id=%s&client_secret=%s&redirect_uri=%s]]></value>
+		</property>
+		<property name="redirectUri" value="/oauth2/qq/success" />
 		<property name="openIdUrl" value="https://graph.qq.com/oauth2.0/me" />
-		<property name="userInfoUrl" value="https://graph.qq.com/user/get_user_info" />
+		<property name="userInfoUrl">
+			<value><![CDATA[https://graph.qq.com/user/get_user_info?oauth_consumer_key=%s&format=json]]></value>
+		</property>
+	</bean>
+	
+	<bean id="sinaOauth2" class="me.qyh.oauth2.support.SinaOauth2Impl">
+		<property name="appkey" value="1923935118"/>
+		<property name="authorizationCodeUrl">
+			<value><![CDATA[https://api.weibo.com/oauth2/authorize?client_id=%s&redirect_uri=%s&response_type=%s]]></value>
+		</property>
+		<property name="authorizationUrl">
+			<value><![CDATA[https://api.weibo.com/oauth2/access_token?client_id=%s&client_secret=%s&grant_type=%s&redirect_uri=%s]]></value>
+		</property>
+		<property name="userInfoUrl">
+			<value><![CDATA[https://api.weibo.com/2/users/show.json?access_token=%s&uid=%s]]></value>
+		</property>
+		<property name="redirectUri" value="/oauth2/sina/success" />
+		<property name="appsecret" value="da327cb8543a0772fbbd4af80c02e42d"/>
 	</bean>
 
 	<bean class="me.qyh.oauth2.service.impl.Oauth2ServiceImpl" />

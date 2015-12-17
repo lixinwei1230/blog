@@ -18,3 +18,8 @@ FOREIGN KEY(user_id) REFERENCES blog_user(id));
 
 ALTER TABLE widget_config ADD COLUMN scope INT NOT NULL DEFAULT 0;
 ALTER TABLE widget_blogwidgetconfig ADD COLUMN scope INT NOT NULL DEFAULT 0;
+
+ALTER TABLE oauth_user DROP FOREIGN KEY oauth_user_ibfk_1;
+ALTER TABLE oauth_user DROP INDEX user_id;
+ALTER TABLE oauth_user ADD FOREIGN KEY(user_id) REFERENCES blog_user(id);
+
