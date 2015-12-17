@@ -2,11 +2,11 @@ package me.qyh.dao;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
-
 import me.qyh.page.LocationWidget;
 import me.qyh.page.Page;
 import me.qyh.page.widget.Widget;
+
+import org.apache.ibatis.annotations.Param;
 
 public interface LocationWidgetDao extends BaseDao<LocationWidget, Integer> {
 

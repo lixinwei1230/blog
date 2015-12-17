@@ -3,8 +3,6 @@ package me.qyh.page.widget.support;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import me.qyh.bean.Scopes;
 import me.qyh.dao.BlogDao;
 import me.qyh.entity.RoleEnum;
@@ -12,6 +10,8 @@ import me.qyh.entity.Space;
 import me.qyh.entity.User;
 import me.qyh.page.widget.config.WidgetConfig;
 import me.qyh.pageparam.BlogPageParam;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class UserInfoWidgetHandler extends AbstractSimpleSystemWidgetHandler {
 

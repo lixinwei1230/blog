@@ -15,7 +15,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</association>
 		<association property="widget" javaType="Widget">
 			<result column="widget_id" property="id" />
+			<result column="widget_name" property="name" />
+			<result column="widget_html" property="html" />
 			<result property="type" column="widget_type" typeHandler="EnumOrdinalTypeHandler" />
+			<discriminator javaType="java.lang.Integer" column="widget_type">
+				<case value="1" resultType="UserWidget">
+					<result column="create_date" property="createDate" />
+				</case>
+			</discriminator>
+		</association>
+		<association property="config" javaType="WidgetConfig">
+			<id property="id" column="id" />
+			<result column="hidden" property="hidden" />
+			<result property="scope" column="scope" typeHandler="EnumOrdinalTypeHandler" />
 		</association>
 	</resultMap>
 
@@ -45,8 +57,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<select id="selectByPage" resultMap="LocationWidgetResult">
 		SELECT
-		id,row_index,column_index,widget_index,widget_type,page_id,widget_id,width
-		FROM widget_locationwidget WHERE page_id = #{id}
+		wl.id,wl.row_index,wl.column_index,wl.widget_index,wl.widget_type,wl.page_id,wl.widget_id,wl.width,wu.widget_name,wu.widget_html,wu.create_date,wc.hidden,wc.scope
+		FROM widget_locationwidget wl 
+		LEFT OUTER JOIN widget_user wu ON wl.widget_id = wu.id
+		LEFT OUTER JOIN widget_config wc ON wl.id = wc.widget_id
+		WHERE wl.page_id = #{id}
 	</select>
 
 	<select id="selectById" resultMap="LocationWidgetResult">

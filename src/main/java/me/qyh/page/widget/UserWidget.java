@@ -29,9 +29,8 @@ public class UserWidget extends Widget {
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
 	}
-
-	public UserWidget() {
-		super(WidgetType.USER);
+	
+	public UserWidget(){
+		setType(WidgetType.USER);
 	}
-
 }

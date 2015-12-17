@@ -8,7 +8,7 @@
 				<div class="col-lg-${cc.width } col-md-${cc.width}">
 					<div class="row">
 						<c:forEach items="${cc.widgets }" var="lw">
-							<c:if test="${!lw.widget.config.hidden }">
+							<c:if test="${!lw.config.hidden }">
 								<div
 									class="col-lg-<fmt:parseNumber integerOnly="true" value="${12*lw.width/cc.widthP }" /> col-md-<fmt:parseNumber integerOnly="true" value="${12*lw.width/cc.widthP }" />">
 									${lw.widget.html }</div>

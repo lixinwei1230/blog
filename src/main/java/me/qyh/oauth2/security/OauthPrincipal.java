@@ -1,12 +1,13 @@
 package me.qyh.oauth2.security;
 
+import me.qyh.oauth2.AccessToken;
 import me.qyh.oauth2.entity.OauthType;
 
 public class OauthPrincipal {
 
 	private String oauthUserId;
 	private OauthType type;
-	private Object token;
+	private AccessToken token;
 
 	public String getOauthUserId() {
 		return oauthUserId;
@@ -20,12 +21,18 @@ public class OauthPrincipal {
 		this.oauthUserId = oauthUserId;
 		this.type = type;
 	}
+	
+	public OauthPrincipal(String oauthUserId, OauthType type, AccessToken token) {
+		this.oauthUserId = oauthUserId;
+		this.type = type;
+		this.token = token;
+	}
 
-	public Object getToken() {
+	public AccessToken getToken() {
 		return token;
 	}
 
-	public void setToken(Object token) {
+	public void setToken(AccessToken token) {
 		this.token = token;
 	}
 

@@ -14,6 +14,7 @@
 		</table>
 	</div>
 	<#else>
+	
 		<div class="panel-body">
 			<div class="alert alert-info">当前没有任何登录信息</div>
 		</div>

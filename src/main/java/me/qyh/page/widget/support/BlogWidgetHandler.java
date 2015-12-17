@@ -16,7 +16,9 @@ import me.qyh.entity.blog.Blog;
 import me.qyh.exception.LogicException;
 import me.qyh.exception.SpaceDisabledException;
 import me.qyh.page.LocationWidget;
-import me.qyh.page.widget.SystemWidget;
+import me.qyh.page.widget.SystemWidgetConfigHandler;
+import me.qyh.page.widget.Widget;
+import me.qyh.page.widget.WidgetType;
 import me.qyh.page.widget.config.WidgetConfig;
 import me.qyh.page.widget.config.support.BlogWidgetConfig;
 import me.qyh.pageparam.BlogPageParam;
@@ -39,40 +41,26 @@ public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 	}
 
 	@Override
-	public void storeWidgetConfig(WidgetConfig config) throws LogicException {
-		BlogWidgetConfig bc = (BlogWidgetConfig)config;
-		setSpace(bc);
-		blogWidgetConfigDao.insert(bc);
-	}
-
-	@Override
 	public boolean doAuthencation(User current) {
 		return true;
 	}
 
 	@Override
-	public WidgetConfig getDefaultWidgetConfig(User current) {
-		BlogWidgetConfig config = new BlogWidgetConfig();
-		config.setHidden(false);
-		config.setSpace(current.getSpace());
-		return config;
-	}
-
-	@Override
 	String getPreviewHtml(User user) {
-		BlogWidgetConfig config = (BlogWidgetConfig) getDefaultWidgetConfig(user);
-
+		BlogWidgetConfig config = (BlogWidgetConfig) (getConfigHandler()
+				.getDefaultWidgetConfig(user));
 		List<Blog> blogs = blogDao.selectPage(buildParam(config, user, user));
-
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("blogs", blogs);
 		map.put("widget", super.getSimpleWidget());
 		map.put("config", config);
 
-		return freeMarkers.processTemplateIntoString("page/widget/widget_blog_preview.ftl", map);
+		return freeMarkers.processTemplateIntoString(
+				"page/widget/widget_blog_preview.ftl", map);
 	}
 
-	protected BlogPageParam buildParam(BlogWidgetConfig config, User owner, User visitor) {
+	protected BlogPageParam buildParam(BlogWidgetConfig config, User owner,
+			User visitor) {
 		BlogPageParam param = new BlogPageParam();
 		param.setCurrentPage(1);
 		param.setPageSize(pageSize);
@@ -91,81 +79,110 @@ public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 			}
 			param.setRecommend(null);
 		}
-		
+
 		param.setIgnoreLevel(true);
 
 		return param;
 	}
 
 	@Override
-	public SystemWidget getWidget(LocationWidget widget, User owner, User visitor)
+	public Widget getWidget(WidgetConfig config, User owner, User visitor)
 			throws LogicException {
-		BlogWidgetConfig config = blogWidgetConfigDao.selectByLocationWidget(widget);
-		if (config == null) {
+		BlogWidgetConfig _config = (BlogWidgetConfig) config;
+		if (_config == null) {
 			throw new LogicException(CODE_CONFIG_NOT_EXISTS);
 		}
-		SystemWidget sw = new SystemWidget();
+		Widget sw = new Widget();
 		sw.setId(id);
 		sw.setName(name);
 
-		List<Blog> blogs = blogDao.selectPage(buildParam(config, owner, visitor));
+		List<Blog> blogs = blogDao.selectPage(buildParam(_config, owner,
+				visitor));
 
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("blogs", blogs);
 		map.put("widget", super.getSimpleWidget());
-		map.put("config", config);
+		map.put("config", _config);
 
-		sw.setHtml(freeMarkers.processTemplateIntoString("page/widget/widget_blog.ftl", map));
-		sw.setConfig(config);
+		sw.setHtml(freeMarkers.processTemplateIntoString(
+				"page/widget/widget_blog.ftl", map));
+		
+		sw.setType(WidgetType.SYSTEM);
 
 		return sw;
 	}
 
-	@Override
-	public void deleteWidgetConfig(LocationWidget widget) throws LogicException {
-		blogWidgetConfigDao.deleteByLocationWidget(widget);
-	}
-
-	@Override
-	public WidgetConfig getConfig(LocationWidget widget) {
-
-		BlogWidgetConfig config = blogWidgetConfigDao.selectByLocationWidget(widget);
-
-		if (config == null) {
-			config = new BlogWidgetConfig();
-		}
-
-		return config;
-	}
-
-	@Override
-	public void updateWidgetConfig(WidgetConfig config) throws LogicException {
-		BlogWidgetConfig bc = (BlogWidgetConfig)config;
-		setSpace(bc);
-		blogWidgetConfigDao.update(bc);
-	}
-
-	@Override
-	public WidgetConfig getConfig(Integer id) throws LogicException {
-		BlogWidgetConfig db = blogWidgetConfigDao.selectById(id);
-		if (db == null) {
-			throw new LogicException("error.widget.config.blogWidgetConfig.notexists");
-		}
-
-		return db;
-	}
-	
-	private void setSpace(BlogWidgetConfig bc) throws LogicException{
+	private void setSpace(BlogWidgetConfig bc) throws LogicException {
 		Space space = bc.getSpace();
-		if(space == null || Validators.isEmptyOrNull(space.getId(),true)){
+		if (space == null || Validators.isEmptyOrNull(space.getId(), true)) {
 			bc.setSpace(null);
-		}else{
-			try{
+		} else {
+			try {
 				spaceServer.getSpaceById(space.getId());
-			}catch (SpaceDisabledException e) {
+			} catch (SpaceDisabledException e) {
 				throw new LogicException(e.getI18nMessage());
 			}
 		}
+	}
+
+	@Override
+	public SystemWidgetConfigHandler getConfigHandler() {
+		return new SystemWidgetConfigHandler() {
+
+			@Override
+			public void storeWidgetConfig(WidgetConfig config)
+					throws LogicException {
+				BlogWidgetConfig bc = (BlogWidgetConfig) config;
+				setSpace(bc);
+				blogWidgetConfigDao.insert(bc);
+			}
+
+			@Override
+			public WidgetConfig getDefaultWidgetConfig(User current) {
+				BlogWidgetConfig config = new BlogWidgetConfig();
+				config.setHidden(false);
+				config.setSpace(current.getSpace());
+				return config;
+			}
+
+			@Override
+			public WidgetConfig getConfig(LocationWidget widget) {
+
+				BlogWidgetConfig config = blogWidgetConfigDao
+						.selectByLocationWidget(widget);
+
+				if (config == null) {
+					config = new BlogWidgetConfig();
+				}
+
+				return config;
+			}
+
+			@Override
+			public void deleteWidgetConfig(LocationWidget widget)
+					throws LogicException {
+				blogWidgetConfigDao.deleteByLocationWidget(widget);
+			}
+
+			@Override
+			public void updateWidgetConfig(WidgetConfig config)
+					throws LogicException {
+				BlogWidgetConfig bc = (BlogWidgetConfig) config;
+				setSpace(bc);
+				blogWidgetConfigDao.update(bc);
+			}
+
+			@Override
+			public WidgetConfig getConfig(Integer id) throws LogicException {
+				BlogWidgetConfig db = blogWidgetConfigDao.selectById(id);
+				if (db == null) {
+					throw new LogicException(
+							"error.widget.config.blogWidgetConfig.notexists");
+				}
+
+				return db;
+			}
+		};
 	}
 
 }

@@ -6,6 +6,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import me.qyh.bean.I18NMessage;
+import me.qyh.bean.Info;
+import me.qyh.exception.LogicException;
+import me.qyh.oauth2.entity.OauthUser;
+import me.qyh.oauth2.security.OauthPrincipal;
+import me.qyh.oauth2.service.OauthService;
+import me.qyh.utils.Validators;
+import me.qyh.web.tag.token.Token;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
@@ -15,15 +24,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import me.qyh.bean.I18NMessage;
-import me.qyh.bean.Info;
-import me.qyh.exception.LogicException;
-import me.qyh.oauth2.entity.OauthUser;
-import me.qyh.oauth2.security.OauthPrincipal;
-import me.qyh.oauth2.service.OauthService;
-import me.qyh.utils.Validators;
-import me.qyh.web.tag.token.Token;
 
 @Controller
 @RequestMapping("oauth/bind")

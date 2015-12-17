@@ -1,23 +1,15 @@
 package me.qyh.oauth2.qq;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectReader;
-
-import me.qyh.oauth2.Oauths;
+import me.qyh.oauth2.AccessToken;
+import me.qyh.oauth2.Oauth2;
 import me.qyh.oauth2.entity.OauthAvatar;
 import me.qyh.oauth2.entity.OauthType;
 import me.qyh.oauth2.entity.OauthUser;
@@ -27,7 +19,17 @@ import me.qyh.oauth2.exception.Oauth2InvalidAccessTokenException;
 import me.qyh.oauth2.security.OauthPrincipal;
 import me.qyh.utils.Validators;
 
-public class QQOauth2Impl implements QQOauth2, InitializingBean {
+import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectReader;
+
+public class QQOauth2Impl implements Oauth2, InitializingBean {
 
 	private static final String RESPONSE_TYPE = "code";
 	private static final String GRANT_TYPE = "authorization_code";
@@ -50,7 +52,7 @@ public class QQOauth2Impl implements QQOauth2, InitializingBean {
 	 * @return
 	 */
 	@Override
-	public String getAuthorizeUrl(String state, HttpServletRequest request) {
+	public String getAuthorizeUrl(String state) {
 		return new String(authorizationCodeUrl).concat("&state=").concat(state);
 	}
 
@@ -83,11 +85,9 @@ public class QQOauth2Impl implements QQOauth2, InitializingBean {
 		params.add("oauth_consumer_key", appId);
 		params.add("format", "json");
 		userInfoUrl = UriComponentsBuilder.fromHttpUrl(userInfoUrl).queryParams(params).build(true).toString();
-
 	}
 
-	@Override
-	public OpenId getOpenId(AccessToken token) {
+	private OpenId getOpenId(AccessToken token) {
 		String url = new String(openIdUrl).concat("?access_token=").concat(token.getToken());
 		QQHttpResult result = sendHttpsGet(url);
 		if (result.hasError) {
@@ -97,8 +97,7 @@ public class QQOauth2Impl implements QQOauth2, InitializingBean {
 		return result.parseJsonObj(OpenId.class);
 	}
 
-	@Override
-	public AccessToken getAccessToken(String code) {
+	private AccessToken getAccessToken(String code) {
 		String url = new String(authorizationUrl).concat("&code=").concat(code);
 		QQHttpResult result = sendHttpsGet(url);
 		if (result.hasError) {
@@ -155,13 +154,15 @@ public class QQOauth2Impl implements QQOauth2, InitializingBean {
 
 	private String _sendHttpsGet(String urlAndParams) {
 		try {
-			String response = Oauths.sendHttpsGet(urlAndParams);
+			String response = IOUtils.toString(new URI(urlAndParams));
 			if (Validators.isEmptyOrNull(response, true)) {
 				throw new Oauth2ConnectionException(OauthType.QQ,
 						String.format("链接%s返回的相应信息为空，可能是链接有问题", urlAndParams));
 			}
 			return response;
 		} catch (IOException e) {
+			throw new Oauth2ConnectionException(OauthType.QQ, e.getMessage(), e);
+		} catch (URISyntaxException e) {
 			throw new Oauth2ConnectionException(OauthType.QQ, e.getMessage(), e);
 		}
 	}
@@ -255,4 +256,9 @@ public class QQOauth2Impl implements QQOauth2, InitializingBean {
 		}
 	}
 
+	@Override
+	public OauthPrincipal getOauthPrincipal(String code) {
+		AccessToken token = getAccessToken(code);
+		return new OauthPrincipal(getOpenId(token).getOpenId(), OauthType.QQ,token);
+	}
 }

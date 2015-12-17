@@ -1,10 +1,9 @@
 package me.qyh.page.widget;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
 import me.qyh.entity.Id;
 import me.qyh.helper.htmlclean.JsonHtmlXssSerializer;
-import me.qyh.page.widget.config.WidgetConfig;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class Widget extends Id {
 
@@ -17,7 +16,6 @@ public class Widget extends Id {
 	private String name;
 	private String html;
 	private WidgetType type;
-	private WidgetConfig config;
 
 	public String getName() {
 		return name;
@@ -35,23 +33,17 @@ public class Widget extends Id {
 		this.html = html;
 	}
 
+	public Widget() {
+		
+	}
+
 	public WidgetType getType() {
 		return type;
 	}
 
-	public WidgetConfig getConfig() {
-		return config;
-	}
-
-	public void setConfig(WidgetConfig config) {
-		this.config = config;
-	}
-
-	public Widget() {
-
-	}
-
-	protected Widget(WidgetType type) {
+	public void setType(WidgetType type) {
 		this.type = type;
 	}
+
+	
 }

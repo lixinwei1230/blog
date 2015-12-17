@@ -2,6 +2,7 @@ package me.qyh.page;
 
 import me.qyh.entity.Id;
 import me.qyh.page.widget.Widget;
+import me.qyh.page.widget.config.WidgetConfig;
 
 public class LocationWidget extends Id {
 
@@ -16,6 +17,7 @@ public class LocationWidget extends Id {
 	private Widget widget;
 	private Page page;
 	private int width;
+	private WidgetConfig config;
 
 	public Page getPage() {
 		return page;
@@ -63,5 +65,13 @@ public class LocationWidget extends Id {
 
 	public void setWidth(int width) {
 		this.width = width;
+	}
+
+	public WidgetConfig getConfig() {
+		return config;
+	}
+
+	public void setConfig(WidgetConfig config) {
+		this.config = config;
 	}
 }
