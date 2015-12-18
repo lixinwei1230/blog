@@ -9,7 +9,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<association property="user" javaType="User">
 			<id column="user_id" property="id" />
 		</association>
-		<association property="tag" javaType="UserTag">
+		<association property="tag" javaType="Tag">
 			<id column="tag_id" property="id" />
 			<result column="tag_name" property="name"/>
 		</association>
