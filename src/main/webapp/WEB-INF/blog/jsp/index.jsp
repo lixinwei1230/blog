@@ -76,13 +76,11 @@
 								<div style="margin-top: 5px; margin-bottom: 10px">
 									<span title="<spring:message code="page.blog.hitTimes" />"
 										class="glyphicon glyphicon-fire" aria-hidden="true"></span>&nbsp;${blog.hits
-									}
-									&nbsp;&nbsp;<a
+									} &nbsp;&nbsp;<a
 										href="<u:url space="${blog.space }"/>/blog/${blog.id}#comment-container">
 										<span class="glyphicon glyphicon-comment"
 										title="<spring:message code="page.blog.comments" />"
-										aria-hidden="true"></span>
-									</a>&nbsp;${blog.comments }
+										aria-hidden="true"></span> </a>&nbsp;${blog.comments }
 								</div>
 								<div>
 									<c:out value="${blog.summary }..." />
@@ -101,7 +99,7 @@
 				</c:choose>
 				<c:if test="${page.totalPage >1 }">
 					<div class="alert alert-info">
-						<a href="${ctx }/blog/list/1?recommend=true">查看更多</a>
+						<a href="${ctx }/blog/list/2?recommend=true">查看更多</a>
 					</div>
 				</c:if>
 			</div>
@@ -124,8 +122,16 @@
 								<div class="form-group">
 									<label>第三方登录</label>
 									<div>
-										<a href="<u:url/>/oauth2/qq/login"><img
-											src="${ctx }/static/imgs/oauth_qq.png" />QQ登录</a>
+										<table class="table">
+											<tr>
+												<td><a href="<u:url/>/oauth2/qq/login"><img
+														src="${ctx }/static/imgs/oauth_qq.png" />QQ登录</a>
+												</td>
+												<td><a href="<u:url/>/oauth2/sina/login"><img
+														src="${ctx }/static/imgs/oauth_sina.png" />新浪微博登录</a>
+												</td>
+											</tr>
+										</table>
 									</div>
 								</div>
 								<div class="form-group">
@@ -139,21 +145,6 @@
 						</fieldset>
 					</div>
 				</c:if>
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						<h3 class="panel-title">友情链接</h3>
-					</div>
-					<div class="table-responsive">
-						<table class="table">
-							<tbody>
-								<tr>
-									<td><a
-										href="http://w.midea.com/shop/index?id=100510&sellerid=220844&from=timeline&isappinstalled=0">某人的微店</a></td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
 				<div class="alert alert-warning">
 					只在新版的chrome浏览器开发测试，别的浏览器不会做测试和支持<br /> 用chrome浏览器、andriod
 					4+访问时，图片格式可能会被转化成webp格式 <br /> 鄙视IE浏览器(包括EDGE)

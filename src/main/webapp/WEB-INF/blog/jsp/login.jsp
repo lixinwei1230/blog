@@ -57,8 +57,16 @@
 					<div class="form-group">
 						<label>第三方登录</label>
 						<div>
-							<a href="<u:url/>/oauth2/qq/login"><img
-								src="${ctx }/static/imgs/oauth_qq.png" />QQ登录</a>
+							<table class="table">
+								<tr>
+									<td><a href="<u:url/>/oauth2/qq/login"><img
+											src="${ctx }/static/imgs/oauth_qq.png" />QQ登录</a>
+									</td>
+									<td><a href="<u:url/>/oauth2/sina/login"><img
+											src="${ctx }/static/imgs/oauth_sina.png" />新浪微博登录</a>
+									</td>
+								</tr>
+							</table>
 						</div>
 					</div>
 					<div class="form-group">

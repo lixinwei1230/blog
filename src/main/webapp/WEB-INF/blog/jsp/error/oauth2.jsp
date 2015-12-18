@@ -37,8 +37,11 @@
 	<jsp:include page="/WEB-INF/scripts.jsp"></jsp:include>
 	<script type="text/javascript">
 		function toLogin(type){
-			if(type == "QQ")
+			if(type == "QQ"){
 				window.location.href = getUrl()+"/oauth2/qq/login";
+			}else if(type == "SINA"){
+				window.location.href = getUrl()+"/oauth2/sina/login";
+			}
 			else{
 				window.location.href = getUrl()+"/login";
 			}

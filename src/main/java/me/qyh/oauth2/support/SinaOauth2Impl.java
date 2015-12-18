@@ -8,6 +8,15 @@ import java.net.URL;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import me.qyh.oauth2.AccessToken;
+import me.qyh.oauth2.Oauth2;
+import me.qyh.oauth2.entity.OauthAvatar;
+import me.qyh.oauth2.entity.OauthType;
+import me.qyh.oauth2.entity.OauthUser;
+import me.qyh.oauth2.exception.Oauth2Exception;
+import me.qyh.oauth2.security.OauthPrincipal;
+import me.qyh.utils.Validators;
+
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,20 +27,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectReader;
 
-import me.qyh.oauth2.AccessToken;
-import me.qyh.oauth2.Oauth2;
-import me.qyh.oauth2.entity.OauthAvatar;
-import me.qyh.oauth2.entity.OauthType;
-import me.qyh.oauth2.entity.OauthUser;
-import me.qyh.oauth2.exception.Oauth2Exception;
-import me.qyh.oauth2.security.OauthPrincipal;
-import me.qyh.utils.Validators;
-import me.qyh.web.tag.url.UrlHelper;
-
 public class SinaOauth2Impl implements Oauth2, InitializingBean {
 
-	@Autowired
-	private UrlHelper urlHelper;
 	@Autowired
 	private ObjectReader reader;
 
@@ -116,7 +113,6 @@ public class SinaOauth2Impl implements Oauth2, InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.redirectUri = urlHelper.getUrl() + redirectUri;
 		authorizationCodeUrl = String.format(authorizationCodeUrl, appkey, redirectUri, "code");
 		if (!Validators.isEmptyOrNull(scopes)) {
 			StringBuilder sb = new StringBuilder();

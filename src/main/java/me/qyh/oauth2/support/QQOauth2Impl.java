@@ -8,13 +8,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectReader;
-
 import me.qyh.oauth2.AccessToken;
 import me.qyh.oauth2.Oauth2;
 import me.qyh.oauth2.entity.OauthAvatar;
@@ -25,14 +18,18 @@ import me.qyh.oauth2.exception.Oauth2Exception;
 import me.qyh.oauth2.exception.Oauth2InvalidAccessTokenException;
 import me.qyh.oauth2.security.OauthPrincipal;
 import me.qyh.utils.Validators;
-import me.qyh.web.tag.url.UrlHelper;
+
+import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectReader;
 
 public class QQOauth2Impl implements Oauth2, InitializingBean {
 
 	@Autowired
 	private ObjectReader reader;
-	@Autowired
-	private UrlHelper urlHelper;
 
 	private String openIdUrl;
 	private String appId;
@@ -56,7 +53,6 @@ public class QQOauth2Impl implements Oauth2, InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.redirectUri = urlHelper.getUrl() + redirectUri;
 		authorizationCodeUrl = String.format(authorizationCodeUrl, "code", appId, redirectUri);
 		if (!Validators.isEmptyOrNull(scopes)) {
 			StringBuilder sb = new StringBuilder();
