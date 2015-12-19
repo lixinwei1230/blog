@@ -23,3 +23,5 @@ ALTER TABLE oauth_user DROP FOREIGN KEY oauth_user_ibfk_1;
 ALTER TABLE oauth_user DROP INDEX user_id;
 ALTER TABLE oauth_user ADD FOREIGN KEY(user_id) REFERENCES blog_user(id);
 
+INSERT INTO user_role(user_id,role_id)
+VALUES((SELECT id FROM blog_user WHERE user_name = 'test'),(SELECT id FROM role WHERE role_name = 'ROLE_SUPERVISOR'))
