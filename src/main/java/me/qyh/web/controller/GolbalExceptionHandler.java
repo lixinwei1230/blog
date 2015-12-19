@@ -7,6 +7,16 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import me.qyh.bean.I18NMessage;
+import me.qyh.bean.Info;
+import me.qyh.exception.BusinessAccessDeinedException;
+import me.qyh.exception.LogicException;
+import me.qyh.exception.MyFileNotFoundException;
+import me.qyh.exception.SpaceDisabledException;
+import me.qyh.exception.SystemException;
+import me.qyh.web.MyFieldError;
+import me.qyh.web.Webs;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,24 +35,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import me.qyh.bean.I18NMessage;
-import me.qyh.bean.Info;
-import me.qyh.exception.BusinessAccessDeinedException;
-import me.qyh.exception.LogicException;
-import me.qyh.exception.MyFileNotFoundException;
-import me.qyh.exception.SpaceDisabledException;
-import me.qyh.exception.SystemException;
-import me.qyh.oauth2.exception.Oauth2Exception;
-import me.qyh.oauth2.exception.Oauth2InvalidStateException;
-import me.qyh.web.MyFieldError;
-import me.qyh.web.Webs;
-
 @ControllerAdvice
 public class GolbalExceptionHandler extends BaseController {
 
 	private Logger logger = LoggerFactory.getLogger(GolbalExceptionHandler.class);
-
-	private static final String OAUTH_TYPE = "OAUTH_TYPE";
 
 	@Autowired
 	private ObjectWriter objectWriter;
@@ -112,16 +108,7 @@ public class GolbalExceptionHandler extends BaseController {
 		logger.error(se.getMessage(), se);
 		return new ModelAndView("/error/500");
 	}
-
-	@ExceptionHandler(Oauth2Exception.class)
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public ModelAndView handleOauth2Exception(Oauth2Exception e) throws Exception {
-		if (!(e instanceof Oauth2InvalidStateException)) {
-			logger.error(e.getMessage(), e);
-		}
-		return new ModelAndView("/error/oauth2").addObject(OAUTH_TYPE, e.getType());
-	}
-
+	
 	@ExceptionHandler(BusinessAccessDeinedException.class)
 	@ResponseStatus(HttpStatus.FORBIDDEN)
 	public ModelAndView handleBusinessAccessDeinedException(BusinessAccessDeinedException e) throws IOException {

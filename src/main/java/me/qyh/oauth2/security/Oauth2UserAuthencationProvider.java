@@ -1,17 +1,15 @@
 package me.qyh.oauth2.security;
 
+import me.qyh.exception.SystemException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-
-import me.qyh.exception.SystemException;
 
 public class Oauth2UserAuthencationProvider implements AuthenticationProvider {
 
@@ -31,15 +29,10 @@ public class Oauth2UserAuthencationProvider implements AuthenticationProvider {
 					: "认证过程中principal为" + token + "不是" + OauthPrincipal.class.getName());
 		}
 		OauthPrincipal principal = (OauthPrincipal) token.getPrincipal();
-		UserDetails user = null;
-		try {
-			user = this.oauthDetailsService.loadUserByOauthPrincipal(principal);
-		} catch (UsernameNotFoundException e) {
-			throw new BadCredentialsException("");
-		}
+		UserDetails user = this.oauthDetailsService.loadUserByOauthPrincipal(principal);
 		preAuthenticationChecks.check(user);
 		postAuthenticationChecks.check(user);
-
+		
 		return new Oauth2UserAuthencationToken(user, authoritiesMapper.mapAuthorities(user.getAuthorities()));
 	}
 

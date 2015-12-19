@@ -14,6 +14,7 @@ import me.qyh.oauth2.entity.OauthAvatar;
 import me.qyh.oauth2.entity.OauthType;
 import me.qyh.oauth2.entity.OauthUser;
 import me.qyh.oauth2.exception.Oauth2Exception;
+import me.qyh.oauth2.exception.Oauth2InvalidAccessTokenException;
 import me.qyh.oauth2.security.OauthPrincipal;
 import me.qyh.utils.Validators;
 
@@ -21,6 +22,7 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -100,6 +102,9 @@ public class SinaOauth2Impl implements Oauth2, InitializingBean {
 			token.setExpireIn(node.get("expires_in").asLong());
 			token.setToken(node.get("access_token").asText());
 			token.setUid(node.get("uid").asText());
+			if (Validators.isEmptyOrNull(token.getToken(), true)) {
+				throw new Oauth2InvalidAccessTokenException(OauthType.QQ, "获取的token为空，可能取消了接入或者遭遇csrf攻击");
+			}
 			return token;
 		} else {
 			try {
@@ -109,6 +114,16 @@ public class SinaOauth2Impl implements Oauth2, InitializingBean {
 				throw new Oauth2Exception(OauthType.SINA, String.format("无法解析%s", node.toString()));
 			}
 		}
+	}
+	
+	@Override
+	public OauthType getType() {
+		return OauthType.SINA;
+	}
+	
+	@Override
+	public String callBackUrl() {
+		return redirectUri;
 	}
 
 	@Override
@@ -141,7 +156,7 @@ public class SinaOauth2Impl implements Oauth2, InitializingBean {
 				result += line;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			
 		} finally {
 			IOUtils.closeQuietly(in);
 			if (conn != null) {
@@ -163,6 +178,7 @@ public class SinaOauth2Impl implements Oauth2, InitializingBean {
 		}
 	}
 
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	private static class Error {
 		@JsonProperty("error")
 		private String error;
@@ -177,6 +193,7 @@ public class SinaOauth2Impl implements Oauth2, InitializingBean {
 		}
 	}
 
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	private class QueryUserInfoError {
 		@JsonProperty("error")
 		private String error;

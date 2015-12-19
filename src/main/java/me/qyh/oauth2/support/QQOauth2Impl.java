@@ -2,7 +2,6 @@ package me.qyh.oauth2.support;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -13,7 +12,6 @@ import me.qyh.oauth2.Oauth2;
 import me.qyh.oauth2.entity.OauthAvatar;
 import me.qyh.oauth2.entity.OauthType;
 import me.qyh.oauth2.entity.OauthUser;
-import me.qyh.oauth2.exception.Oauth2ConnectionException;
 import me.qyh.oauth2.exception.Oauth2Exception;
 import me.qyh.oauth2.exception.Oauth2InvalidAccessTokenException;
 import me.qyh.oauth2.security.OauthPrincipal;
@@ -23,6 +21,8 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectReader;
 
@@ -135,14 +135,12 @@ public class QQOauth2Impl implements Oauth2, InitializingBean {
 		try {
 			String response = IOUtils.toString(new URI(urlAndParams));
 			if (Validators.isEmptyOrNull(response, true)) {
-				throw new Oauth2ConnectionException(OauthType.QQ,
+				throw new Oauth2Exception(OauthType.QQ,
 						String.format("链接%s返回的相应信息为空，可能是链接有问题", urlAndParams));
 			}
 			return response;
-		} catch (IOException e) {
-			throw new Oauth2ConnectionException(OauthType.QQ, e.getMessage(), e);
-		} catch (URISyntaxException e) {
-			throw new Oauth2ConnectionException(OauthType.QQ, e.getMessage(), e);
+		} catch (Exception e) {
+			throw new Oauth2Exception(OauthType.QQ, e.getMessage(), e);
 		}
 	}
 
@@ -240,4 +238,64 @@ public class QQOauth2Impl implements Oauth2, InitializingBean {
 		AccessToken token = getAccessToken(code);
 		return new OauthPrincipal(getOpenId(token).getOpenId(), OauthType.QQ, token);
 	}
+	
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	private static class QQOauth2Error {
+
+		@JsonProperty("error")
+		private String errorCode;
+
+		public String getErrorCode() {
+			return errorCode;
+		}
+
+		public void setErrorCode(String errorCode) {
+			this.errorCode = errorCode;
+		}
+
+	}
+	
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	private static  class OpenId {
+
+		@JsonProperty("openid")
+		private String openId;
+
+		public String getOpenId() {
+			return openId;
+		}
+	}
+	
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	private static class QQUser {
+
+		private String ret;// 返回码,如果为0则异常
+		private String nickname;// 昵称
+		@JsonProperty("figureurl_2")
+		private String avatar;// 空间头像100X100
+
+		public String getRet() {
+			return ret;
+		}
+
+		public String getNickname() {
+			return nickname;
+		}
+
+		public String getAvatar() {
+			return avatar;
+		}
+
+	}
+
+	@Override
+	public OauthType getType() {
+		return OauthType.QQ;
+	}
+
+	@Override
+	public String callBackUrl() {
+		return redirectUri;
+	}
+
 }

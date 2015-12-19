@@ -1,5 +1,6 @@
 package me.qyh.oauth2;
 
+import me.qyh.oauth2.entity.OauthType;
 import me.qyh.oauth2.entity.OauthUser;
 import me.qyh.oauth2.security.OauthPrincipal;
 
@@ -30,5 +31,9 @@ public interface Oauth2 {
 	 * @return
 	 */
 	OauthPrincipal getOauthPrincipal(String code);
+	
+	OauthType getType();
+	
+	String callBackUrl();
 
 }

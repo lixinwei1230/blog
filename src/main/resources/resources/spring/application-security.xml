@@ -35,11 +35,13 @@
 		<intercept-url pattern="/my/oauth/**" access="ROLE_USER" />
 
 		<request-cache ref="requestCache" />
-		<!-- <custom-filter ref="ajaxLoginFilter" before="FORM_LOGIN_FILTER" /> -->
 		<custom-filter ref="loginFilter" position="FORM_LOGIN_FILTER" />
+		<custom-filter ref="rememberMeFilter" position="REMEMBER_ME_FILTER"/>
 		<custom-filter ref="logoutFilter" position="LOGOUT_FILTER" />
-		<custom-filter ref="rememberMeFilter" after="FORM_LOGIN_FILTER"/>
+		<custom-filter ref="qqOauth2AuthencationFilter" after="FORM_LOGIN_FILTER" />
+		<custom-filter ref="oauth2ExceptionTranslationFilter" after="FIRST"/>
 	</http>
+	<b:bean id="oauth2ExceptionTranslationFilter" class="me.qyh.oauth2.security.Oauth2ExceptionTranslationFilter"/>
 
 	<b:bean id="passwordEncoder"
 		class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
@@ -93,10 +95,23 @@
 				<!-- Servlet > 3.1中 org.springframework.security.web.authentication.session.ChangeSessionIdAuthenticationStrategy 
 					是更好的选择 -->
 				<b:bean
-					class="org.springframework.security.web.authentication.session.ChangeSessionIdAuthenticationStrategy">
+					class="org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy">
 				</b:bean>
 			</b:list>
 		</b:constructor-arg>
+	</b:bean>
+	
+	<b:bean id="qqOauth2AuthencationFilter" class="me.qyh.oauth2.security.Oauth2AuthencationFilter">
+		<b:constructor-arg>
+			<b:list>
+				<b:ref bean="qqOauth2"/>
+				<b:ref bean="sinaOauth2"/>
+			</b:list>
+		</b:constructor-arg>
+		<b:property name="authenticationFailureHandler" ref="loginFailureHandler" />
+		<b:property name="authenticationSuccessHandler" ref="loginSuccessHandler" />
+		<b:property name="authenticationManager" ref="authenticationManager" />
+		<b:property name="sessionAuthenticationStrategy" ref="sessionStrategy" />
 	</b:bean>
 
 
@@ -165,5 +180,11 @@
 			</b:bean>
 		</b:property>
 	</b:bean>
+	
+	
+	<b:bean class="me.qyh.oauth2.security.DefaultOauthDetailsServiceImpl" />
+
+	<!-- 安全认证 -->
+	<b:bean id="oauth2UserAuthenticationProvider" class="me.qyh.oauth2.security.Oauth2UserAuthencationProvider" />
 
 </b:beans>
