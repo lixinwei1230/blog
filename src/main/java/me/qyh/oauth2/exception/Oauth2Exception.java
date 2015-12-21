@@ -1,9 +1,15 @@
 package me.qyh.oauth2.exception;
 
-import me.qyh.exception.SystemException;
 import me.qyh.oauth2.entity.OauthType;
 
-public class Oauth2Exception extends SystemException {
+import org.springframework.security.core.AuthenticationException;
+
+/**
+ * 在向服务商请求oauth2信息过程中发生的异常，包括连接、解析异常等
+ * @author mhlx
+ *
+ */
+public class Oauth2Exception extends AuthenticationException {
 
 	/**
 	 * 
@@ -19,11 +25,6 @@ public class Oauth2Exception extends SystemException {
 
 	public Oauth2Exception(OauthType type, String message) {
 		super(message);
-		this.type = type;
-	}
-
-	public Oauth2Exception(OauthType type, Throwable cause) {
-		super(cause);
 		this.type = type;
 	}
 

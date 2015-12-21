@@ -1,8 +1,10 @@
 package me.qyh.oauth2.exception;
 
+import org.springframework.security.core.AuthenticationException;
+
 import me.qyh.oauth2.security.OauthPrincipal;
 
-public class Oauth2UnbindException extends RuntimeException{
+public class Oauth2UnbindException extends AuthenticationException{
 	
 	/**
 	 * 
@@ -12,7 +14,7 @@ public class Oauth2UnbindException extends RuntimeException{
 	private OauthPrincipal principal;
 
 	public Oauth2UnbindException(OauthPrincipal principal) {
-		super();
+		super("");
 		this.principal = principal;
 	}
 

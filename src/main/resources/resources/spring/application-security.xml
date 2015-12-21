@@ -39,9 +39,7 @@
 		<custom-filter ref="rememberMeFilter" position="REMEMBER_ME_FILTER"/>
 		<custom-filter ref="logoutFilter" position="LOGOUT_FILTER" />
 		<custom-filter ref="qqOauth2AuthencationFilter" after="FORM_LOGIN_FILTER" />
-		<custom-filter ref="oauth2ExceptionTranslationFilter" after="FIRST"/>
 	</http>
-	<b:bean id="oauth2ExceptionTranslationFilter" class="me.qyh.oauth2.security.Oauth2ExceptionTranslationFilter"/>
 
 	<b:bean id="passwordEncoder"
 		class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
@@ -68,10 +66,8 @@
 		class="org.springframework.security.web.savedrequest.HttpSessionRequestCache">
 		<b:property name="requestMatcher" ref="noAjaxRequestMatcher" />
 	</b:bean>
-
-	<b:bean id="loginFailureHandler" class="me.qyh.security.LoginFailureHandler">
-		<b:constructor-arg index="0" value="/login" />
-	</b:bean>
+	
+	<b:bean id="loginFailureHandler" class="me.qyh.security.LoginFailureHandler"/>
 
 	<b:bean id="loginFilter"
 		class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
@@ -102,13 +98,12 @@
 	</b:bean>
 	
 	<b:bean id="qqOauth2AuthencationFilter" class="me.qyh.oauth2.security.Oauth2AuthencationFilter">
-		<b:constructor-arg>
-			<b:list>
-				<b:ref bean="qqOauth2"/>
-				<b:ref bean="sinaOauth2"/>
-			</b:list>
-		</b:constructor-arg>
-		<b:property name="authenticationFailureHandler" ref="loginFailureHandler" />
+		<b:constructor-arg ref="oauth2Provider"/>
+		<b:property name="authenticationFailureHandler" >
+			<b:bean class="me.qyh.oauth2.security.Oauth2AuthenticationFailureHandler">
+				<b:constructor-arg index="0" value="/oauth/bind/index"/>
+			</b:bean>
+		</b:property>
 		<b:property name="authenticationSuccessHandler" ref="loginSuccessHandler" />
 		<b:property name="authenticationManager" ref="authenticationManager" />
 		<b:property name="sessionAuthenticationStrategy" ref="sessionStrategy" />

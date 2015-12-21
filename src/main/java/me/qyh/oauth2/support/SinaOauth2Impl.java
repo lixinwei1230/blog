@@ -14,7 +14,7 @@ import me.qyh.oauth2.entity.OauthAvatar;
 import me.qyh.oauth2.entity.OauthType;
 import me.qyh.oauth2.entity.OauthUser;
 import me.qyh.oauth2.exception.Oauth2Exception;
-import me.qyh.oauth2.exception.Oauth2InvalidAccessTokenException;
+import me.qyh.oauth2.exception.Oauth2InvalidPrincipalException;
 import me.qyh.oauth2.security.OauthPrincipal;
 import me.qyh.utils.Validators;
 
@@ -98,13 +98,14 @@ public class SinaOauth2Impl implements Oauth2, InitializingBean {
 			throw new Oauth2Exception(OauthType.SINA, String.format("无法解析%s", result), e);
 		}
 		if (node.has("access_token")) {
+			String _token = node.get("access_token").asText();
+			if (Validators.isEmptyOrNull(_token, true)) {
+				throw new Oauth2InvalidPrincipalException(OauthType.SINA, "获取的token为空，可能取消了接入或者遭遇csrf攻击");
+			}
 			UidToken token = new UidToken();
 			token.setExpireIn(node.get("expires_in").asLong());
-			token.setToken(node.get("access_token").asText());
+			token.setToken(_token);
 			token.setUid(node.get("uid").asText());
-			if (Validators.isEmptyOrNull(token.getToken(), true)) {
-				throw new Oauth2InvalidAccessTokenException(OauthType.QQ, "获取的token为空，可能取消了接入或者遭遇csrf攻击");
-			}
 			return token;
 		} else {
 			try {

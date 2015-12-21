@@ -13,7 +13,7 @@ import me.qyh.oauth2.entity.OauthAvatar;
 import me.qyh.oauth2.entity.OauthType;
 import me.qyh.oauth2.entity.OauthUser;
 import me.qyh.oauth2.exception.Oauth2Exception;
-import me.qyh.oauth2.exception.Oauth2InvalidAccessTokenException;
+import me.qyh.oauth2.exception.Oauth2InvalidPrincipalException;
 import me.qyh.oauth2.security.OauthPrincipal;
 import me.qyh.utils.Validators;
 
@@ -89,7 +89,7 @@ public class QQOauth2Impl implements Oauth2, InitializingBean {
 
 		token.setToken(result.getResult("access_token"));
 		if (Validators.isEmptyOrNull(token.getToken(), true)) {
-			throw new Oauth2InvalidAccessTokenException(OauthType.QQ, "获取的token为空，可能取消了接入或者遭遇csrf攻击");
+			throw new Oauth2InvalidPrincipalException(OauthType.QQ, "获取的token为空，可能取消了接入或者遭遇csrf攻击");
 		}
 		token.setExpireIn(Long.parseLong(result.getResult("expires_in")));
 		return token;

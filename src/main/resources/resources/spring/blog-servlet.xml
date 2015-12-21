@@ -108,12 +108,6 @@
 
 	<bean class="me.qyh.upload.server.inner.InnerUploadController" />
 	<bean class="me.qyh.upload.server.inner.CleanFileController" />
-	<bean class="me.qyh.oauth2.web.controller.BindController">
-		<property name="oauth2s">
-			<list>
-				<ref bean="qqOauth2" />
-				<ref bean="sinaOauth2" />
-			</list>
-		</property>
-	</bean>
+	
+	<bean class="me.qyh.oauth2.web.controller.BindController"/>
 </beans>
