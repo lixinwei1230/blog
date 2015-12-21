@@ -26,7 +26,7 @@
 			<list>
 				<bean class="me.qyh.oauth2.support.QQOauth2Impl">
 					<property name="appId" value="101243309" />
-					<property name="appKey" value="851b2a4a5638562a2321c4891d470ba9" />
+					<property name="appKey" value="******" />
 					<property name="authorizationCodeUrl">
 						<value><![CDATA[https://graph.qq.com/oauth2.0/authorize?response_type=%s&client_id=%s&redirect_uri=%s]]></value>
 					</property>
@@ -52,7 +52,7 @@
 						<value><![CDATA[https://api.weibo.com/2/users/show.json?access_token=%s&uid=%s]]></value>
 					</property>
 					<property name="redirectUri" value="http://www.qyh.me/oauth2/sina/success" />
-					<property name="appsecret" value="da327cb8543a0772fbbd4af80c02e42d" />
+					<property name="appsecret" value="******" />
 				</bean>
 			</list>
 		</property>
