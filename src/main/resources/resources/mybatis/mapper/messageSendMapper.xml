@@ -30,9 +30,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		FROM message_send ms LEFT OUTER JOIN message_detail md ON ms.detail =
 		md.id
 		WHERE ms.isDeleted = false
-		AND sender = #{sender.id}
+		<if test="sender != null">
+			AND sender = #{sender.id}
+		</if>
 		<if test="begin != null and end != null">
 			AND ms.sendDate BETWEEN #{begin} AND #{end}
+		</if>
+		<if test="type != null">
+			AND ms.message_type =
+			#{type,javaType=MessageType,typeHandler=EnumOrdinalTypeHandler}
 		</if>
 		ORDER BY ms.id DESC
 		LIMIT #{offset},#{pageSize}
@@ -41,9 +47,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="selectCount" resultType="int">
 		SELECT COUNT(ms.id) FROM message_send ms
 		WHERE ms.isDeleted = false
-		AND sender = #{sender.id}
+		<if test="sender != null">
+			AND sender = #{sender.id}
+		</if>
 		<if test="begin != null and end != null">
 			AND ms.sendDate BETWEEN #{begin} AND #{end}
+		</if>
+		<if test="type != null">
+			AND ms.message_type =
+			#{type,javaType=MessageType,typeHandler=EnumOrdinalTypeHandler}
 		</if>
 	</select>
 
@@ -63,8 +75,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		mr.receiver = #{user.id})
 		AND ms.message_type =
 		#{type,javaType=MessageType,typeHandler=EnumOrdinalTypeHandler}
-		LIMIT
-		0,20
+		AND ms.isDeleted = false
+		ORDER BY ms.id DESC
+		LIMIT 0,#{maxCount}
 	</select>
 
 	<delete id="deleteById">

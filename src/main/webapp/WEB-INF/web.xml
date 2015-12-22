@@ -60,6 +60,11 @@
 			org.springframework.security.web.session.HttpSessionEventPublisher 
 		</listener-class>
 	</listener>
+	<listener>
+		<listener-class>
+			me.qyh.web.listener.MySessionListener
+		</listener-class>
+	</listener>
     <filter>
         <filter-name>CharacterEncodingFilter</filter-name>
         <filter-class>
@@ -101,7 +106,6 @@
         <url-pattern>/</url-pattern>
     </servlet-mapping>
     
-    <!-- 
     
     <security-constraint> 
        <web-resource-collection > 
@@ -113,5 +117,4 @@
               <transport-guarantee>CONFIDENTIAL</transport-guarantee> 
        </user-data-constraint> 
 </security-constraint>
-     -->
 </web-app>

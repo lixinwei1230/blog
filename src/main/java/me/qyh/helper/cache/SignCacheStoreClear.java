@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 public class SignCacheStoreClear {
 
 	@Autowired
-	private SignCacheStore signCacheStore;
+	private NamedCache signCacheStore;
 
 	public void doJob() {
 		signCacheStore.clear();

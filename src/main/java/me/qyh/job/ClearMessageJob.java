@@ -1,13 +1,13 @@
 package me.qyh.job;
 
+import me.qyh.dao.MessageReceiveDao;
+import me.qyh.entity.message.MessageStatus;
+import me.qyh.helper.cache.NamedCache;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-
-import me.qyh.dao.MessageReceiveDao;
-import me.qyh.entity.message.MessageStatus;
-import me.qyh.helper.message.MessageCache;
 
 public class ClearMessageJob {
 
@@ -16,7 +16,7 @@ public class ClearMessageJob {
 	@Autowired
 	private MessageReceiveDao messageReceiveDao;
 	@Autowired
-	private MessageCache messageCache;
+	private NamedCache messageCache;
 	@Value("${config.message.overday}")
 	private int overday;
 

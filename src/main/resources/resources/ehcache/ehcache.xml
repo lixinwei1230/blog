@@ -16,7 +16,7 @@
 	</cache>
 
 	<!--userd for blog -->
-	<cache name="blogCache" maxElementsInMemory="50" eternal="false"
+	<cache name="blogCache" maxElementsInMemory="500" eternal="false"
 		timeToIdleSeconds="300" timeToLiveSeconds="600" overflowToDisk="true" />
 
 	<!--userd for widget -->
@@ -26,5 +26,8 @@
 	<!--userd for signCache -->
 	<cache name="signCache" maxElementsInMemory="500" eternal="false"
 		timeToIdleSeconds="300" timeToLiveSeconds="600" overflowToDisk="true" />
+		
+	<!--userd for signCache -->
+	<cache name="globalMessageCache" maxElementsInMemory="100" eternal="true" />
 
 </ehcache>  

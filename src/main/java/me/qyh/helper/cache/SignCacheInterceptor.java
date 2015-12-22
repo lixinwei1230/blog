@@ -23,7 +23,7 @@ public class SignCacheInterceptor implements MethodInterceptor {
 	@Autowired
 	private CacheManager cacheManager;
 	@Autowired
-	private SignCacheStore signCacheStore;
+	private NamedCache signCacheStore;
 
 	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {
@@ -45,7 +45,7 @@ public class SignCacheInterceptor implements MethodInterceptor {
 				throw new SystemException("SignCache Annotation中的condition表达式不能为空，并且必须是布尔表达式");
 			}
 			if (result != null && (Boolean) condition) {
-				Sign sign = signCacheStore.getSign(cacheKey);
+				Sign sign = signCacheStore.get(cacheKey, Sign.class);
 				if (sign == null) {
 					signCacheStore.put(cacheKey, new Sign(signCache.periodSec(), signCache.hits()));
 				} else {

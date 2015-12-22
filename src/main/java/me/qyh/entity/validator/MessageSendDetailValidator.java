@@ -2,22 +2,15 @@ package me.qyh.entity.validator;
 
 import java.util.Set;
 
+import me.qyh.entity.message.MessageSendDetail;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
-
-import me.qyh.entity.message.MessageDetail;
-import me.qyh.entity.message.MessageSendDetail;
-import me.qyh.utils.Validators;
 
 @Component(value = "messageSendDetailValidator")
-public class MessageSendDetailValidator implements Validator {
+public class MessageSendDetailValidator extends MessageSendValidator {
 
-	@Value("${config.validation.messageSend.titleMaxLength}")
-	private int titleMaxLength;
-	@Value("${config.validation.messageSend.contentMaxLength}")
-	private int contentMaxLength;
 	@Value("${config.validation.messageSend.receiversMaxSize}")
 	private int receiversMaxSize;
 
@@ -28,35 +21,9 @@ public class MessageSendDetailValidator implements Validator {
 
 	@Override
 	public void validate(Object o, Errors e) {
-		MessageSendDetail send = (MessageSendDetail) o;
-		MessageDetail detail = send.getDetail();
-		if (detail == null) {
-			e.rejectValue("detail", "validation.messageSendDetail.detail.empty");
-			return;
-		}
-		String title = detail.getTitle();
-
-		if (Validators.isEmptyOrNull(title, true)) {
-			e.rejectValue("detail", "validation.messageSendDetail.detail.title.empty");
-			return;
-		}
-
-		if (title.length() > titleMaxLength) {
-			e.rejectValue("detail", "validation.messageSendDetail.detail.title.toolong",
-					new Object[] { titleMaxLength }, "信息标题长度不 能超过" + titleMaxLength + "个字符");
-			return;
-		}
-
-		String content = detail.getContent();
-		if (Validators.isEmptyOrNull(content, true)) {
-			e.rejectValue("detail", "validation.messageSendDetail.detail.content.empty");
-			return;
-		}
-		if (content.length() > contentMaxLength) {
-			e.rejectValue("detail", "validation.messageSendDetail.detail.content.toolong",
-					new Object[] { contentMaxLength }, "信息内容长度不 能超过" + contentMaxLength + "个字符");
-		}
-
+		super.validate(o, e);
+		
+		MessageSendDetail send = (MessageSendDetail)o;
 		Set<String> receivers = send.getReceivers();
 		if (receivers.isEmpty()) {
 			e.rejectValue("receivers", "validation.messageSendDetail.receivers.empty");

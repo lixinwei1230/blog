@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,10 +25,8 @@ import me.qyh.entity.message.MessageSendDetail;
 import me.qyh.entity.message.MessageStatus;
 import me.qyh.entity.message.MessageType;
 import me.qyh.exception.LogicException;
-import me.qyh.exception.SystemException;
+import me.qyh.helper.cache.NamedCache;
 import me.qyh.helper.htmlclean.HtmlContentHandler;
-import me.qyh.helper.message.MessageCache;
-import me.qyh.helper.message.MessageSource;
 import me.qyh.pageparam.MessageReceivePageParam;
 import me.qyh.pageparam.MessageSendPageParam;
 import me.qyh.pageparam.Page;
@@ -34,33 +35,40 @@ import me.qyh.server.TipMessage;
 import me.qyh.server.TipServer;
 import me.qyh.server.UserServer;
 import me.qyh.service.MessageService;
+import me.qyh.utils.Validators;
 
-public class MessageServiceImpl extends BaseServiceImpl implements MessageService, TipServer {
+@Service
+@SuppressWarnings("unchecked")
+public class MessageServiceImpl extends BaseServiceImpl implements MessageService, TipServer, InitializingBean {
 
 	@Autowired
-	private MessageSendDao messageSendDao;
+	protected MessageSendDao messageSendDao;
 	@Autowired
 	private MessageReceiveDao messageReceiveDao;
 	@Autowired
-	private MessageDetailDao messageDetailDao;
+	protected MessageDetailDao messageDetailDao;
 	@Autowired
 	private HtmlContentHandler messageHtmlHandler;
 	@Autowired
-	private MessageCache messageCache;
-	@Autowired
 	private UserServer userServer;
-	private Map<Integer, MessageSource> sources = new HashMap<Integer, MessageSource>();
+	@Value("${config.message.globalMessageSource.provide.maxCount}")
+	private int maxCount;
+	@Autowired
+	private NamedCache messageCache;
+	@Autowired
+	private NamedCache globalMessageCache;
+
+	private static final String GLOBAL_MESSAGE = "globalMessage";
+	private static final String UNREAD_COUNT = "unreadCount";
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public int getToReadMessageCount(User user, Set<Integer> sourceIds) {
-		int unreadFromSources = handleMessageSources(user, sourceIds);
-
-		Integer userId = user.getId();
-		if (messageCache.hasKey(userId)) {
-			int totalCount = messageCache.get(userId) + unreadFromSources;
-			messageCache.addCount(userId, unreadFromSources);
-
+		int unreadFromSources = handleGlobalMessage(user);
+		Map<String, Object> map = (Map<String, Object>) messageCache.get(user.getId());
+		if (map != null && map.containsKey(UNREAD_COUNT)) {
+			int totalCount = (int) map.get(UNREAD_COUNT) + unreadFromSources;
+			addCount(user, unreadFromSources);
 			return totalCount;
 		}
 
@@ -68,29 +76,42 @@ public class MessageServiceImpl extends BaseServiceImpl implements MessageServic
 		param.setIsRead(false);
 		param.setReceiver(user);
 		int count = messageReceiveDao.selectCount(param);
-		messageCache.cache(userId, count);
+		addCount(user, count);
 		return count;
 	}
 
-	private int handleMessageSources(User user, Set<Integer> sourceIds) {
-		List<MessageSource> _sources = new ArrayList<MessageSource>();
-		for (int sourceId : sourceIds) {
-			if (sources.containsKey(sourceId)) {
-				_sources.add(sources.get(sourceId));
+	private int handleGlobalMessage(User user) {
+		List<MessageSend> messages = null;
+		List<MessageSend> all = (List<MessageSend>) globalMessageCache.get(GLOBAL_MESSAGE);
+		Map<String, Object> map = (Map<String, Object>) messageCache.get(user.getId());
+		if (map == null) {
+			map = new HashMap<String, Object>();
+		}
+		if (!map.containsKey(GLOBAL_MESSAGE)) {
+			messages = messageSendDao.selectUnSendMessageByTypeAndUser(MessageType.GLOBAL, user, maxCount);
+		} else {
+			List<MessageSend> received = (List<MessageSend>) map.get(GLOBAL_MESSAGE);
+			if (!Validators.isEmptyOrNull(received)) {
+				messages = getUnrecieve(received, all);
 			} else {
-				throw new SystemException("无法找到信息源:" + sourceId);
+				messages = all;
 			}
 		}
-		List<MessageReceive> toReceive = new ArrayList<MessageReceive>();
-		if (!_sources.isEmpty()) {
-			for (MessageSource source : _sources) {
-				toReceive.addAll(source.provideTosendMessages(user));
+		if (!messages.isEmpty()) {
+			List<MessageReceive> receives = new ArrayList<MessageReceive>(messages.size());
+			for (MessageSend send : messages) {
+				MessageReceive receive = new MessageReceive();
+				receive.setMessage(send);
+				receive.setIsRead(false);
+				receive.setReceiver(user);
+				receive.setStatus(MessageStatus.COMMON);
+				receives.add(receive);
 			}
+			messageReceiveDao.inserts(receives);
 		}
-		if (!toReceive.isEmpty()) {
-			messageReceiveDao.inserts(toReceive);
-		}
-		return toReceive.size();
+		map.put(GLOBAL_MESSAGE, new ArrayList<MessageSend>(all));
+		messageCache.put(user.getId(), map);
+		return messages.size();
 	}
 
 	@Override
@@ -107,7 +128,7 @@ public class MessageServiceImpl extends BaseServiceImpl implements MessageServic
 			receive.setMessage(message);
 			receive.setStatus(MessageStatus.COMMON);
 			messageReceiveDao.insert(receive);
-			messageCache.addCount(user.getId(), 1);
+			addCount(user, 1);
 		}
 	}
 
@@ -143,11 +164,11 @@ public class MessageServiceImpl extends BaseServiceImpl implements MessageServic
 			}
 
 			if (!_isRead && isRead) {
-				messageCache.addCount(receive.getReceiver().getId(), -1);
+				addCount(receive.getReceiver(), -1);
 			}
 
 			if (_isRead && !isRead) {
-				messageCache.addCount(receive.getReceiver().getId(), 1);
+				addCount(receive.getReceiver(), 1);
 			}
 		}
 	}
@@ -162,7 +183,7 @@ public class MessageServiceImpl extends BaseServiceImpl implements MessageServic
 			messageReceiveDao.deleteById(id);
 
 			if (!receive.getIsRead()) {
-				messageCache.addCount(receive.getReceiver().getId(), -1);
+				addCount(receive.getReceiver(), -1);
 			}
 		}
 	}
@@ -175,6 +196,10 @@ public class MessageServiceImpl extends BaseServiceImpl implements MessageServic
 			super.doAuthencation(UserContext.getUser(), send.getSender());
 
 			messageSendDao.deleteById(id);
+			
+			if(MessageType.GLOBAL.equals(send.getType())){
+				deleteMessageSend(send);
+			}
 		}
 	}
 
@@ -250,7 +275,7 @@ public class MessageServiceImpl extends BaseServiceImpl implements MessageServic
 		toReceive.setStatus(MessageStatus.COMMON);
 		messageReceiveDao.insert(toReceive);
 
-		messageCache.addCount(message.getReceiver().getId(), 1);
+		addCount(message.getReceiver(), 1);
 
 	}
 
@@ -272,8 +297,47 @@ public class MessageServiceImpl extends BaseServiceImpl implements MessageServic
 		return send;
 	}
 
-	public void setSources(Map<Integer, MessageSource> sources) {
-		this.sources = sources;
+	private void addCount(User user, int count) {
+		int _count = 0;
+		Map<String, Object> map = (Map<String, Object>) messageCache.get(user.getId());
+		if(map != null){
+			if(map.containsKey(UNREAD_COUNT)){
+				_count = (int) map.get(UNREAD_COUNT);
+			}
+		} else {
+			map = new HashMap<String , Object>();
+		}
+		_count += count;
+		map.put(UNREAD_COUNT, _count);
+		messageCache.put(user.getId(), map);
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		MessageSendPageParam param = new MessageSendPageParam();
+		param.setCurrentPage(1);
+		param.setPageSize(maxCount);
+		param.setType(MessageType.GLOBAL);
+		List<MessageSend> globalMessages = messageSendDao.selectPage(param);
+		globalMessageCache.put(GLOBAL_MESSAGE, globalMessages);
+	}
+
+	private List<MessageSend> getUnrecieve(List<MessageSend> received, List<MessageSend> all) {
+		List<MessageSend> unreceive = new ArrayList<MessageSend>();
+		for (MessageSend send : all) {
+			if (!received.contains(send)) {
+				unreceive.add(send);
+			}
+		}
+		return unreceive;
+	}
+
+	private void deleteMessageSend(MessageSend toDelete) {
+		List<MessageSend> all = (List<MessageSend>) globalMessageCache.get(GLOBAL_MESSAGE);
+		if(all.contains(toDelete)){
+			int pos = all.indexOf(toDelete);
+			all.remove(pos);
+		}
 	}
 
 }

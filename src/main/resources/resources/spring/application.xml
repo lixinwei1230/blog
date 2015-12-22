@@ -136,18 +136,6 @@
 
 	<context:component-scan
 		base-package="me.qyh.common,me.qyh.config,me.qyh.helper,me.qyh.service.impl,me.qyh.manage.service.impl" />
-
-
-	<bean id="messageService" class="me.qyh.service.impl.MessageServiceImpl">
-		<property name="sources">
-			<map>
-				<entry key="1">
-					<bean class="me.qyh.helper.message.GlobalMessageSource" />
-				</entry>
-			</map>
-		</property>
-	</bean>
-
 	<bean id="commentService" class="me.qyh.service.impl.CommentServiceImpl">
 		<property name="handlers">
 			<list>
@@ -291,4 +279,15 @@
 			</list>
 		</property>
 	</bean>
+	
+	<bean id="signCacheStore" class="me.qyh.helper.cache.NamedCache">
+		<property name="cacheName" value="signCache"/>
+	</bean>
+	<bean id="messageCache" class="me.qyh.helper.cache.NamedCache">
+		<property name="cacheName" value="messageCache"/>
+	</bean>
+	<bean id="globalMessageCache" class="me.qyh.helper.cache.NamedCache">
+		<property name="cacheName" value="globalMessageCache"/>
+	</bean>
+	
 </beans>      

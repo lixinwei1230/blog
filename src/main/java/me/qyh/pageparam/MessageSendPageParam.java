@@ -3,6 +3,7 @@ package me.qyh.pageparam;
 import java.util.Date;
 
 import me.qyh.entity.User;
+import me.qyh.entity.message.MessageType;
 
 public class MessageSendPageParam extends PageParam {
 
@@ -14,6 +15,7 @@ public class MessageSendPageParam extends PageParam {
 	private Date begin;
 	private Date end;
 	private User sender;
+	private MessageType type;
 
 	public Date getBegin() {
 		return begin;
@@ -39,4 +41,11 @@ public class MessageSendPageParam extends PageParam {
 		this.sender = sender;
 	}
 
+	public MessageType getType() {
+		return type;
+	}
+
+	public void setType(MessageType type) {
+		this.type = type;
+	}
 }

@@ -20,7 +20,7 @@ public class SignCacheEvictInterceptor implements MethodInterceptor {
 	@Autowired
 	private CacheManager cacheManager;
 	@Autowired
-	private SignCacheStore signCacheStore;
+	private NamedCache signCacheStore;
 
 	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {
