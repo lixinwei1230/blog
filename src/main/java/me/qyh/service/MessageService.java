@@ -14,7 +14,7 @@ import me.qyh.pageparam.Page;
 
 public interface MessageService {
 
-	int getToReadMessageCount(User user, Set<Integer> sourceIds);
+	int getToReadMessageCount(User user);
 
 	void insertMessage(MessageSendDetail message) throws LogicException;
 

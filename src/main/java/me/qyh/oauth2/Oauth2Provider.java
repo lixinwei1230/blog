@@ -61,5 +61,4 @@ public class Oauth2Provider implements InitializingBean {
 	public void setOauth2s(List<Oauth2> oauth2s) {
 		this.oauth2s = oauth2s;
 	}
-
 }

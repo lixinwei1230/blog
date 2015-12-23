@@ -45,8 +45,8 @@ public class MessageReceiveController extends BaseController {
 
 	@RequestMapping(value = "getToReadMessageCount", method = RequestMethod.GET)
 	@ResponseBody
-	public Info getToReadMessageCount(@RequestParam("sources") Set<Integer> sourceIds) {
-		int count = messageService.getToReadMessageCount(UserContext.getUser(), sourceIds);
+	public Info getToReadMessageCount() {
+		int count = messageService.getToReadMessageCount(UserContext.getUser());
 		return new Info(true, count);
 	}
 

@@ -20,20 +20,23 @@ public interface Oauth2 {
 
 	/**
 	 * 用户授权路径
-	 * @param state
-	 * @return
 	 */
 	String getAuthorizeUrl(String state);
 	
 	/**
 	 * 获取用户凭证
-	 * @param code
-	 * @return
 	 */
 	OauthPrincipal getOauthPrincipal(String code);
 	
+	/**
+	 * 服务类别
+	 */
 	OauthType getType();
 	
+	/**
+	 * 用户授权后的回调路径
+	 * @return
+	 */
 	String callBackUrl();
 
 }

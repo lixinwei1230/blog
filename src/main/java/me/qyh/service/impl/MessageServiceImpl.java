@@ -63,7 +63,7 @@ public class MessageServiceImpl extends BaseServiceImpl implements MessageServic
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-	public int getToReadMessageCount(User user, Set<Integer> sourceIds) {
+	public int getToReadMessageCount(User user) {
 		int unreadFromSources = handleGlobalMessage(user);
 		Map<String, Object> map = (Map<String, Object>) messageCache.get(user.getId());
 		if (map != null && map.containsKey(UNREAD_COUNT)) {
