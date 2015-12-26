@@ -32,7 +32,7 @@ public interface BlogService {
 
 	void updateBlog(Blog blog) throws LogicException;
 
-	void insertOrUpdateTemporaryBlog(Blog blog);
+	void insertOrUpdateTemporaryBlog(Blog blog) throws LogicException;
 
 	TemporaryBlog getTemporaryBlog(Blog blog);
 

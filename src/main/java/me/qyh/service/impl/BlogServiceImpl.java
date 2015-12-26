@@ -90,6 +90,8 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	private UserServer userServer;
 	@Autowired
 	private ConfigServer configServer;
+	@Value("${config.blog.temporarySaveFrequency}")
+	private long temporarySaveFrequency;
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
@@ -322,7 +324,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-	public void insertOrUpdateTemporaryBlog(Blog blog) {
+	public void insertOrUpdateTemporaryBlog(Blog blog) throws LogicException {
 		TemporaryBlog tBlog;
 		try {
 			tBlog = blog.getTemporaryBlog(objectWriter);
@@ -345,24 +347,29 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		} else {
 			TemporaryBlog db = tBlogs.get(0);
 			super.doAuthencation(UserContext.getSpace(), db.getSpace());
+			Date now = new Date();
+			long time = now.getTime() - db.getSaveDate().getTime();
+			if (time < temporarySaveFrequency) {
+				throw new LogicException("error.frequenceOperation", (temporarySaveFrequency - time) / 1000);
+			}
 
 			tBlog.setId(db.getId());
-			tBlog.setSaveDate(new Date());
+			tBlog.setSaveDate(now);
 			temporaryBlogDao.update(tBlog);
 		}
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
-	public List<Blog> findAroundBlogs(Integer id,BlogPageParam param) {
+	public List<Blog> findAroundBlogs(Integer id, BlogPageParam param) {
 		validBlogPageParam(param);
 		List<Blog> blogs = new ArrayList<Blog>();
 		Blog previous = blogDao.getPreviousBlog(id, param);
 		Blog next = blogDao.getNextBlog(id, param);
-		if(previous != null){
+		if (previous != null) {
 			blogs.add(previous);
 		}
-		if(next != null){
+		if (next != null) {
 			blogs.add(next);
 		}
 		return blogs;
@@ -401,7 +408,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 				}
 
 				User user = UserContext.getUser();
-				UserTag ut = userTagDao.selectByTag(tag,user);
+				UserTag ut = userTagDao.selectByTag(tag, user);
 				if (ut == null) {
 					UserTag _ut = new UserTag();
 					_ut.setUser(user);
@@ -501,8 +508,8 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 			}
 		}
 	}
-	
-	private void validBlogPageParam(BlogPageParam param){
+
+	private void validBlogPageParam(BlogPageParam param) {
 		Scopes max = spaceServer.getScopes(UserContext.getUser(), param.getSpace());
 		if (!max.contains(param.getScopes())) {
 			param.setScopes(max);
