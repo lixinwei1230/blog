@@ -3,6 +3,7 @@ package me.qyh.security;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import me.qyh.web.tag.url.UrlHelper;
@@ -10,11 +11,16 @@ import me.qyh.web.tag.url.UrlHelper;
 public class DomainMatchRequestMatcher implements RequestMatcher {
 
 	private String url;
+	private HttpMethod httpMethod = null;
 	@Autowired
 	private UrlHelper urlHelper;
 
 	@Override
 	public boolean matches(HttpServletRequest request) {
+		if (httpMethod != null && request.getMethod() != null
+				&& httpMethod != HttpMethod.valueOf(request.getMethod())) {
+			return false;
+		}
 		return matchDomain(request) && matchSpecifiedUrl(request);
 	}
 
@@ -42,5 +48,10 @@ public class DomainMatchRequestMatcher implements RequestMatcher {
 
 	public DomainMatchRequestMatcher(String url) {
 		this.url = url;
+	}
+
+	public DomainMatchRequestMatcher(String url, String httpMethod) {
+		this(url);
+		this.httpMethod = HttpMethod.valueOf(httpMethod);
 	}
 }

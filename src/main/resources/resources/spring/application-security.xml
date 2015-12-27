@@ -12,7 +12,7 @@
 		<headers>
 			<xss-protection />
 		</headers>
-		<csrf />
+		<csrf token-repository-ref="csrfTokenRepository" />
 
 		<intercept-url pattern="/upload/**" access="ROLE_SPACE" />
 		<intercept-url pattern="/my/file/**" access="ROLE_SPACE" />
@@ -40,6 +40,8 @@
 		<custom-filter ref="logoutFilter" position="LOGOUT_FILTER" />
 		<custom-filter ref="qqOauth2AuthencationFilter" after="FORM_LOGIN_FILTER" />
 	</http>
+	
+	<b:bean id="csrfTokenRepository" class="org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository"></b:bean>
 
 	<b:bean id="passwordEncoder"
 		class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
@@ -91,7 +93,10 @@
 				<!-- Servlet > 3.1中 org.springframework.security.web.authentication.session.ChangeSessionIdAuthenticationStrategy 
 					是更好的选择 -->
 				<b:bean
-					class="org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy">
+					class="org.springframework.security.web.authentication.session.ChangeSessionIdAuthenticationStrategy">
+				</b:bean>
+				<b:bean class="org.springframework.security.web.csrf.CsrfAuthenticationStrategy">
+					<b:constructor-arg index="0" ref="csrfTokenRepository"/>
 				</b:bean>
 			</b:list>
 		</b:constructor-arg>
@@ -108,14 +113,6 @@
 		<b:property name="authenticationManager" ref="authenticationManager" />
 		<b:property name="sessionAuthenticationStrategy" ref="sessionStrategy" />
 	</b:bean>
-
-
-	<!-- <b:bean id="ajaxLoginFilter" class="me.qyh.security.MyUsernamePasswordAuthenticationFilter"> 
-		<b:property name="filterProcessesUrl" value="/ajax_spring_security_check" 
-		/> <b:property name="authenticationFailureHandler" ref="ajaxLoginFailureHandler" 
-		/> <b:property name="authenticationSuccessHandler" ref="ajaxLoginSuccessHandler" 
-		/> <b:property name="authenticationManager" ref="authenticationManager" /> 
-		<b:property name="rememberMeServices" ref="rememberMeServices" /> </b:bean> -->
 
 	<context:component-scan base-package="me.qyh.security">
 		<context:include-filter type="annotation"
@@ -167,11 +164,15 @@
 				<b:bean
 					class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler" />
 				<b:ref bean="rememberMeServices" />
+				<b:bean class="org.springframework.security.web.csrf.CsrfLogoutHandler">
+					<b:constructor-arg index="0" ref="csrfTokenRepository"/>
+				</b:bean>
 			</b:array>
 		</b:constructor-arg>
 		<b:property name="logoutRequestMatcher">
 			<b:bean id="logoutRequestMatcher" class="me.qyh.security.DomainMatchRequestMatcher">
 				<b:constructor-arg index="0" value="/logout" />
+				<b:constructor-arg index="1" value="POST"/>
 			</b:bean>
 		</b:property>
 	</b:bean>
