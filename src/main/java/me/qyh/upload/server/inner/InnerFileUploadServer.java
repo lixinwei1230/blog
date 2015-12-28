@@ -164,25 +164,15 @@ public class InnerFileUploadServer implements UploadServer {
 					continue;
 				}
 			}
-			boolean needCover = needCover(contentType, _file);
-			MyFile cover = null;
+			File _cover = createCover(temp, _file, contentType);
+			boolean hasCover = (_cover != null);
 			Date now = new Date();
-			File _cover = null;
-			if (needCover) {
-				String coverName = Files.getFilename(newFilename) + "." + JPEG;
-				_cover = new File(temp, coverName);
-				try {
-					im4javas.writeFirstFrameOfGif(_file.getAbsolutePath(), _cover.getAbsolutePath());
-				} catch (Exception e) {
-					throw new SystemException(e);
-				}
-				cover = new MyFile(user, _cover.length(), JPEG, coverName, now, innerFileStore, FileStatus.NORMAL,
-						relativePath, file.getOriginalFilename(), true);
-				fileDao.insert(cover);
-			}
 			MyFile mf = new MyFile(user, _file.length(), Files.getFileExtension(_file.getName()), _file.getName(), now,
 					innerFileStore, FileStatus.NORMAL, relativePath, file.getOriginalFilename(), false);
-			if (needCover) {
+			if(hasCover){
+				MyFile cover = new MyFile(user, _cover.length(), JPEG, _cover.getName(), now, innerFileStore, FileStatus.NORMAL,
+						relativePath, file.getOriginalFilename(), true);
+				fileDao.insert(cover);
 				mf.setCover(cover);
 			}
 			fileDao.insert(mf);
@@ -195,7 +185,7 @@ public class InnerFileUploadServer implements UploadServer {
 			}
 			try{
 				FileUtils.copyFile(_file, new File(folder,_file.getName()));
-				if(needCover){
+				if(hasCover){
 					FileUtils.copyFile(_cover, new File(folder,_cover.getName()));
 				}
 			}catch (IOException e) {
@@ -228,13 +218,24 @@ public class InnerFileUploadServer implements UploadServer {
 	}
 
 	private boolean maybeImage(String contentType) {
-		return contentType != null && contentType.startsWith(IMAGEPREFIX);
+		return contentType != null && Strings.startsWithIgnoreCase(contentType, IMAGEPREFIX);
 	}
 
-	private boolean needCover(String contentType, File file) {
-		return (contentType != null && contentType.endsWith(GIF));
+	private File createCover(File dir,File toCreate,String contentType){
+		boolean needCreate = (contentType != null && Strings.endsWithIgnoreCase(contentType, GIF));
+		File cover = null;
+		if(needCreate){
+			String coverName = Files.getFilename(toCreate.getName()) + "." + JPEG;
+			cover = new File(dir, coverName);
+			try {
+				im4javas.writeFirstFrameOfGif(toCreate.getAbsolutePath(), cover.getAbsolutePath());
+			} catch (Exception e) {
+				throw new SystemException(e);
+			}
+		}
+		return cover;
 	}
-
+	
 	private long calculateTotalSize(List<MultipartFile> files) {
 		long total = 0;
 		for (MultipartFile file : files) {

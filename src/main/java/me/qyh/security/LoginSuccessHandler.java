@@ -7,15 +7,18 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import me.qyh.bean.Info;
+import me.qyh.dao.LoginInfoDao;
+import me.qyh.entity.LoginInfo;
+import me.qyh.web.Webs;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
 
-import me.qyh.dao.LoginInfoDao;
-import me.qyh.entity.LoginInfo;
-import me.qyh.web.Webs;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 /**
  * 登录成功处理器
@@ -28,6 +31,8 @@ public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
 	
 	@Autowired
 	private LoginInfoDao loginInfoDao;
+	@Autowired
+	private ObjectWriter objectWriter;
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -48,6 +53,10 @@ public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
 		
 		loginInfoDao.insert(info);
 		
-		super.onAuthenticationSuccess(request, response, authentication);
+		if(Webs.isAjaxRequest(request)){
+			Webs.writeInfo(response, objectWriter, new Info(true));
+		} else {
+			super.onAuthenticationSuccess(request, response, authentication);
+		}
 	}
 }

@@ -33,8 +33,9 @@ public class LoginFailureHandler extends DefaultLoginFailureHandler {
 		String msg = messageSource.getMessage("error.loginFailed", new Object[] {}, request.getLocale());
 		if (Webs.isAjaxRequest(request)) {
 			Webs.writeInfo(response, objectWriter, new Info(false, msg));
+		} else {
+			request.getSession().setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION, msg);
+			response.sendRedirect(urlHelper.getUrl() + defaultFailureUrl);
 		}
-		request.getSession().setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION, msg);
-		response.sendRedirect(urlHelper.getUrl() + defaultFailureUrl);
 	}
 }

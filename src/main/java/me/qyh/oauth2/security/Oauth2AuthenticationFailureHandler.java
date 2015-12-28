@@ -43,7 +43,6 @@ public class Oauth2AuthenticationFailureHandler extends DefaultLoginFailureHandl
 			return ;
 		}
 		res.sendRedirect(urlHelper.getUrl() + defaultFailureUrl);
-		return;
 	}
 
 }
