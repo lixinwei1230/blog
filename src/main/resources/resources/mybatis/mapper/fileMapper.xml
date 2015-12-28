@@ -154,5 +154,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		GROUP BY YEAR(uploadDate),MONTH(uploadDate)
 		ORDER BY id DESC LIMIT 0,12
 	</select>
+	
+	<delete id="deleteById">
+		DELETE FROM blog_file WHERE id = #{id}
+	</delete>
 
 </mapper>
