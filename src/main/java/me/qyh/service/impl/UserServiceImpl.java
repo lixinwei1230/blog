@@ -29,7 +29,6 @@ import me.qyh.dao.LoginInfoDao;
 import me.qyh.dao.RoleDao;
 import me.qyh.dao.UserCodeDao;
 import me.qyh.dao.UserDao;
-import me.qyh.entity.FileStatus;
 import me.qyh.entity.LoginInfo;
 import me.qyh.entity.MyFile;
 import me.qyh.entity.Role;
@@ -50,7 +49,7 @@ import me.qyh.security.UserContext;
 import me.qyh.server.UserServer;
 import me.qyh.service.UserService;
 import me.qyh.upload.server.inner.BadImageException;
-import me.qyh.upload.server.inner.InnerFileStore;
+import me.qyh.upload.server.inner.LocalFileStorage;
 import me.qyh.utils.Files;
 import me.qyh.utils.Times;
 import me.qyh.web.controller.MyAvatarController.AvatarFile;
@@ -86,7 +85,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 	@Autowired
 	private FileDao fileDao;
 	@Autowired
-	private InnerFileStore avatarStore;
+	private LocalFileStorage avatarStore;
 	@Value("${config.avatar.absPath}")
 	private String absPath;
 	@Autowired
@@ -262,18 +261,35 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 		}
 		String relativePath = Files.ymd();
 		File folder = new File(this.absPath + relativePath);
-		if (!folder.exists() && !folder.mkdirs()) {
-			throw new SystemException(
-					String.format("%s:创建文件夹:%s失败", this.getClass().getName(), folder.getAbsolutePath()));
-		}
+		Files.forceMkdir(folder);
 		boolean croped = false;
 		boolean oldAvatar = (file instanceof AvatarFile);
-		String absPath = folder.getAbsolutePath() + File.separator + file.getName();
+		try {
+			ImageInfo info = im4javas.getImageInfo(file.getAbsolutePath());
+			croped = (info.getWidth() != crop.getW() || info.getHeight() != crop.getH());
+		} catch (BadImageException e) {
+			throw new LogicException("error.upload.badImage");
+		}
+		String absPath = oldAvatar ? file.getAbsolutePath()
+				: folder.getAbsolutePath() + File.separator + file.getName();
+		if (croped) {
+			try {
+				im4javas.crop(file.getAbsolutePath(), absPath, crop.getX(), crop.getY(), crop.getW(), crop.getH());
+			} catch (Exception e) {
+				throw new LogicException("error.avatar.badCrop");
+			}
+		} else if (!oldAvatar) {
+			try {
+				FileUtils.copyFile(file, new File(absPath));
+			} catch (IOException e) {
+				throw new SystemException(e.getMessage(), e);
+			}
+		}
 		MyFile avatar = null;
 		if (!oldAvatar) {
 			File cropFile = croped ? new File(absPath) : file;
-			avatar = new MyFile(user, cropFile.length(), Files.getFileExtension(file.getName()), file.getName(),
-					new Date(), avatarStore, FileStatus.NORMAL, relativePath, file.getName(), false);
+			avatar = new MyFile(user, cropFile.length(), file.getName(), new Date(), avatarStore, file.getName());
+			avatar.setRelativePath(relativePath);
 			fileDao.insert(avatar);
 		} else {
 			avatar = ((AvatarFile) file).getMyFile();
@@ -283,25 +299,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 					logger.warn("用户:{}更新了头像，但是无法改变物理文件:{}的最后操作时间，这将会导致无法刷新用户头像缓存", user, file);
 				}
 			}
-		}
-		try {
-			ImageInfo info = im4javas.getImageInfo(file.getAbsolutePath());
-			croped = (info.getWidth() != crop.getW() || info.getHeight() != crop.getH());
-			if (croped) {
-				try {
-					im4javas.crop(file.getAbsolutePath(), absPath, crop.getX(), crop.getY(), crop.getW(), crop.getH());
-				} catch (Exception e) {
-					throw new LogicException("error.avatar.badCrop");
-				}
-			} else if (!oldAvatar) {
-				try {
-					FileUtils.copyFile(file, new File(absPath));
-				} catch (IOException e) {
-					throw new SystemException(e.getMessage(), e);
-				}
-			}
-		} catch (BadImageException e) {
-			throw new LogicException("error.upload.badImage");
 		}
 
 		user.setAvatar(avatar);
