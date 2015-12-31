@@ -8,6 +8,8 @@
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 
+	<http pattern="/static/**" security="none"/>
+	<http pattern="/file/**" security="none"/>
 	<http entry-point-ref="restAuthenticationEntryPoint">
 		<headers>
 			<xss-protection />

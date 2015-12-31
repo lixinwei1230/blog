@@ -30,7 +30,7 @@ import me.qyh.entity.FileStatus;
 import me.qyh.entity.MyFile;
 import me.qyh.pageparam.MyFilePageParam;
 import me.qyh.pageparam.Page;
-import me.qyh.upload.server.FileStore;
+import me.qyh.upload.server.FileStorage;
 
 /**
  * 清理文件的定时任务
@@ -58,9 +58,9 @@ public class ClearFileJob {
 	}
 
 	private void deleteMyFile(MyFile file) throws Exception {
-		FileStore store = file.getStore();
-		String url = store.deleteUrl() + "?path=" + file.getSeekPath() + "&key=" + store.delKey();
-		String result = sendPost(url, store.protocol());
+		FileStorage store = file.getStore();
+		String url = store.delUrl(file);
+		String result = sendPost(url);
 		JsonParser parser = reader.getFactory().createParser(result);
 		Info info = reader.readValue(parser, Info.class);
 		if (info.getSuccess()) {
@@ -102,7 +102,8 @@ public class ClearFileJob {
 		}
 	}
 
-	private String sendPost(String url, String protocol) throws Exception {
+	private String sendPost(String url) throws Exception {
+		String protocol = url.substring(0,url.indexOf(":"));
 		if ("https".equalsIgnoreCase(protocol)) {
 			trustAllHttpsCertificates();
 			HostnameVerifier hv = new HostnameVerifier() {
@@ -121,6 +122,7 @@ public class ClearFileJob {
 			conn = (HttpURLConnection) realUrl.openConnection();
 			conn.setDoOutput(true);
 			conn.setDoInput(true);
+			conn.setRequestMethod("POST");
 			in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
 			String line;
 			while ((line = in.readLine()) != null) {

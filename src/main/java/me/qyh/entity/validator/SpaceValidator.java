@@ -12,7 +12,7 @@ import me.qyh.utils.Validators;
 @Component
 public class SpaceValidator implements Validator {
 
-	public static final String ID_PATTERN = "^[a-z]{3,11}$";
+	public static final Pattern ID_PATTERN = Pattern.compile("^[a-z]{3,11}$");
 
 	@Override
 	public boolean supports(Class<?> clazz) {
@@ -27,7 +27,7 @@ public class SpaceValidator implements Validator {
 			e.rejectValue("id", "validation.space.id.blank");
 			return;
 		}
-		if (!Validators.validate(Pattern.compile(ID_PATTERN), id)) {
+		if (!Validators.validate(ID_PATTERN, id)) {
 			e.rejectValue("id", "validation.space.id.invalid");
 			return;
 		}

@@ -181,7 +181,7 @@
 			<value>doJob</value>
 		</property>
 	</bean>
-
+	
 	<bean id="clearFileJob"
 		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
 		<property name="targetObject">
@@ -189,6 +189,16 @@
 		</property>
 		<property name="targetMethod">
 			<value>doJob</value>
+		</property>
+	</bean>
+	
+	<bean id="clearFileTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="clearFileJob" />
+		</property>
+		<property name="cronExpression">
+			<value>0 0 3 * * ?</value>
 		</property>
 	</bean>
 
@@ -199,16 +209,6 @@
 		</property>
 		<property name="targetMethod">
 			<value>doJob</value>
-		</property>
-	</bean>
-
-	<bean id="clearFileTrigger"
-		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
-		<property name="jobDetail">
-			<ref bean="clearFileJob" />
-		</property>
-		<property name="cronExpression">
-			<value>0 0 3 * * ?</value>
 		</property>
 	</bean>
 
@@ -236,8 +236,8 @@
 		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
-				<ref bean="clearFileTrigger" />
 				<ref bean="clearMessageTrigger" />
+				<ref bean="clearFileTrigger" />
 				<ref bean="signCacheStoreClearTrigger" />
 			</list>
 		</property>
@@ -254,23 +254,21 @@
 		<aop:advisor pointcut-ref="signCacheEvictPoint" advice-ref="signCacheEvictInterceptor" />
 	</aop:config>
 
-	<bean id="innerFileStore" class="me.qyh.upload.server.inner.InnerFileStore">
+	<bean id="innerFileStore" class="me.qyh.upload.server.inner.LocalFileStorage">
 		<property name="id" value="1" />
-		<property name="uploadRequestUrl" value="upload" />
-		<property name="writeRequestUrl" value="write" />
-		<property name="deleteRequestUrl" value="clean/file/deletePhysical"/>
-		<property name="protocol" value="https"/>
+		<property name="absPath" value="${config.file.absPath}"/>
+		<property name="mapping" ref="simulationDomainFileMapping"/>
 	</bean>
 
-	<bean id="avatarStore" class="me.qyh.upload.server.inner.InnerFileStore">
-		<property name="id" value="-1" />
-		<property name="uploadRequestUrl" value="my/avatar/upload" />
-		<property name="writeRequestUrl" value="avatar" />
-		<property name="deleteRequestUrl" value="clean/avatar/deletePhysical"/>
-		<property name="protocol" value="https"/>
+	<bean id="avatarStore" class="me.qyh.upload.server.inner.LocalFileStorage">
+		<property name="id" value="0" />
+		<property name="absPath" value="${config.avatar.absPath}"/>
+		<property name="mapping" ref="simulationDomainFileMapping"/>
 	</bean>
-
-	<bean id="innerFileUploadServer" class="me.qyh.upload.server.inner.InnerFileUploadServer"/>
+	
+	<bean id="simulationDomainFileMapping" class="me.qyh.upload.server.inner.SimulationDomainFileMapping">
+		<property name="prefix" value="f"/>
+	</bean>
 
 	<bean id="fileServer" class="me.qyh.upload.server.MemoryServer">
 		<property name="stores">

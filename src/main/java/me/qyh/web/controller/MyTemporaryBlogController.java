@@ -18,21 +18,17 @@ import me.qyh.entity.blog.Blog;
 import me.qyh.exception.LogicException;
 import me.qyh.security.UserContext;
 import me.qyh.service.BlogService;
-import me.qyh.upload.server.FileServer;
 
 @Controller
 @RequestMapping("my/blog/temporary")
 public class MyTemporaryBlogController {
 
 	private static final String BLOG = "blog";
-	private static final String UPLOAD_URL = "uploadUrl";
 
 	@Autowired
 	private BlogService blogService;
 	@Autowired
 	private Validator blogValidator;
-	@Autowired
-	private FileServer fileServer;
 
 	@InitBinder(value = "blog")
 	protected void initBinder(WebDataBinder binder) {
@@ -42,7 +38,6 @@ public class MyTemporaryBlogController {
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
 	public String loadTemporaryBlog(@PathVariable("id") int id, ModelMap model) throws LogicException {
 		model.addAttribute(BLOG, blogService.getTemporaryBlog(id));
-		model.addAttribute(UPLOAD_URL, fileServer.getStore().uploadUrl());
 		return "my/blog/temporary";
 	}
 

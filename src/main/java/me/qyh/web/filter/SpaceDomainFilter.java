@@ -1,6 +1,7 @@
 package me.qyh.web.filter;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import javax.servlet.FilterChain;
 import javax.servlet.RequestDispatcher;
@@ -11,8 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import me.qyh.entity.Space;
 import me.qyh.entity.User;
+import me.qyh.entity.validator.SpaceValidator;
 import me.qyh.security.UserContext;
 import me.qyh.utils.Strings;
+import me.qyh.utils.Validators;
 import me.qyh.web.Webs;
 import me.qyh.web.tag.url.UrlHelper;
 
@@ -24,6 +27,8 @@ public class SpaceDomainFilter extends OncePerRequestFilter {
 
 	private static final String[] ignorePathPatterns = { "/avatar/*", "/my/**",
 			"/captcha/*", "/favicon.ico" };
+	private final PathMatcher pathMatcher = new AntPathMatcher();
+	private final Pattern namePattern = SpaceValidator.ID_PATTERN;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request,
@@ -31,9 +36,9 @@ public class SpaceDomainFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		String uri = getUriCleanedWithoutContextPath(request.getRequestURI(),
 				request.getContextPath());
-		PathMatcher pathMatcher = new AntPathMatcher();
 		// 静态资源和ajax请求直接放行
-		if (pathMatcher.match("/static/**", uri) || Webs.isAjaxRequest(request)) {
+		if (pathMatcher.match("/static/**", uri) 
+				|| pathMatcher.match("/file/**", uri)|| Webs.isAjaxRequest(request)) {
 			chain.doFilter(request, response);
 			return;
 		}
@@ -46,11 +51,21 @@ public class SpaceDomainFilter extends OncePerRequestFilter {
 		if (helper.isEnableSpaceDomain()) {
 			if (maybeSpaceUrl(uri)) {
 				String space = getSpaceFromUri(uri);
-				response.sendRedirect(buildSpaceUrlWithPort(helper, space));
+				String url = "";
+				if(!Validators.validate(namePattern, space)){
+					url = helper.getUrl() + uri;
+				}else{
+					url = buildSpaceUrlWithPort(helper, space);
+				}
+				response.sendRedirect(url);
 				return;
 			}
 			if (maybeSpaceDomain) {
 				String space = getSpaceFromDomain(domain);
+				if(!Validators.validate(namePattern, space)){
+					response.sendRedirect(helper.getUrl() + uri);
+					return;
+				}
 				if (pathMatcher.match("/my/**", uri)) {
 					User current = UserContext.getUser();
 					if(current != null){
@@ -86,6 +101,10 @@ public class SpaceDomainFilter extends OncePerRequestFilter {
 		} else if (maybeSpaceDomain) {
 			// mhlx.qyh.me == > qyh.me/space/mhlx
 			String space = getSpaceFromDomain(domain);
+			if(!Validators.validate(namePattern, space)){
+				response.sendRedirect(helper.getUrl() + uri);
+				return ;
+			}
 			String url = helper.getUrl() + (isForwardUri(pathMatcher, uri) ? "/space/" + space : "") + uri;
 			response.sendRedirect(url);
 			return;

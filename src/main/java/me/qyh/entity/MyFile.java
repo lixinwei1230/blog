@@ -1,11 +1,10 @@
 package me.qyh.entity;
 
-import java.io.File;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import me.qyh.upload.server.FileStore;
+import me.qyh.upload.server.FileStorage;
 import me.qyh.utils.Files;
 import me.qyh.web.Webs;
 
@@ -26,20 +25,21 @@ public class MyFile extends Id {
 	private String extension;
 	private String name;
 	private Date uploadDate;
-	private transient FileStore store;
+	private transient FileStorage store;
 	private FileStatus status;
 	private String relativePath;
 	private String originalFilename;// 原始文件名
 	private MyFile cover;// 封面 gif图片会用到
-	private boolean isCover;
+	private String filenameWithoutExtension;
+
+	boolean isCover;
 
 	public boolean isImage() {
 		return Webs.isWebImage(originalFilename);
 	}
 
 	public String getOriginalFilenameWithoutExtension() {
-
-		return originalFilename == null ? "" : Files.getFilename(originalFilename);
+		return originalFilename == null ? null : Files.getFilename(originalFilename);
 	}
 
 	public User getUser() {
@@ -62,10 +62,6 @@ public class MyFile extends Id {
 		return extension;
 	}
 
-	public void setExtension(String extension) {
-		this.extension = extension;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -83,11 +79,11 @@ public class MyFile extends Id {
 	}
 
 	@JsonIgnore
-	public FileStore getStore() {
+	public FileStorage getStore() {
 		return store;
 	}
 
-	public void setStore(FileStore store) {
+	public void setStore(FileStorage store) {
 		this.store = store;
 	}
 
@@ -107,33 +103,29 @@ public class MyFile extends Id {
 		this.relativePath = relativePath;
 	}
 
-	public String getSeekPath() {
-		if (relativePath == null || name == null) {
-			return null;
-		}
-		return relativePath + File.separator + name;
-	}
-
-	public String getSeekPrefixUrl() {
-		return store == null ? null : store.seekPrefix();
+	public String getUrl() {
+		return store == null ? null : store.fileUrl(this);
 	}
 
 	public MyFile() {
 
 	}
 
-	public MyFile(User user, long size, String extension, String name, Date uploadDate, FileStore store,
-			FileStatus status, String relativePath, String originalFilename, boolean isCover) {
-		super();
+	public MyFile(User user, long size, String name, Date uploadDate, FileStorage store, String originalFilename) {
 		this.user = user;
 		this.size = size;
-		this.extension = extension;
+		this.extension = Files.getFileExtension(name);
 		this.name = name;
 		this.uploadDate = uploadDate;
 		this.store = store;
-		this.status = status;
-		this.relativePath = relativePath;
+		this.status = FileStatus.NORMAL;
 		this.originalFilename = originalFilename;
+		this.filenameWithoutExtension = Files.getFilename(name);
+	}
+
+	public MyFile(User user, long size, String name, Date uploadDate, FileStorage store, String originalFilename,
+			boolean isCover) {
+		this(user,size,name,uploadDate,store,originalFilename);
 		this.isCover = isCover;
 	}
 
@@ -160,4 +152,9 @@ public class MyFile extends Id {
 	public void setIsCover(boolean isCover) {
 		this.isCover = isCover;
 	}
+
+	public String getFilenameWithoutExtension() {
+		return filenameWithoutExtension;
+	}
+	
 }

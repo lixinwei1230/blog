@@ -1,8 +1,6 @@
 package me.qyh.web.controller;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import javax.servlet.http.HttpSession;
 
@@ -27,9 +25,9 @@ import me.qyh.entity.MyFile;
 import me.qyh.exception.LogicException;
 import me.qyh.exception.MyFileNotFoundException;
 import me.qyh.service.MyFileService;
+import me.qyh.service.UploadService;
 import me.qyh.service.UserService;
-import me.qyh.upload.server.UploadServer;
-import me.qyh.upload.server.inner.InnerFileStore;
+import me.qyh.upload.server.inner.LocalFileStorage;
 import me.qyh.utils.Files;
 
 @Controller
@@ -37,30 +35,27 @@ import me.qyh.utils.Files;
 public class MyAvatarController extends BaseController {
 
 	private static final String AVATAR = "avatar";
-	private static final String UPLOAD_URL = "uploadUrl";
 	private static final String STORE = "store";
 
 	@Autowired
-	private UploadServer avatarUploadServer;
-	@Autowired
-	private InnerFileStore avatarStore;
+	private UploadService uploadService;
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private LocalFileStorage avatarStore;
 	@Autowired
 	private MyFileService myFileService;
 
 	@RequestMapping(value = "index", method = RequestMethod.GET)
 	public String index(ModelMap model) {
 		model.addAttribute(STORE, avatarStore.id());
-		model.addAttribute(UPLOAD_URL, avatarStore.uploadUrl());
 		return "my/avatar/index";
 	}
 
 	@RequestMapping(value = "upload", method = RequestMethod.POST)
 	@ResponseBody
 	public Info upload(@RequestParam(value = "file") MultipartFile file, HttpSession session) throws LogicException {
-		session.setAttribute(AVATAR,
-				avatarUploadServer.upload(new ArrayList<MultipartFile>(Arrays.asList(new MultipartFile[] { file }))));
+		session.setAttribute(AVATAR, uploadService.uploadAvatar(file));
 		return new Info(true);
 	}
 
@@ -69,7 +64,7 @@ public class MyAvatarController extends BaseController {
 	public Info choose(@RequestParam(value = "id") int id, HttpSession session) throws LogicException {
 		MyFile mf = myFileService.getMyFile(id);
 		try {
-			File file = avatarUploadServer.seekFile(mf.getSeekPath());
+			File file = avatarStore.seek(mf.getRelativePath()+mf.getName());
 			session.setAttribute(AVATAR, new AvatarFile(file.getAbsolutePath(), mf));
 		} catch (MyFileNotFoundException e) {
 			throw new LogicException(e.getI18nMessage());
@@ -97,7 +92,7 @@ public class MyAvatarController extends BaseController {
 		FileSystemResource res = new FileSystemResource(file);
 		return new ResponseEntity<FileSystemResource>(res, headers, HttpStatus.CREATED);
 	}
-	
+
 	public class AvatarFile extends File {
 
 		/**

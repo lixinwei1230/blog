@@ -18,6 +18,8 @@ import me.qyh.entity.RoleEnum;
 import me.qyh.entity.User;
 import me.qyh.helper.htmlclean.HtmlContentHandler;
 import me.qyh.page.PageType;
+import me.qyh.upload.server.FileStorage;
+import me.qyh.upload.server.inner.LocalFileStorage;
 import me.qyh.utils.Files;
 
 /**
@@ -89,6 +91,8 @@ public class DefaultConfigServer implements ConfigServer {
 	private HtmlContentHandler fullWidgetHtmlHandler;
 	@Autowired
 	private HtmlContentHandler widgetHtmlHandler;
+	@Autowired
+	private LocalFileStorage avatarStore;
 
 	@Override
 	public CommentConfig getCommentConfig(CommentScope target) {
@@ -154,15 +158,13 @@ public class DefaultConfigServer implements ConfigServer {
 	}
 
 	@Override
-	public FileWriteConfig getFileWriteConfig() {
-		FileWriteConfig config = new FileWriteConfig(fileWriteMatcher,
-				new DefaultImageZoomMatcher(fileImage_allowSizes));
-		return config;
-	}
-
-	@Override
-	public FileWriteConfig getAvatarWriteConfig() {
-		FileWriteConfig config = new FileWriteConfig(fileWriteMatcher, new DefaultImageZoomMatcher(avatar_allowSizes));
+	public FileWriteConfig getFileWriteConfig(FileStorage store) {
+		FileWriteConfig config = null;
+		if (avatarStore.id() == store.id()) {
+			config = new FileWriteConfig(fileWriteMatcher, new DefaultImageZoomMatcher(avatar_allowSizes));
+		} else {
+			config = new FileWriteConfig(fileWriteMatcher, new DefaultImageZoomMatcher(fileImage_allowSizes));
+		}
 		return config;
 	}
 

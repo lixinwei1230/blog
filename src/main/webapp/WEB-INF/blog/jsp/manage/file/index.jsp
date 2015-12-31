@@ -51,7 +51,7 @@
 											<td><c:choose>
 													<c:when test="${file.image }">
 														<img
-															src="${file.seekPrefixUrl }?path=${file.seekPath}&size=200"
+															src="${file.url}/200"
 															class="img-responsive"
 															style="max-width:200px;max-height:200px"
 															onerror="javascript:this.src='${ctx}/static/imgs/img-missing.png'" />
@@ -72,13 +72,13 @@
 													pattern="yyyy-MM-dd HH:mm" /></td>
 											<td><c:choose>
 													<c:when test="${file.image }">
-														<a href="${file.seekPrefixUrl }?path=${file.seekPath}"
+														<a href="${file.url }"
 															title="原始图片" target="_blank"><span
 															class="glyphicon glyphicon-picture" aria-hidden="true"></span>
 														</a>
 													</c:when>
 													<c:otherwise>
-														<a href="${file.seekPrefixUrl }?path=${file.seekPath}"
+														<a href="${file.url}"
 															title="文件下载" ><span
 															class="glyphicon glyphicon-download-alt"
 															aria-hidden="true"></span>

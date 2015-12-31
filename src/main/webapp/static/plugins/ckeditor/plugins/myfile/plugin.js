@@ -136,11 +136,11 @@ CKEDITOR.plugins.add('myfile', {
 						if(file.image){
 							if(file.cover && file.cover != null){
 								 html += '<td><div class="videos">';
-								 html += '<a class="video" data-play="'+file.seekPrefixUrl+'?path='+file.seekPath+'"> <span>&nbsp;</span> <img class="img-responsive" src="'+file.cover.seekPrefixUrl+'?path='+file.cover.seekPath+'"> </a> ';
+								 html += '<a class="video" data-play="'+file.url+'"> <span>&nbsp;</span> <img class="img-responsive" src="'+file.cover.url+'"> </a> ';
 							     html += '<div class="clearfix">&nbsp;</div>'
 								 html += '</div></td>'; 
 							}else{
-								html += '<td><img src="'+file.seekPrefixUrl+'?path='+file.seekPath+'&size=200"/></td>';
+								html += '<td><img src="'+file.url+'/200"/></td>';
 							}
 						}else{
 							var name = file.originalFilenameWithoutExtension;
@@ -152,7 +152,7 @@ CKEDITOR.plugins.add('myfile', {
 						html += '<td>'+new Date(file.uploadDate).pattern("yyyy-MM-dd HH:mm")+'</td>';
 						html += '<td><a href="javascript:void(0)" class="insert-'+file.id+'">插入</a>';
 						if(file.image){
-							html += '&nbsp;&nbsp;<a href="'+file.seekPrefixUrl+'?path='+file.seekPath+'" target="_blank">原图</a>';
+							html += '&nbsp;&nbsp;<a href="'+file.url+'" target="_blank">原图</a>';
 						}
 						html += '</td></tr>';
 					}
@@ -191,14 +191,14 @@ CKEDITOR.plugins.add('myfile', {
 								if(file.cover && file.cover != null){
 									 var html = "";
 									 html += '<div class="videos">';
-									 html += '<a class="video" data-play="'+file.seekPrefixUrl+'?path='+file.seekPath+'"> <span>&nbsp;</span> <img class="img-responsive" src="'+file.cover.seekPrefixUrl+'?path='+file.cover.seekPath+'"> </a> ';
+									 html += '<a class="video" data-play="'+file.url+'"> <span>&nbsp;</span> <img class="img-responsive" src="'+file.cover.url+'"> </a> ';
 									 html += '</div>'; 
 									me.editor.insertHtml(html);
 								}else{
-									me.editor.insertHtml('<img class="img-responsive" src="'+file.seekPrefixUrl+'?path='+file.seekPath+'&size=600"/>');
+									me.editor.insertHtml('<img class="img-responsive" src="'+file.url+'/600"/>');
 								}
 							}else{
-								me.editor.insertHtml('<a href="'+file.seekPrefixUrl+'?path='+file.seekPath+'">'+file.originalFilename+'</a>');
+								me.editor.insertHtml('<a href="'+file.url+'">'+file.originalFilename+'</a>');
 							}
 							
 							return ;

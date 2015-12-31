@@ -26,7 +26,6 @@ import me.qyh.exception.LogicException;
 import me.qyh.pageparam.BlogPageParam;
 import me.qyh.security.UserContext;
 import me.qyh.service.BlogService;
-import me.qyh.upload.server.FileServer;
 
 @Controller
 @RequestMapping("my/blog")
@@ -34,7 +33,6 @@ public class MyBlogController extends BaseController {
 
 	private static final String CATEGORYS = "categorys";
 	private static final String BLOG = "blog";
-	private static final String UPLOAD_URL = "uploadUrl";
 
 	@Autowired
 	private BlogService blogService;
@@ -42,8 +40,6 @@ public class MyBlogController extends BaseController {
 	private Validator blogValidator;
 	@Value("${config.pagesize.blog}")
 	private int pageSize;
-	@Autowired
-	private FileServer fileServer;
 
 	@InitBinder(value = "blog")
 	protected void initBinder(WebDataBinder binder) {
@@ -55,9 +51,6 @@ public class MyBlogController extends BaseController {
 		Blog blog = new Blog();
 		blog.setSpace(UserContext.getSpace());
 		TemporaryBlog tBlog = blogService.getTemporaryBlog(blog);
-		if (tBlog == null) {
-			model.addAttribute(UPLOAD_URL, fileServer.getStore().uploadUrl());
-		}
 		return tBlog == null ? "my/blog/write" : "forward:temporary/" + tBlog.getId();
 	}
 
@@ -128,7 +121,6 @@ public class MyBlogController extends BaseController {
 	public String update(@PathVariable("id") int id, ModelMap model) throws LogicException {
 		Blog blog = blogService.getBlog(id);
 		model.addAttribute(BLOG, blog);
-		model.addAttribute(UPLOAD_URL, fileServer.getStore().uploadUrl());
 		TemporaryBlog tBlog = blogService.getTemporaryBlog(blog);
 		if (tBlog != null) {
 			model.addAttribute("tBlog", tBlog);

@@ -22,7 +22,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<result column="file_name" property="name" />
 			<result column="extension" property="extension" />
 			<result column="uploadDate" property="uploadDate" />
-			<result column="file_store" property="store" typeHandler="FileStoreTypeHandler" />
+			<result column="file_store" property="store" typeHandler="FileStorageTypeHandler" />
 			<result column="relativePath" property="relativePath" />
 		</association>
 		<association property="space" javaType="Space">

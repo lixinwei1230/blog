@@ -1,7 +1,12 @@
 package me.qyh.utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Calendar;
+
+import org.apache.commons.io.FileUtils;
+
+import me.qyh.exception.SystemException;
 
 public final class Files {
 
@@ -52,5 +57,13 @@ public final class Files {
 		String filename = getFilename(name);
 		String extension = getFileExtension(name);
 		return filename + append + (Validators.isEmptyOrNull(extension, true) ? "" : "." + extension);
+	}
+
+	public static void forceMkdir(File dir) {
+		try {
+			FileUtils.forceMkdir(dir);
+		} catch (IOException e) {
+			throw new SystemException(e.getMessage(), e);
+		}
 	}
 }

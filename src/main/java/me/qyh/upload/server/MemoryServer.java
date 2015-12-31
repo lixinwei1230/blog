@@ -13,11 +13,11 @@ import org.springframework.stereotype.Component;
 @Component(value = "fileServer")
 public class MemoryServer implements FileServer {
 
-	private List<FileStore> stores = new ArrayList<FileStore>();
+	private List<FileStorage> stores = new ArrayList<FileStorage>();
 
 	@Override
-	public FileStore getStore(int id) {
-		for (FileStore store : stores) {
+	public FileStorage getStore(int id) {
+		for (FileStorage store : stores) {
 			if (store.id() == id) {
 				return store;
 			}
@@ -25,12 +25,12 @@ public class MemoryServer implements FileServer {
 		return null;
 	}
 
-	public void setStores(List<FileStore> stores) {
+	public void setStores(List<FileStorage> stores) {
 		this.stores = stores;
 	}
 
 	@Override
-	public FileStore getStore() {
+	public FileStorage getStore() {
 		return stores.get(0);
 	}
 

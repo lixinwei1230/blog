@@ -105,9 +105,5 @@
 	</mvc:interceptors>
 
 	<bean id="blogRssView" class="me.qyh.web.rss.SpaceBlogRssFeedView" />
-
-	<bean class="me.qyh.upload.server.inner.InnerUploadController" />
-	<bean class="me.qyh.upload.server.inner.CleanFileController" />
-	
 	<bean class="me.qyh.oauth2.web.controller.BindController"/>
 </beans>

@@ -2,7 +2,6 @@ package me.qyh.config;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
@@ -14,19 +13,18 @@ import me.qyh.web.Webs;
 import me.qyh.web.tag.url.UrlHelper;
 
 @Component("fileWriteMatcher")
-public class ReferMatcher implements RequestMatcher, InitializingBean {
+public class ReferMatcher implements RequestMatcher {
 
 	@Autowired
 	private UrlHelper urlHelper;
-	private String rootDomain;
 
 	private String[] allowDomains;
 	private boolean enableLocal = true;
-	private boolean enableNull;
+	private boolean enableNull = true;
 
 	private static final String LOCALHOST = "localhost";
 	private static final String LOCALIP = "127.0.0.1";
-	
+	private final AntPathMatcher matcher = new AntPathMatcher();
 
 	@Override
 	public boolean matches(HttpServletRequest request) {
@@ -43,7 +41,7 @@ public class ReferMatcher implements RequestMatcher, InitializingBean {
 			if (isLocal(referer)) {
 				return enableLocal;
 			}
-			if (!Validators.validateIp(referer) && !(rootDomain == null)) {
+			if (!Validators.validateIp(referer) && !(urlHelper.getRootDomain() == null)) {
 				return matchDomain(referer);
 			}
 		} catch (Exception e) {
@@ -57,7 +55,7 @@ public class ReferMatcher implements RequestMatcher, InitializingBean {
 	}
 
 	private boolean matchDomain(String referer) {
-		AntPathMatcher matcher = new AntPathMatcher();
+		String rootDomain = urlHelper.getRootDomain();
 		if (rootDomain.equals(referer) || matcher.match("*." + rootDomain, referer)) {
 			return true;
 		}
@@ -69,22 +67,6 @@ public class ReferMatcher implements RequestMatcher, InitializingBean {
 			}
 		}
 		return false;
-	}
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		String domain = urlHelper.getDomain();
-		if (domain.indexOf(".") == -1) {
-			this.rootDomain = null;
-		} else {
-			String[] chunks = domain.split("\\.");
-			int length = chunks.length;
-			if (length < 2) {
-				this.rootDomain = null;
-			} else {
-				this.rootDomain = chunks[length - 2] + "." + chunks[length - 1];
-			}
-		}
 	}
 
 	public void setAllowDomains(String[] allowDomains) {

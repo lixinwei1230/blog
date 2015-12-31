@@ -1,5 +1,6 @@
 package me.qyh.web.controller;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -16,19 +17,15 @@ import me.qyh.exception.LogicException;
 import me.qyh.pageparam.MyFilePageParam;
 import me.qyh.security.UserContext;
 import me.qyh.service.MyFileService;
-import me.qyh.upload.server.FileServer;
 
 @Controller
 @RequestMapping("my/file")
 public class MyFileController extends BaseController {
 
 	private static final String INDEXS = "indexs";
-	private static final String UPLOAD_URL = "uploadUrl";
 
 	@Autowired
 	private MyFileService myFileService;
-	@Autowired
-	private FileServer fileServer;
 	@Value("${config.pageSize.myfile}")
 	private int pageSize;
 
@@ -37,14 +34,14 @@ public class MyFileController extends BaseController {
 		param.setStatus(FileStatus.NORMAL);
 		param.setUser(UserContext.getUser());
 		param.setShowCover(false);
-		model.put(INDEXS, myFileService.findIndexs(param));
+		MyFilePageParam _param = new MyFilePageParam();
+		BeanUtils.copyProperties(param, _param);
+		model.put(INDEXS, myFileService.findIndexs(_param));
 
 		param.setCurrentPage(currentPage);
 		param.setPageSize(pageSize);
 		param.validate();
 		model.put(PAGE, myFileService.findMyFiles(param));
-
-		model.put(UPLOAD_URL, fileServer.getStore().uploadUrl());
 		return "my/file/index";
 	}
 

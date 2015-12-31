@@ -15,8 +15,8 @@ public interface FileServer {
 	 *            存储器ID
 	 * @return {@code FileStore}
 	 */
-	FileStore getStore(int id);
+	FileStorage getStore(int id);
 
-	FileStore getStore();
+	FileStorage getStore();
 
 }

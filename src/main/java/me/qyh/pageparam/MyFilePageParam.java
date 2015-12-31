@@ -9,7 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import me.qyh.entity.FileStatus;
 import me.qyh.entity.User;
 
-public class MyFilePageParam extends PageParam {
+public class MyFilePageParam extends PageParam  {
 
 	/**
 	 * 

@@ -11,7 +11,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result column="file_name" property="name" />
 		<result column="extension" property="extension" />
 		<result column="uploadDate" property="uploadDate" />
-		<result column="file_store" property="store" typeHandler="FileStoreTypeHandler" />
+		<result column="file_store" property="store" typeHandler="FileStorageTypeHandler" />
 		<result column="relativePath" property="relativePath" />
 		<result column="original_name" property="originalFilename" />
 		<result column="is_cover" property="isCover" />
@@ -21,7 +21,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<association property="cover" javaType="MyFile">
 			<id column="cover_id" property="id" />
 			<result column="cover_file_store" property="store"
-				typeHandler="FileStoreTypeHandler" />
+				typeHandler="FileStorageTypeHandler" />
 			<result column="cover_relativePath" property="relativePath" />
 			<result column="cover_file_name" property="name" />
 		</association>
@@ -42,7 +42,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		INSERT
 		INTO
 		blog_file(file_size,file_name,file_status,extension,uploadDate,file_store,user_id,relativePath,original_name,cover,is_cover)
-		VALUES(#{size},#{name},#{status,javaType=FileStatus,typeHandler=EnumOrdinalTypeHandler},#{extension},#{uploadDate},#{store,typeHandler=FileStoreTypeHandler},#{user.id},#{relativePath},#{originalFilename},#{cover.id},#{isCover})
+		VALUES(#{size},#{name},#{status,javaType=FileStatus,typeHandler=EnumOrdinalTypeHandler},#{extension},#{uploadDate},#{store,typeHandler=FileStorageTypeHandler},#{user.id},#{relativePath},#{originalFilename},#{cover.id},#{isCover})
 	</insert>
 
 	<update id="update">

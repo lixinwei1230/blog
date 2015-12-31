@@ -8,8 +8,8 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-co
 			alias="EnumOrdinalTypeHandler" />
 		<typeAlias type="org.apache.ibatis.type.EnumTypeHandler"
 			alias="EnumTypeHandler" />
-		<typeAlias type="me.qyh.mybatis.handler.FileStoreTypeHandler"
-			alias="FileStoreTypeHandler" />
+		<typeAlias type="me.qyh.mybatis.handler.FileStorageTypeHandler"
+			alias="FileStorageTypeHandler" />
 
 		<typeAlias type="me.qyh.entity.User" alias="User" />
 		<typeAlias type="me.qyh.entity.Role" alias="Role" />

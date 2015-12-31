@@ -12,12 +12,17 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.util.WebUtils;
 
+import me.qyh.bean.Info;
 import me.qyh.config.ConfigServer;
 import me.qyh.config.FileWriteConfig;
 import me.qyh.config.ImageZoomMatcher;
@@ -25,34 +30,47 @@ import me.qyh.exception.MyFileNotFoundException;
 import me.qyh.exception.SystemException;
 import me.qyh.helper.im4java.Im4javas;
 import me.qyh.helper.im4java.Im4javas.ImageInfo;
+import me.qyh.upload.server.FileServer;
+import me.qyh.upload.server.FileStorage;
+import me.qyh.upload.server.inner.LocalFileStorage;
 import me.qyh.utils.Files;
+import me.qyh.web.InvalidParamException;
 import me.qyh.web.Webs;
 
-public abstract class FileWriteController extends BaseController {
+@Controller
+@RequestMapping("file")
+public class LocalFileController extends BaseController {
 
 	private static final String WEBP_SUPPORT_COOKIE = "WEBP_SUPPORT";
 	private static final String WEBP = "webp";
 	private static final String WEBP_CONTENT_TYPE = "image/webp";
 	@Autowired
-	protected ConfigServer configServer;
+	private ConfigServer configServer;
 	@Autowired
 	private Im4javas im4javas;
 	@Value("${config.image.thumb.cachedir}")
 	private String imageCacheDir;
+	@Autowired
+	private LocalFileStorage avatarStore;
+	@Autowired
+	private FileServer fileServer;
 
-	public void write(String path, Integer size, ServletWebRequest request, HttpServletResponse response)
-			throws MyFileNotFoundException {
+	@RequestMapping(value = "{storeId}/{y}/{m}/{d}/{name}/{ext}/{size}", method = RequestMethod.GET)
+	public void write(@PathVariable("storeId") int storeId, @PathVariable("y") String y, @PathVariable("m") String m,
+			@PathVariable("d") String d, @PathVariable("name") String name, @PathVariable("ext") String ext,
+			@PathVariable("size") Integer size, ServletWebRequest request, HttpServletResponse response)
+					throws MyFileNotFoundException {
+		String path = File.separator + y + File.separator + m + File.separator + d + File.separator + name + "." + ext;
 		if (!Webs.isSafeFilePath(path)) {
-			response.setStatus(HttpStatus.NOT_FOUND.value());
-			return;
+			throw new MyFileNotFoundException();
 		}
-		FileWriteConfig config = getWriteConfig();
+		LocalFileStorage store = seek(storeId);
+		FileWriteConfig config = configServer.getFileWriteConfig(store);
 		RequestMatcher matcher = config.getRequestMatcher();
 		if (matcher != null && !matcher.matches(request.getRequest())) {
-			response.setStatus(HttpStatus.NOT_FOUND.value());
-			return;
+			throw new MyFileNotFoundException();
 		}
-		File seek = seek(path);
+		File seek = store.seek(path);
 		if (Webs.isWebImage(seek.getName())) {
 			response.setContentType(URLConnection.guessContentTypeFromName(seek.getName()));
 			String etag = Webs.generatorETag(path + seek.lastModified());
@@ -61,10 +79,7 @@ public abstract class FileWriteController extends BaseController {
 			}
 			String relativePath = getRelativePath(seek);
 			File cacheFolder = new File(imageCacheDir + relativePath);
-			if (!cacheFolder.exists() && !cacheFolder.mkdirs()) {
-				throw new SystemException(
-						String.format("%s:创建文件夹%s失败", this.getClass().getName(), cacheFolder.getAbsolutePath()));
-			}
+			Files.forceMkdir(cacheFolder);
 			if (supportWebp(request.getRequest(), seek)) {
 				response.setContentType(WEBP_CONTENT_TYPE);
 				String absPath = cacheFolder.getAbsolutePath() + File.separator
@@ -105,8 +120,33 @@ public abstract class FileWriteController extends BaseController {
 		} catch (IOException e) {
 		}
 	}
-
-	protected abstract File seek(String path) throws MyFileNotFoundException;
+	
+	@RequestMapping(value = "{storeId}/{y}/{m}/{d}/{name}/{ext}", method = RequestMethod.GET)
+	public void write(@PathVariable("storeId") int storeId, @PathVariable("y") String y, @PathVariable("m") String m,
+			@PathVariable("d") String d, @PathVariable("name") String name, @PathVariable("ext") String ext,
+			ServletWebRequest request, HttpServletResponse response)
+					throws MyFileNotFoundException {
+		this.write(storeId, y, m, d, name, ext,null, request, response);
+	}
+	
+	@RequestMapping(value = "{storeId}/{y}/{m}/{d}/{name}/{ext}/{key}/delete", method = RequestMethod.POST)
+	@ResponseBody
+	public Info delete(@PathVariable("storeId") int storeId, @PathVariable("y") String y, @PathVariable("m") String m,
+			@PathVariable("d") String d, @PathVariable("name") String name, @PathVariable("ext") String ext,@PathVariable("key") String key,
+			ServletWebRequest request, HttpServletResponse response) {
+		try{
+			String path = File.separator + y + File.separator + m + File.separator + d + File.separator + name + "." + ext;
+			LocalFileStorage storage = seek(storeId);
+			try {
+				File file = storage.seek(path);
+				return new Info(FileUtils.deleteQuietly(file));
+			} catch (MyFileNotFoundException e) {
+				return new Info(true);
+			}
+		}catch(InvalidParamException e){
+		}
+		return new Info(true);
+	}
 
 	private String getRelativePath(File file) {
 		String absPath = file.getParent();
@@ -125,7 +165,7 @@ public abstract class FileWriteController extends BaseController {
 		return new File(destPath);
 	}
 
-	protected boolean supportWebp(HttpServletRequest request, File file) {
+	private boolean supportWebp(HttpServletRequest request, File file) {
 		Cookie cookie = WebUtils.getCookie(request, WEBP_SUPPORT_COOKIE);
 		if (cookie != null && "true".equalsIgnoreCase(cookie.getValue())) {
 			String ext = Files.getFileExtension(file);
@@ -134,6 +174,20 @@ public abstract class FileWriteController extends BaseController {
 		return false;
 	}
 
-	protected abstract FileWriteConfig getWriteConfig();
-
+	private LocalFileStorage seek(int id) {
+		LocalFileStorage storage = null;
+		if (id == avatarStore.id()) {
+			storage = avatarStore;
+		}
+		if (storage == null) {
+			FileStorage seeked = fileServer.getStore(id);
+			if (seeked != null && (seeked instanceof LocalFileStorage)) {
+				storage = (LocalFileStorage) seeked;
+			}
+		}
+		if (storage == null) {
+			throw new InvalidParamException();
+		}
+		return storage;
+	}
 }

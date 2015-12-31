@@ -458,7 +458,7 @@
 		CKEDITOR.config.allowedContent=true;
 		CKEDITOR.config.extraPlugins = 'codemirror,mytable,mycode,mydiv,myfile,mylink';
 		CKEDITOR.config.shiftEnterMode=CKEDITOR.ENTER_P;
-		CKEDITOR.config.uploadUrl = '${uploadUrl}';
+		CKEDITOR.config.uploadUrl = contextPath+'/upload';
 		CKEDITOR.config.toolbar = [
 		    [ 'Source'],
 		    [ 'Undo', 'Redo','Bold' ],

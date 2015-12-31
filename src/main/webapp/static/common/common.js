@@ -297,7 +297,7 @@ function writeUserInfo(type,_this,users){
 	}else{
 		var avatar = "";
 		if(user.avatar){
-			avatar = '<img alt="'+name+'" class="img-circle"  src="'+user.avatar.seekPrefixUrl+'?path='+user.avatar.seekPath+'&size=64" onerror="javascript:this.src=\''+contextPath+'/static/imgs/guest_64.png\'" title="'+name+'"/>';
+			avatar = '<img alt="'+name+'" class="img-circle"  src="'+user.avatar.url+'/64" onerror="javascript:this.src=\''+contextPath+'/static/imgs/guest_64.png\'" title="'+name+'"/>';
 		}else{
 			avatar = '<img alt="'+name+'" src="'+contextPath+'/static/imgs/guest_64.png" title="'+name+'" class="img-circle"/>'
 		}
