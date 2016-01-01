@@ -10,15 +10,6 @@ import me.qyh.exception.SystemException;
 
 public final class Files {
 
-	public static String cleanPath(String path) {
-		String separator = File.separator;
-		if ("\\".equals(separator)) {
-			return path.replaceAll("/", "\\\\");
-		} else {
-			return path.replaceAll("\\\\", "/");
-		}
-	}
-
 	public static String getFileExtension(String filename) {
 		if (filename.indexOf('.') != -1) {
 			return filename.substring(filename.lastIndexOf('.') + 1);

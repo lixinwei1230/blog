@@ -11,5 +11,7 @@ public interface FileStorage {
 	String fileUrl(MyFile file);
 	
 	int id();
+	
+	boolean canStore(MyFile file);
 
 }

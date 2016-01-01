@@ -13,6 +13,7 @@ import me.qyh.upload.server.FileMapper;
 import me.qyh.upload.server.FileStorage;
 import me.qyh.utils.Files;
 import me.qyh.utils.Strings;
+import me.qyh.web.Webs;
 import me.qyh.web.tag.url.UrlHelper;
 
 public class LocalFileStorage implements FileStorage, InitializingBean {
@@ -21,6 +22,7 @@ public class LocalFileStorage implements FileStorage, InitializingBean {
 	private int id;
 	private FileMapping mapping = new DefaultMapping();
 	private String key;
+	private StoreType type = StoreType.ALL;
 
 	@Autowired
 	private UrlHelper urlHelper;
@@ -59,6 +61,17 @@ public class LocalFileStorage implements FileStorage, InitializingBean {
 	@Override
 	public int id() {
 		return id;
+	}
+
+	@Override
+	public boolean canStore(MyFile file) {
+		switch (type) {
+		case IMAGE_ONLY:
+			return Webs.isWebImage(file.getName());
+		case ALL:
+			return true;
+		default : return false;
+		}
 	}
 
 	public File seek(String path) throws MyFileNotFoundException {
@@ -104,5 +117,13 @@ public class LocalFileStorage implements FileStorage, InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.key = Strings.getMd5(Strings.getMd5(this.getClass().getName() + "-" + id));
+	}
+	
+	public void setType(StoreType type) {
+		this.type = type;
+	}
+
+	public enum StoreType{
+		IMAGE_ONLY,ALL
 	}
 }

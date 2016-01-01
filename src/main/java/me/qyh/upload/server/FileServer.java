@@ -1,5 +1,7 @@
 package me.qyh.upload.server;
 
+import me.qyh.entity.MyFile;
+
 /**
  * 文件服务器
  * 
@@ -17,6 +19,6 @@ public interface FileServer {
 	 */
 	FileStorage getStore(int id);
 
-	FileStorage getStore();
+	FileStorage getStore(MyFile file);
 
 }

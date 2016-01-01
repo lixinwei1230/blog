@@ -288,8 +288,9 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 		MyFile avatar = null;
 		if (!oldAvatar) {
 			File cropFile = croped ? new File(absPath) : file;
-			avatar = new MyFile(user, cropFile.length(), file.getName(), new Date(), avatarStore, file.getName());
+			avatar = new MyFile(user, cropFile.length(), file.getName(), new Date(), file.getName());
 			avatar.setRelativePath(relativePath);
+			avatar.setStore(avatarStore);
 			fileDao.insert(avatar);
 		} else {
 			avatar = ((AvatarFile) file).getMyFile();

@@ -10,9 +10,6 @@ import org.jsoup.safety.Whitelist;
 
 public final class Validators {
 
-	private static final Pattern UUID_PATTERN = Pattern
-			.compile("[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}");
-
 	private static final Pattern IPADDRESS_PATTERN = Pattern
 			.compile("((25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9])\\.(25[0-5]|2[0-4]"
 					+ "[0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9]|0)\\.(25[0-5]|2[0-4][0-9]|[0-1]"
@@ -109,11 +106,7 @@ public final class Validators {
 			return str.isEmpty();
 		}
 	}
-
-	public static boolean isUUID(final CharSequence uuid) {
-		return validate(UUID_PATTERN, uuid);
-	}
-
+	
 	public static boolean hasText(String html) {
 		return !Jsoup.clean(html, Whitelist.simpleText()).isEmpty();
 	}

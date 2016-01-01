@@ -166,18 +166,20 @@ public class UploadServiceImpl implements UploadService {
 			File _cover = createCover(temp, _file, contentType);
 			boolean hasCover = (_cover != null);
 			Date now = new Date();
-			FileStorage storage = fileServer.getStore();
-			FileMapper mf = new FileMapper(user, _file.length(), _file.getName(), now, storage,
+			FileMapper mf = new FileMapper(user, _file.length(), _file.getName(), now, 
 					file.getOriginalFilename(), _file);
+			FileStorage storage = fileServer.getStore(mf);
 			if (hasCover) {
-				FileMapper cover = new FileMapper(user, _cover.length(), _cover.getName(), now, storage,
+				FileMapper cover = new FileMapper(user, _cover.length(), _cover.getName(), now,
 						file.getOriginalFilename(), _cover);
+				FileStorage coverStorage = fileServer.getStore(cover);
 				cover.setIsCover(true);
 				try {
-					cover.setRelativePath(storage.store(cover));
+					cover.setRelativePath(coverStorage.store(cover));
 				} catch (Exception e) {
 					throw new SystemException(e.getMessage(), e);
 				}
+				cover.setStore(coverStorage);
 				fileDao.insert(cover);
 				mf.setCover(cover);
 			}
@@ -186,6 +188,7 @@ public class UploadServiceImpl implements UploadService {
 			} catch (Exception e) {
 				throw new SystemException(e.getMessage(), e);
 			}
+			mf.setStore(storage);
 			fileDao.insert(mf);
 			info.addSuccess(originalFilename, _file.length());
 		}

@@ -111,21 +111,20 @@ public class MyFile extends Id {
 
 	}
 
-	public MyFile(User user, long size, String name, Date uploadDate, FileStorage store, String originalFilename) {
+	public MyFile(User user, long size, String name, Date uploadDate, String originalFilename) {
 		this.user = user;
 		this.size = size;
 		this.extension = Files.getFileExtension(name);
 		this.name = name;
 		this.uploadDate = uploadDate;
-		this.store = store;
 		this.status = FileStatus.NORMAL;
 		this.originalFilename = originalFilename;
 		this.filenameWithoutExtension = Files.getFilename(name);
 	}
 
-	public MyFile(User user, long size, String name, Date uploadDate, FileStorage store, String originalFilename,
+	public MyFile(User user, long size, String name, Date uploadDate, String originalFilename,
 			boolean isCover) {
-		this(user,size,name,uploadDate,store,originalFilename);
+		this(user,size,name,uploadDate,originalFilename);
 		this.isCover = isCover;
 	}
 
@@ -155,6 +154,14 @@ public class MyFile extends Id {
 
 	public String getFilenameWithoutExtension() {
 		return filenameWithoutExtension;
+	}
+
+	@Override
+	public String toString() {
+		return "MyFile [user=" + user + ", size=" + size + ", extension=" + extension + ", name=" + name
+				+ ", uploadDate=" + uploadDate + ", status=" + status + ", relativePath=" + relativePath
+				+ ", originalFilename=" + originalFilename + ", cover=" + cover + ", filenameWithoutExtension="
+				+ filenameWithoutExtension + ", isCover=" + isCover + "]";
 	}
 	
 }

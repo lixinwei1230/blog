@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import me.qyh.entity.MyFile;
+import me.qyh.exception.SystemException;
+
 /**
  * 
  * @author qyh
@@ -30,8 +33,14 @@ public class MemoryServer implements FileServer {
 	}
 
 	@Override
-	public FileStorage getStore() {
-		return stores.get(0);
+	public FileStorage getStore(MyFile file) {
+		for (FileStorage store : stores) {
+			if (store.canStore(file)) {
+				return store;
+			}
+		}
+		//
+		throw new SystemException(String.format("无法找到能存放%s的存储器", file));
 	}
 
 }

@@ -19,9 +19,9 @@ public class FileMapper extends MyFile {
 		super();
 	}
 
-	public FileMapper(User user, long size, String name, Date uploadDate, FileStorage store,
+	public FileMapper(User user, long size, String name, Date uploadDate, 
 			String originalFilename, File mappered) {
-		super(user, size, name, uploadDate, store, originalFilename);
+		super(user, size, name, uploadDate, originalFilename);
 		this.mappered = mappered;
 	}
 
