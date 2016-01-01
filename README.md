@@ -12,6 +12,12 @@ jdk7+&mysql 5+&tomcat7+<br/>
 邮件服务:<br/>
 注册，找回密码需要邮件的支持，需要在resources/mail.properties配置邮件服务信息<br/>
 
+泛域名支持:<br/>
+需要泛域名解析的支持<br/>
+用户激活space的时候会自动为配置一个子域名(eg:test.qyh.me)<br/>
+需要在webConfig.properties中配置enableSpaceDomain为true<br/>
+会自动开启SpaceDomainFilter<br/>
+
 文件存储:<br/>
 头像存储固定为avatarStore<br/>
 不能在FileServer中配置avatarStore<br/>
