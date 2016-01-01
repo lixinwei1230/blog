@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLConnection;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -44,6 +48,11 @@ public class LocalFileController extends BaseController {
 	private static final String WEBP_SUPPORT_COOKIE = "WEBP_SUPPORT";
 	private static final String WEBP = "webp";
 	private static final String WEBP_CONTENT_TYPE = "image/webp";
+	private static final String IF_MODIFIED_SINCE = "If-Modified-Since";
+	private static final String[] DATE_FORMATS = new String[] { "EEE, dd MMM yyyy HH:mm:ss zzz",
+			"EEE, dd-MMM-yy HH:mm:ss zzz", "EEE MMM dd HH:mm:ss yyyy" };
+	private static TimeZone GMT = TimeZone.getTimeZone("GMT");
+
 	@Autowired
 	private ConfigServer configServer;
 	@Autowired
@@ -54,6 +63,10 @@ public class LocalFileController extends BaseController {
 	private LocalFileStorage avatarStore;
 	@Autowired
 	private FileServer fileServer;
+	@Value("${config.file.webpSupport}")
+	private boolean supportWebp;
+	@Value("${config.file.maxAge}")
+	private long maxAge;
 
 	@RequestMapping(value = "{storeId}/{y}/{m}/{d}/{name}/{ext}/{size}", method = RequestMethod.GET)
 	public void write(@PathVariable("storeId") int storeId, @PathVariable("y") String y, @PathVariable("m") String m,
@@ -65,22 +78,28 @@ public class LocalFileController extends BaseController {
 			throw new MyFileNotFoundException();
 		}
 		LocalFileStorage store = seek(storeId);
+		boolean isImage = Webs.isWebImage("." + ext);
+		if (isImage && !isAvatarStore(store) && !isModified(request)) {
+			response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+			return;
+		}
 		FileWriteConfig config = configServer.getFileWriteConfig(store);
 		RequestMatcher matcher = config.getRequestMatcher();
 		if (matcher != null && !matcher.matches(request.getRequest())) {
 			throw new MyFileNotFoundException();
 		}
 		File seek = store.seek(path);
-		if (Webs.isWebImage(seek.getName())) {
-			response.setContentType(URLConnection.guessContentTypeFromName(seek.getName()));
+		if (isImage) {
 			String etag = Webs.generatorETag(path + seek.lastModified());
 			if (request.checkNotModified(etag)) {
+				response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
 				return;
 			}
+
 			String relativePath = getRelativePath(seek);
 			File cacheFolder = new File(imageCacheDir + relativePath);
 			Files.forceMkdir(cacheFolder);
-			if (supportWebp(request.getRequest(), seek)) {
+			if (supportWebp && supportWebp(request.getRequest(), seek)) {
 				response.setContentType(WEBP_CONTENT_TYPE);
 				String absPath = cacheFolder.getAbsolutePath() + File.separator
 						+ Files.appendFilename(seek.getName(), seek.lastModified() + "");
@@ -109,33 +128,40 @@ public class LocalFileController extends BaseController {
 					}
 				}
 			}
+			response.setContentType(URLConnection.guessContentTypeFromName(seek.getName()));
+			if (!isAvatarStore(store)) {
+				response.addDateHeader("Last-Modified", System.currentTimeMillis());
+				response.addDateHeader("Expires", System.currentTimeMillis() + maxAge * 1000);
+				response.setHeader("Cache-Control", "max-age=" + maxAge);
+			}
 		} else {
 			response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
 			response.setHeader("Content-Disposition", "attachment;filename=" + seek.getName());
 		}
 		response.setContentLength((int) seek.length());
+		response.setStatus(HttpServletResponse.SC_OK);
 		try {
 			OutputStream out = response.getOutputStream();
 			FileUtils.copyFile(seek, out);
 		} catch (IOException e) {
 		}
 	}
-	
+
 	@RequestMapping(value = "{storeId}/{y}/{m}/{d}/{name}/{ext}", method = RequestMethod.GET)
 	public void write(@PathVariable("storeId") int storeId, @PathVariable("y") String y, @PathVariable("m") String m,
 			@PathVariable("d") String d, @PathVariable("name") String name, @PathVariable("ext") String ext,
-			ServletWebRequest request, HttpServletResponse response)
-					throws MyFileNotFoundException {
-		this.write(storeId, y, m, d, name, ext,null, request, response);
+			ServletWebRequest request, HttpServletResponse response) throws MyFileNotFoundException {
+		this.write(storeId, y, m, d, name, ext, null, request, response);
 	}
-	
+
 	@RequestMapping(value = "{storeId}/{y}/{m}/{d}/{name}/{ext}/{key}/delete", method = RequestMethod.POST)
 	@ResponseBody
 	public Info delete(@PathVariable("storeId") int storeId, @PathVariable("y") String y, @PathVariable("m") String m,
-			@PathVariable("d") String d, @PathVariable("name") String name, @PathVariable("ext") String ext,@PathVariable("key") String key,
-			ServletWebRequest request, HttpServletResponse response) {
-		try{
-			String path = File.separator + y + File.separator + m + File.separator + d + File.separator + name + "." + ext;
+			@PathVariable("d") String d, @PathVariable("name") String name, @PathVariable("ext") String ext,
+			@PathVariable("key") String key, ServletWebRequest request, HttpServletResponse response) {
+		try {
+			String path = File.separator + y + File.separator + m + File.separator + d + File.separator + name + "."
+					+ ext;
 			LocalFileStorage storage = seek(storeId);
 			try {
 				File file = storage.seek(path);
@@ -143,7 +169,7 @@ public class LocalFileController extends BaseController {
 			} catch (MyFileNotFoundException e) {
 				return new Info(true);
 			}
-		}catch(InvalidParamException e){
+		} catch (InvalidParamException e) {
 		}
 		return new Info(true);
 	}
@@ -189,5 +215,31 @@ public class LocalFileController extends BaseController {
 			throw new InvalidParamException();
 		}
 		return storage;
+	}
+
+	/**
+	 * @see HttpHeaders
+	 * @param req
+	 * @return
+	 */
+	private boolean isModified(ServletWebRequest req) {
+		String lastModifyTime = req.getHeader(IF_MODIFIED_SINCE);
+		if (lastModifyTime != null) {
+			for (String dateFormat : DATE_FORMATS) {
+				SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat, Locale.US);
+				simpleDateFormat.setTimeZone(GMT);
+				try {
+					long time = simpleDateFormat.parse(lastModifyTime).getTime();
+					return !req.checkNotModified(time);
+				} catch (ParseException e) {
+					// ignore
+				}
+			}
+		}
+		return true;
+	}
+
+	private boolean isAvatarStore(LocalFileStorage store) {
+		return avatarStore.id() == store.id();
 	}
 }
