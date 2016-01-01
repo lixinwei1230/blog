@@ -60,6 +60,7 @@
 		</div>
 	</div>
 </body>
+<u:url space="${space }" var="spaceLinkPrefix" />
 <jsp:include page="/WEB-INF/foot.jsp"></jsp:include>
 <jsp:include page="/WEB-INF/scripts.jsp"></jsp:include>
 <script type="text/javascript"
@@ -89,9 +90,9 @@ $(document).ready(function(){
 			for(var i=0;i<blogs.length;i++){
 				var blog = blogs[i];
 				if(blog.id > blogId){
-					html += '<p>下一篇：<a href="${ctx}/space/${space.id}/blog/'+blog.id+'">'+blog.title+"</a></p>";
+					html += '<p>下一篇：<a href="${spaceLinkPrefix}/blog/'+blog.id+'">'+blog.title+"</a></p>";
 				}else{
-					html += '<p>上一篇：<a href="${ctx}/space/${space.id}/blog/'+blog.id+'">'+blog.title+"</a></p>";
+					html += '<p>上一篇：<a href="${spaceLinkPrefix}/blog/'+blog.id+'">'+blog.title+"</a></p>";
 				}
 			}
 			html += '</div>';
