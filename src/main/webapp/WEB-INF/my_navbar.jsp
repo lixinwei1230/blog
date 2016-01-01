@@ -89,7 +89,7 @@
 								</c:if>
 							</ul></li>
 						<c:if test="${isUser or isOauth }">
-							<li><a href="javascript:void(0)" onclick="document.getElementById('logoutForm').submit()">退出</a><form style="display: none" action="${ctx }/logout" method="post" id="logoutForm"><input type="hidden" name="${_csrf.parameterName}"value="${_csrf.token}" /></form></li>
+							<li><a href="javascript:void(0)" onclick="document.getElementById('logoutForm').submit()">退出</a><form style="display: none" action="<u:url/>/logout" method="post" id="logoutForm"><input type="hidden" name="${_csrf.parameterName}"value="${_csrf.token}" /></form></li>
 						</c:if>
 					</c:if>
 				</ul>

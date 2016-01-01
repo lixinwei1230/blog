@@ -46,7 +46,7 @@
 				</ul>
 				<sec:authorize ifAnyGranted="ROLE_USER,ROLE_OAUTH">
 					<ul class="nav navbar-nav navbar-right">
-						<li><a href="javascript:void(0)" onclick="document.getElementById('logoutForm').submit()">退出</a><form style="display: none" action="${ctx }/logout" method="post" id="logoutForm"><input type="hidden" name="${_csrf.parameterName}"value="${_csrf.token}" /></form></li>
+						<li><a href="javascript:void(0)" onclick="document.getElementById('logoutForm').submit()">退出</a><form style="display: none" action="<u:url/>/logout" method="post" id="logoutForm"><input type="hidden" name="${_csrf.parameterName}"value="${_csrf.token}" /></form></li>
 					</ul>
 				</sec:authorize>
 				<ul class="nav navbar-nav navbar-right">
