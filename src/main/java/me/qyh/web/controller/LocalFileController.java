@@ -78,71 +78,94 @@ public class LocalFileController extends BaseController {
 			throw new MyFileNotFoundException();
 		}
 		LocalFileStorage store = seek(storeId);
-		boolean isImage = Webs.isWebImage("." + ext);
-		if (isImage && !isAvatarStore(store) && !isModified(request)) {
-			response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-			return;
-		}
 		FileWriteConfig config = configServer.getFileWriteConfig(store);
 		RequestMatcher matcher = config.getRequestMatcher();
 		if (matcher != null && !matcher.matches(request.getRequest())) {
 			throw new MyFileNotFoundException();
 		}
 		File seek = store.seek(path);
-		if (isImage) {
-			String etag = Webs.generatorETag(path + seek.lastModified());
-			if (request.checkNotModified(etag)) {
-				response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-				return;
-			}
-
-			String relativePath = getRelativePath(seek);
-			File cacheFolder = new File(imageCacheDir + relativePath);
-			Files.forceMkdir(cacheFolder);
-			if (supportWebp && supportWebp(request.getRequest(), seek)) {
-				response.setContentType(WEBP_CONTENT_TYPE);
-				String absPath = cacheFolder.getAbsolutePath() + File.separator
-						+ Files.appendFilename(seek.getName(), seek.lastModified() + "");
-				File webp = new File(absPath + "." + WEBP);
-				if (!webp.exists()) {
-					try {
-						im4javas.format(WEBP, seek.getAbsolutePath(), absPath);
-					} catch (Exception e) {
-						throw new SystemException(e);
-					}
-				}
-				seek = webp;
-			}
-
-			ImageZoomMatcher zm = config.getZoomMatcher();
-			if (zm != null && zm.zoom(size, seek)) {
-				File dest = new File(cacheFolder,
-						Files.appendFilename(seek.getName(), "_" + seek.lastModified() + "_" + size));
-				if (dest.exists()) {
-					seek = dest;
-				} else {
-					try {
-						seek = zoomImage(seek.getAbsolutePath(), dest.getAbsolutePath(), size, false);
-					} catch (Exception e) {
-						throw new SystemException(e);
-					}
-				}
-			}
-			response.setContentType(URLConnection.guessContentTypeFromName(seek.getName()));
-			if (!isAvatarStore(store)) {
-				response.addDateHeader("Last-Modified", System.currentTimeMillis());
-				response.addDateHeader("Expires", System.currentTimeMillis() + maxAge * 1000);
-				response.setHeader("Cache-Control", "max-age=" + maxAge);
-			}
-		} else {
+		boolean isImage = Webs.isWebImage("." + ext);
+		if (!isImage) {
+			response.setContentLength((int) seek.length());
+			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
 			response.setHeader("Content-Disposition", "attachment;filename=" + seek.getName());
+			try {
+				OutputStream out = response.getOutputStream();
+				FileUtils.copyFile(seek, out);
+			} catch (IOException e) {
+
+			}
+			return;
 		}
-		response.setContentLength((int) seek.length());
+		boolean isAvatar = isAvatarStore(store);
+		if (!isAvatar && !isModified(request)) {
+			response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+			return;
+		}
+		String relativePath = Files.ymd();
+		StringBuilder sb = new StringBuilder(imageCacheDir);
+		sb.append(relativePath);
+		sb.append(File.separator);
+		String rename = seek.getName();
+		if (isAvatar) {
+			rename = Files.appendFilename(rename, seek.lastModified());
+		}
+		ImageZoomMatcher zm = config.getZoomMatcher();
+		boolean zoom = (zm != null && zm.zoom(size, seek));
+		if (zoom) {
+			rename = Files.appendFilename(rename, size);
+		}
+		sb.append(rename);
+		boolean supportWebp = (this.supportWebp && supportWebp(request.getRequest(), seek));
+		if (supportWebp) {
+			sb.append(".").append(WEBP);
+		}
+		String absPath = sb.toString();
+
+		String etag = Webs.generatorETag(absPath);
+		if (request.checkNotModified(etag)) {
+			response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+			return;
+		}
+
+		File file = new File(absPath);
+		if (!file.exists()) {
+			if(!zoom && !supportWebp){
+				file = seek;
+			} else {
+				File cacheFolder = new File(imageCacheDir + relativePath);
+				Files.forceMkdir(cacheFolder);
+				response.setContentType(URLConnection.guessContentTypeFromName(seek.getName()));
+				if (supportWebp) {
+					response.setContentType(WEBP_CONTENT_TYPE);
+					try {
+						im4javas.format(WEBP, seek.getAbsolutePath(), Files.getFilename(absPath));
+					} catch (Exception e) {
+						throw new SystemException(e);
+					}
+					seek = file;
+				}
+
+				if (zoom) {
+					try {
+						file = zoomImage(seek.getAbsolutePath(), file.getAbsolutePath(), size, false);
+					} catch (Exception e) {
+						throw new SystemException(e);
+					}
+				}
+			}
+		}
+		response.setContentLength((int) file.length());
+		if (!isAvatar) {
+			response.addDateHeader("Last-Modified", System.currentTimeMillis());
+			response.addDateHeader("Expires", System.currentTimeMillis() + maxAge * 1000);
+			response.setHeader("Cache-Control", "max-age=" + maxAge);
+		}
 		response.setStatus(HttpServletResponse.SC_OK);
 		try {
 			OutputStream out = response.getOutputStream();
-			FileUtils.copyFile(seek, out);
+			FileUtils.copyFile(file, out);
 		} catch (IOException e) {
 		}
 	}
@@ -172,11 +195,6 @@ public class LocalFileController extends BaseController {
 		} catch (InvalidParamException e) {
 		}
 		return new Info(true);
-	}
-
-	private String getRelativePath(File file) {
-		String absPath = file.getParent();
-		return absPath.substring(absPath.indexOf(File.separatorChar));
 	}
 
 	private File zoomImage(String absPath, String destPath, int size, boolean force) throws Exception {

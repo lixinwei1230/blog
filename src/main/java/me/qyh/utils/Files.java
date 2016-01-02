@@ -44,10 +44,18 @@ public final class Files {
 		return sb.toString();
 	}
 
-	public static String appendFilename(String name, String append) {
-		String filename = getFilename(name);
+	public static String appendFilename(String name, Object ... appends) {
+		if(Validators.isEmptyOrNull(appends)){
+			return name;
+		}
 		String extension = getFileExtension(name);
-		return filename + append + (Validators.isEmptyOrNull(extension, true) ? "" : "." + extension);
+		StringBuilder sb = new StringBuilder();
+		sb.append(getFilename(name));
+		for(Object append : appends){
+			sb.append(append);
+		}
+		sb.append((Validators.isEmptyOrNull(extension, true) ? "" : "." + extension));
+		return sb.toString();
 	}
 
 	public static void forceMkdir(File dir) {
