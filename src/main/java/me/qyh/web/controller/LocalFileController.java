@@ -187,6 +187,9 @@ public class LocalFileController extends BaseController {
 			String path = File.separator + y + File.separator + m + File.separator + d + File.separator + name + "."
 					+ ext;
 			LocalFileStorage storage = seek(storeId);
+			if(!storage.getKey().equals(key)){
+				return new Info(false);
+			}
 			try {
 				File file = storage.seek(path);
 				return new Info(FileUtils.deleteQuietly(file));

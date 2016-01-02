@@ -123,6 +123,10 @@ public class LocalFileStorage implements FileStorage, InitializingBean {
 		this.type = type;
 	}
 
+	public String getKey() {
+		return key;
+	}
+
 	public enum StoreType{
 		IMAGE_ONLY,ALL
 	}
