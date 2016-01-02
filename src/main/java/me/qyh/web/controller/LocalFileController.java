@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Controller;
@@ -103,7 +104,7 @@ public class LocalFileController extends BaseController {
 			response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
 			return;
 		}
-		String relativePath = Files.ymd();
+		String relativePath = getRelativePath(seek);
 		StringBuilder sb = new StringBuilder(imageCacheDir);
 		sb.append(relativePath);
 		sb.append(File.separator);
@@ -259,5 +260,10 @@ public class LocalFileController extends BaseController {
 
 	private boolean isAvatarStore(LocalFileStorage store) {
 		return avatarStore.id() == store.id();
+	}
+	
+	private String getRelativePath(File file) {
+		String absPath = file.getParent();
+		return absPath.substring(absPath.indexOf(File.separatorChar));
 	}
 }
