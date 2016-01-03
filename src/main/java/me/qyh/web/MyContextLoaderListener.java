@@ -21,6 +21,8 @@ import me.qyh.web.tag.url.UrlHelper;
 
 public class MyContextLoaderListener extends ContextLoaderListener {
 
+	private static final String ENABLE_SIMULATION_DOMAIN_FILE_MAPPING_FILTER = "enableSimulationDomainFileMappingFilter";
+
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
 		super.contextInitialized(event);
@@ -28,15 +30,19 @@ public class MyContextLoaderListener extends ContextLoaderListener {
 		UrlHelper helper = ctx.getBean(UrlHelper.class);
 		String domain = helper.getDomain();
 		ServletContext sc = event.getServletContext();
-		Map<String, LocalFileStorage> storesMap = ctx.getBeansOfType(LocalFileStorage.class);
-		if(!storesMap.isEmpty()){
-			for(LocalFileStorage store : storesMap.values()){
-				if(store.getMapping() instanceof SimulationDomainFileMapping){
-					Class<? extends Filter> simulationDomainFileMappingFilter = SimulationDomainFileMappingFilter.class;
-					sc.addFilter(simulationDomainFileMappingFilter.getName(), simulationDomainFileMappingFilter)
-							.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
+		String enableSimulationDomainFileMappingFilter = sc
+				.getInitParameter(ENABLE_SIMULATION_DOMAIN_FILE_MAPPING_FILTER);
+		if ("true".equalsIgnoreCase(enableSimulationDomainFileMappingFilter)) {
+			Map<String, LocalFileStorage> storesMap = ctx.getBeansOfType(LocalFileStorage.class);
+			if (!storesMap.isEmpty()) {
+				for (LocalFileStorage store : storesMap.values()) {
+					if (store.getMapping() instanceof SimulationDomainFileMapping) {
+						Class<? extends Filter> simulationDomainFileMappingFilter = SimulationDomainFileMappingFilter.class;
+						sc.addFilter(simulationDomainFileMappingFilter.getName(), simulationDomainFileMappingFilter)
+								.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
+					}
+					break;
 				}
-				break;
 			}
 		}
 		if (!(Validators.validateIp(domain) || "localhost".equals(domain))) {

@@ -45,6 +45,10 @@
 	    	classpath:resources/spring/application.xml
 	    </param-value>
 	</context-param>
+	<context-param>
+		<param-name>enableSimulationDomainFileMappingFilter</param-name>
+		<param-value>true</param-value>
+	</context-param>
 	<listener>
 	    <listener-class>
 	        me.qyh.web.MyContextLoaderListener
@@ -106,7 +110,7 @@
         <url-pattern>/</url-pattern>
     </servlet-mapping>
     
-    
+   <!--  
     <security-constraint> 
        <web-resource-collection > 
               <web-resource-name >SSL</web-resource-name> 
@@ -116,5 +120,5 @@
        <user-data-constraint> 
               <transport-guarantee>CONFIDENTIAL</transport-guarantee> 
        </user-data-constraint> 
-</security-constraint>
+</security-constraint> -->
 </web-app>
