@@ -3,6 +3,8 @@ package me.qyh.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +33,8 @@ import me.qyh.service.CommentHandler;
 import me.qyh.service.CommentService;
 
 public class CommentServiceImpl extends BaseServiceImpl implements CommentService {
+
+	private static final Logger logger = LoggerFactory.getLogger(CommentServiceImpl.class);
 
 	@Autowired
 	private CommentDao commentDao;
@@ -181,13 +185,14 @@ public class CommentServiceImpl extends BaseServiceImpl implements CommentServic
 		commentDao.deleteById(id);
 	}
 
-	private CommentHandler getCommentHandler(CommentScope scope) {
+	private CommentHandler getCommentHandler(CommentScope scope) throws LogicException {
 		for (CommentHandler handler : handlers) {
 			if (handler.match(scope)) {
 				return handler;
 			}
 		}
-		throw new SystemException("无法找到评论域" + scope.toString() + "的处理器");
+		logger.warn("无法找到评论域" + scope.toString() + "的处理器");
+		throw new LogicException("error.comment.fail");
 	}
 
 	private Page<Comment> _findComments(CommentPageParam param, CommentConfig config) {
