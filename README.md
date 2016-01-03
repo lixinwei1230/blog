@@ -21,7 +21,7 @@ jdk7+&mysql 5+&tomcat7+<br/>
 文件存储:<br/>
 头像存储固定为avatarStore<br/>
 不能在FileServer中配置avatarStore<br/>
-配置了LocalFileStorage并且配置了SimulationDomainFileMapping会自动开启SimulationDomainFileMappingFilter<br/>
+配置了LocalFileStorage并且配置了SimulationDomainFileMapping会自动开启SimulationDomainFileMappingFilter(web.xml配置enableSimulationDomainFileMappingFilter不为true不会开启)<br/>
 
 图片裁剪:<br/>
 图片的裁剪使用Im4java + GraphicsMagick。需要安装GraphicsMagick，下载地址：http://ftp.icm.edu.pl/pub/unix/graphics/GraphicsMagick/windows/ ，im4java在maven中可以找到
