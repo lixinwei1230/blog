@@ -39,6 +39,7 @@ import me.qyh.upload.server.FileServer;
 import me.qyh.upload.server.FileStorage;
 import me.qyh.upload.server.inner.LocalFileStorage;
 import me.qyh.utils.Files;
+import me.qyh.utils.Validators;
 import me.qyh.web.InvalidParamException;
 import me.qyh.web.Webs;
 
@@ -72,7 +73,7 @@ public class LocalFileController extends BaseController {
 	@RequestMapping(value = "{storeId}/{y}/{m}/{d}/{name}/{ext}/{size}", method = RequestMethod.GET)
 	public void write(@PathVariable("storeId") int storeId, @PathVariable("y") String y, @PathVariable("m") String m,
 			@PathVariable("d") String d, @PathVariable("name") String name, @PathVariable("ext") String ext,
-			@PathVariable("size") Integer size, ServletWebRequest request, HttpServletResponse response)
+			@PathVariable("size") String size, ServletWebRequest request, HttpServletResponse response)
 					throws MyFileNotFoundException {
 		String path = File.separator + y + File.separator + m + File.separator + d + File.separator + name + "." + ext;
 		if (!Webs.isSafeFilePath(path)) {
@@ -112,8 +113,9 @@ public class LocalFileController extends BaseController {
 		if (isAvatar) {
 			rename = Files.appendFilename(rename, seek.lastModified());
 		}
+		SizeFormat format = parseSize(size);
 		ImageZoomMatcher zm = config.getZoomMatcher();
-		boolean zoom = (zm != null && zm.zoom(size, seek));
+		boolean zoom = (format != null && zm != null && zm.zoom(format.size, seek));
 		if (zoom) {
 			rename = Files.appendFilename(rename, size);
 		}
@@ -150,7 +152,7 @@ public class LocalFileController extends BaseController {
 
 				if (zoom) {
 					try {
-						file = zoomImage(seek.getAbsolutePath(), file.getAbsolutePath(), size, false);
+						file = zoomImage(seek.getAbsolutePath(), file.getAbsolutePath(), format);
 					} catch (Exception e) {
 						throw new SystemException(e);
 					}
@@ -201,8 +203,9 @@ public class LocalFileController extends BaseController {
 		return new Info(true);
 	}
 
-	private File zoomImage(String absPath, String destPath, int size, boolean force) throws Exception {
-		if (!force) {
+	private File zoomImage(String absPath, String destPath, SizeFormat format) throws Exception {
+		int size = format.size;
+		if (!format.force) {
 			File zoom = new File(absPath);
 			ImageInfo info = im4javas.getImageInfo(absPath);
 			if (info.getHeight() < size && info.getWidth() < size) {
@@ -268,5 +271,35 @@ public class LocalFileController extends BaseController {
 	private String getRelativePath(File file) {
 		String absPath = file.getParent();
 		return absPath.substring(absPath.indexOf(File.separatorChar));
+	}
+	
+	
+	private final class SizeFormat{
+		private Integer size;
+		private boolean force;
+		public SizeFormat(int size, boolean force) {
+			super();
+			this.size = size;
+			this.force = force;
+		}
+	}
+	
+	private SizeFormat parseSize(String _size){
+		if(Validators.isEmptyOrNull(_size,true)){
+			return null;
+		}else{
+			boolean force = false;
+			int pos = _size.indexOf("!");
+			if(pos != -1){
+				force = true;
+			}
+			String strSize = pos == -1 ? _size : _size.substring(0,pos);
+			try{
+				int size = Integer.parseInt(strSize);
+				return new SizeFormat(size, force);
+			}catch(Exception e){
+				throw new InvalidParamException();
+			}
+		}
 	}
 }
