@@ -117,7 +117,7 @@ public class LocalFileController extends BaseController {
 		ImageZoomMatcher zm = config.getZoomMatcher();
 		boolean zoom = (format != null && zm != null && zm.zoom(format.size, seek));
 		if (zoom) {
-			rename = Files.appendFilename(rename, size);
+			rename = Files.appendFilename(rename, format.size);
 		}
 		sb.append(rename);
 		boolean supportWebp = (this.supportWebp && supportWebp(request.getRequest(), seek));
@@ -293,6 +293,7 @@ public class LocalFileController extends BaseController {
 			if(pos != -1){
 				force = true;
 			}
+			
 			String strSize = pos == -1 ? _size : _size.substring(0,pos);
 			try{
 				int size = Integer.parseInt(strSize);
