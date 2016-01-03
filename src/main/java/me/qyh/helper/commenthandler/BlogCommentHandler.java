@@ -54,7 +54,7 @@ public class BlogCommentHandler implements CommentHandler {
 	private Integer getBlogId(CommentScope target) {
 		try {
 			return Integer.parseInt(target.getScopeId());
-		} catch (NumberFormatException e) {
+		} catch (Exception e) {
 			throw new SystemException(this.getClass().getName() + "-getBlogId:" + e.getMessage(), e);
 		}
 	}

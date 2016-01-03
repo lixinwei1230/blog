@@ -46,4 +46,9 @@ public class CommentScope extends Id {
 		this.user = user;
 	}
 
+	@Override
+	public String toString() {
+		return "CommentScope [scopeId=" + scopeId + ", scope=" + scope + "]";
+	}
+
 }

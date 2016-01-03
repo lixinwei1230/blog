@@ -1,12 +1,16 @@
 package me.qyh.helper.commenthandler;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.PathMatcher;
 
 import me.qyh.entity.Comment;
 import me.qyh.entity.CommentScope;
@@ -23,6 +27,10 @@ public class PageCommentHandler implements CommentHandler {
 
 	private static final String scope = "PAGE";
 
+	private final PathMatcher matcher = new AntPathMatcher();
+
+	private Set<String> allowPatterns = new HashSet<String>();
+
 	@Autowired
 	private WebFreemarkers freeMarkers;
 	@Autowired
@@ -32,7 +40,14 @@ public class PageCommentHandler implements CommentHandler {
 
 	@Override
 	public boolean match(CommentScope target) {
-		return target.getScope().equalsIgnoreCase(scope);
+		if (target.getScope().equalsIgnoreCase(scope)) {
+			for (String pattern : allowPatterns) {
+				if (matcher.match(pattern, target.getScopeId())) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -83,5 +98,9 @@ public class PageCommentHandler implements CommentHandler {
 
 			tipService.sendTip(message);
 		}
+	}
+
+	public void setAllowPatterns(Set<String> allowPatterns) {
+		this.allowPatterns = allowPatterns;
 	}
 }

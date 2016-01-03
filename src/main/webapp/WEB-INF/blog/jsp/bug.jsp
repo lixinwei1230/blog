@@ -47,7 +47,7 @@ $(document).ajaxSend(function(e, xhr, options) {
 $(document).ready(function(){
 	$("#comment-container").comment({
 		scopeId:function(){
-			return getUrl()+'/bug';
+			return '/bug';
 		},
 		scope:"PAGE",
 		comment_container : "comment-container",

@@ -145,9 +145,12 @@
 						</fieldset>
 					</div>
 				</c:if>
+				<div class="alert alert-danger">
+					2016年学习android，2017年转向android开发
+				</div>
 				<div class="alert alert-warning">
-					只在新版的chrome浏览器开发测试，别的浏览器不会做测试和支持<br /> 用chrome浏览器、andriod
-					4+访问时，图片格式可能会被转化成webp格式 <br /> 鄙视IE浏览器(包括EDGE)
+					只在新版的chrome浏览器开发测试，别的浏览器不会做测试和支持<br /> 
+					鄙视用IE浏览器的(包括EDGE)
 				</div>
 			</div>
 		</div>
