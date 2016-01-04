@@ -1,4 +1,4 @@
-package me.qyh.upload.server.inner;
+package me.qyh.helper.file;
 
 public class BadImageException extends Exception {
 

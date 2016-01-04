@@ -33,8 +33,10 @@ import me.qyh.config.FileWriteConfig;
 import me.qyh.config.ImageZoomMatcher;
 import me.qyh.exception.MyFileNotFoundException;
 import me.qyh.exception.SystemException;
-import me.qyh.helper.im4java.Im4javas;
-import me.qyh.helper.im4java.Im4javas.ImageInfo;
+import me.qyh.helper.file.BadImageException;
+import me.qyh.helper.file.ImageInfo;
+import me.qyh.helper.file.ImageProcessing;
+import me.qyh.helper.file.Resize;
 import me.qyh.upload.server.FileServer;
 import me.qyh.upload.server.FileStorage;
 import me.qyh.upload.server.inner.LocalFileStorage;
@@ -58,7 +60,7 @@ public class LocalFileController extends BaseController {
 	@Autowired
 	private ConfigServer configServer;
 	@Autowired
-	private Im4javas im4javas;
+	private ImageProcessing im4javas;
 	@Value("${config.image.thumb.cachedir}")
 	private String imageCacheDir;
 	@Autowired
@@ -82,6 +84,7 @@ public class LocalFileController extends BaseController {
 		LocalFileStorage store = seek(storeId);
 		FileWriteConfig config = configServer.getFileWriteConfig(store);
 		RequestMatcher matcher = config.getRequestMatcher();
+		// 防盗链
 		if (matcher != null && !matcher.matches(request.getRequest())) {
 			throw new MyFileNotFoundException();
 		}
@@ -96,63 +99,58 @@ public class LocalFileController extends BaseController {
 				OutputStream out = response.getOutputStream();
 				FileUtils.copyFile(seek, out);
 			} catch (IOException e) {
-
 			}
 			return;
 		}
+		// 头像不能检查last modified
 		boolean isAvatar = isAvatarStore(store);
 		if (!isAvatar && !isModified(request)) {
 			response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
 			return;
 		}
-		String relativePath = getRelativePath(seek);
 		StringBuilder sb = new StringBuilder(imageCacheDir);
-		sb.append(relativePath);
-		sb.append(File.separator);
-		String rename = seek.getName();
-		if (isAvatar) {
-			rename = Files.appendFilename(rename, seek.lastModified());
-		}
 		SizeFormat format = parseSize(size);
 		ImageZoomMatcher zm = config.getZoomMatcher();
-		boolean zoom = (format != null && zm != null && zm.zoom(format.size, seek));
-		if (zoom) {
-			rename = Files.appendFilename(rename, format.size);
+		boolean zoom = format != null && zm.zoom(format.size, seek) && needZoom(seek, format);
+		String _path = path;
+		if (isAvatar) {
+			_path = Files.appendFilename(_path, seek.lastModified());
 		}
-		sb.append(rename);
-		boolean supportWebp = (this.supportWebp && supportWebp(request.getRequest(), seek));
+		if (zoom) {
+			_path = Files.appendFilename(_path, format.size);
+		}
+		sb.append(_path);
+		boolean supportWebp = (this.supportWebp && supportWebp(request.getRequest(), path));
 		if (supportWebp) {
 			sb.append(".").append(WEBP);
 		}
 		String absPath = sb.toString();
-
 		String etag = Webs.generatorETag(absPath);
 		if (request.checkNotModified(etag)) {
 			response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
 			return;
 		}
-
 		File file = new File(absPath);
 		if (!file.exists()) {
-			if(!zoom && !supportWebp){
+			Files.forceMkdir(file.getParentFile());
+			response.setContentType(URLConnection.guessContentTypeFromName(path));
+			if (!zoom && !supportWebp) {
 				file = seek;
 			} else {
-				File cacheFolder = new File(imageCacheDir + relativePath);
-				Files.forceMkdir(cacheFolder);
-				response.setContentType(URLConnection.guessContentTypeFromName(seek.getName()));
 				if (supportWebp) {
 					response.setContentType(WEBP_CONTENT_TYPE);
 					try {
-						im4javas.format(WEBP, seek.getAbsolutePath(), Files.getFilename(absPath));
+						im4javas.format(seek, new File(Files.getFilename(absPath)), WEBP);
 					} catch (Exception e) {
 						throw new SystemException(e);
 					}
 					seek = file;
 				}
-
 				if (zoom) {
 					try {
-						file = zoomImage(seek.getAbsolutePath(), file.getAbsolutePath(), format);
+						Resize _size = new Resize();
+						_size.setSize(format.size);
+						im4javas.zoom(seek, file, _size);
 					} catch (Exception e) {
 						throw new SystemException(e);
 					}
@@ -189,7 +187,7 @@ public class LocalFileController extends BaseController {
 			String path = File.separator + y + File.separator + m + File.separator + d + File.separator + name + "."
 					+ ext;
 			LocalFileStorage storage = seek(storeId);
-			if(!storage.getKey().equals(key)){
+			if (!storage.getKey().equals(key)) {
 				return new Info(false);
 			}
 			try {
@@ -203,23 +201,26 @@ public class LocalFileController extends BaseController {
 		return new Info(true);
 	}
 
-	private File zoomImage(String absPath, String destPath, SizeFormat format) throws Exception {
-		int size = format.size;
+	private boolean needZoom(File file, SizeFormat format) {
 		if (!format.force) {
-			File zoom = new File(absPath);
-			ImageInfo info = im4javas.getImageInfo(absPath);
-			if (info.getHeight() < size && info.getWidth() < size) {
-				return zoom;
+			int size = format.size;
+			ImageInfo info;
+			try {
+				info = im4javas.read(file);
+				if (info.getHeight() < size && info.getWidth() < size) {
+					return false;
+				}
+			} catch (BadImageException e) {
+				throw new SystemException(e.getMessage(), e);
 			}
 		}
-		im4javas.zoom(absPath, destPath, size);
-		return new File(destPath);
+		return true;
 	}
 
-	private boolean supportWebp(HttpServletRequest request, File file) {
+	private boolean supportWebp(HttpServletRequest request, String name) {
 		Cookie cookie = WebUtils.getCookie(request, WEBP_SUPPORT_COOKIE);
 		if (cookie != null && "true".equalsIgnoreCase(cookie.getValue())) {
-			String ext = Files.getFileExtension(file);
+			String ext = Files.getFileExtension(name);
 			return "jpg".equalsIgnoreCase(ext) || "jpeg".equalsIgnoreCase(ext) || "png".equalsIgnoreCase(ext);
 		}
 		return false;
@@ -267,38 +268,33 @@ public class LocalFileController extends BaseController {
 	private boolean isAvatarStore(LocalFileStorage store) {
 		return avatarStore.id() == store.id();
 	}
-	
-	private String getRelativePath(File file) {
-		String absPath = file.getParent();
-		return absPath.substring(absPath.indexOf(File.separatorChar));
-	}
-	
-	
-	private final class SizeFormat{
+
+	private final class SizeFormat {
 		private Integer size;
 		private boolean force;
+
 		public SizeFormat(int size, boolean force) {
 			super();
 			this.size = size;
 			this.force = force;
 		}
 	}
-	
-	private SizeFormat parseSize(String _size){
-		if(Validators.isEmptyOrNull(_size,true)){
+
+	private SizeFormat parseSize(String _size) {
+		if (Validators.isEmptyOrNull(_size, true)) {
 			return null;
-		}else{
+		} else {
 			boolean force = false;
 			int pos = _size.indexOf("!");
-			if(pos != -1){
+			if (pos != -1) {
 				force = true;
 			}
-			
-			String strSize = pos == -1 ? _size : _size.substring(0,pos);
-			try{
+
+			String strSize = pos == -1 ? _size : _size.substring(0, pos);
+			try {
 				int size = Integer.parseInt(strSize);
 				return new SizeFormat(size, force);
-			}catch(Exception e){
+			} catch (Exception e) {
 				throw new InvalidParamException();
 			}
 		}

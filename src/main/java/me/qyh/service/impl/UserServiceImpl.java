@@ -38,9 +38,10 @@ import me.qyh.entity.UserCode;
 import me.qyh.entity.UserCodeType;
 import me.qyh.exception.LogicException;
 import me.qyh.exception.SystemException;
+import me.qyh.helper.file.BadImageException;
+import me.qyh.helper.file.Im4javas;
+import me.qyh.helper.file.ImageInfo;
 import me.qyh.helper.freemaker.WebFreemarkers;
-import me.qyh.helper.im4java.Im4javas;
-import me.qyh.helper.im4java.Im4javas.ImageInfo;
 import me.qyh.helper.mail.Mailer;
 import me.qyh.helper.mail.MimeMessageHelperHandler;
 import me.qyh.pageparam.LoginInfoPageParam;
@@ -48,7 +49,6 @@ import me.qyh.pageparam.Page;
 import me.qyh.security.UserContext;
 import me.qyh.server.UserServer;
 import me.qyh.service.UserService;
-import me.qyh.upload.server.inner.BadImageException;
 import me.qyh.upload.server.inner.LocalFileStorage;
 import me.qyh.utils.Files;
 import me.qyh.utils.Times;
@@ -265,29 +265,31 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 		boolean croped = false;
 		boolean oldAvatar = (file instanceof AvatarFile);
 		try {
-			ImageInfo info = im4javas.getImageInfo(file.getAbsolutePath());
+			ImageInfo info = im4javas.read(file);
 			croped = (info.getWidth() != crop.getW() || info.getHeight() != crop.getH());
 		} catch (BadImageException e) {
 			throw new LogicException("error.upload.badImage");
 		}
 		String absPath = oldAvatar ? file.getAbsolutePath()
 				: folder.getAbsolutePath() + File.separator + file.getName();
+		File dest = new File(absPath);
 		if (croped) {
 			try {
-				im4javas.crop(file.getAbsolutePath(), absPath, crop.getX(), crop.getY(), crop.getW(), crop.getH());
+				crop.setFile(file);
+				im4javas.crop(crop,dest);
 			} catch (Exception e) {
 				throw new LogicException("error.avatar.badCrop");
 			}
 		} else if (!oldAvatar) {
 			try {
-				FileUtils.copyFile(file, new File(absPath));
+				FileUtils.copyFile(file, dest);
 			} catch (IOException e) {
 				throw new SystemException(e.getMessage(), e);
 			}
 		}
 		MyFile avatar = null;
 		if (!oldAvatar) {
-			File cropFile = croped ? new File(absPath) : file;
+			File cropFile = croped ? dest : file;
 			avatar = new MyFile(user, cropFile.length(), file.getName(), new Date(), file.getName());
 			avatar.setRelativePath(relativePath);
 			avatar.setStore(avatarStore);

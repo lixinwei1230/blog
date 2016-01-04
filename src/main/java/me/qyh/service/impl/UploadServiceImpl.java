@@ -17,21 +17,21 @@ import me.qyh.bean.I18NMessage;
 import me.qyh.config.ConfigServer;
 import me.qyh.config.FileUploadConfig;
 import me.qyh.config.FileUploadConfig.SizeLimit;
-import me.qyh.config.FileUploadConfig._ImageConfig;
 import me.qyh.config.FileUploadConfig.SizeLimit.Result;
+import me.qyh.config.FileUploadConfig._ImageConfig;
 import me.qyh.dao.FileDao;
 import me.qyh.entity.User;
 import me.qyh.exception.LogicException;
 import me.qyh.exception.SystemException;
-import me.qyh.helper.im4java.Im4javas;
-import me.qyh.helper.im4java.Im4javas.ImageInfo;
+import me.qyh.helper.file.BadImageException;
+import me.qyh.helper.file.Im4javas;
+import me.qyh.helper.file.ImageInfo;
 import me.qyh.security.UserContext;
 import me.qyh.service.UploadService;
 import me.qyh.upload.server.FileMapper;
 import me.qyh.upload.server.FileServer;
 import me.qyh.upload.server.FileStorage;
 import me.qyh.upload.server.UploadedResult;
-import me.qyh.upload.server.inner.BadImageException;
 import me.qyh.utils.Files;
 import me.qyh.utils.Strings;
 
@@ -42,8 +42,6 @@ public class UploadServiceImpl implements UploadService {
 	private ConfigServer configServer;
 	@Autowired
 	private FileDao fileDao;
-	@Value("${config.file.absPath}")
-	private String absPath;
 	@Value("${config.tempdir}")
 	private String tempDir;
 	@Autowired
@@ -110,7 +108,7 @@ public class UploadServiceImpl implements UploadService {
 			String contentType = file.getContentType();
 			if (image) {
 				try {
-					ImageInfo ii = im4javas.getImageInfo(_file.getAbsolutePath());
+					ImageInfo ii = im4javas.read(_file);
 					if (!Strings.inArray(ii.getType(), _config.getAllowFileTypes(), true)) {
 						info.addError(originalFilename, new I18NMessage("error.upload.invalidExtension", ii.getType()));
 						continue;
@@ -135,7 +133,7 @@ public class UploadServiceImpl implements UploadService {
 					_file = rename;
 					if (!GIF.equalsIgnoreCase(ii.getType())) {
 						try {
-							im4javas.strip(_file.getAbsolutePath());
+							im4javas.strip(_file,_file);
 						} catch (Exception e) {
 							throw new SystemException(e.getMessage(), e);
 						}
@@ -143,18 +141,18 @@ public class UploadServiceImpl implements UploadService {
 					contentType = IMAGEPREFIX + ii.getType().toLowerCase();
 					if (GIF.equalsIgnoreCase(ii.getType())) {
 						try {
-							int numImages = Im4javas.getNumImages(_file);
+							int numImages = im4javas.getFrameNumsOfGif(_file);
 							// 只有1帧
 							if (numImages == 1) {
 								try {
-									im4javas.format(PNG, _file.getAbsolutePath(), _file.getAbsolutePath());
+									im4javas.format(_file, _file,PNG);
 								} catch (Exception e) {
 									throw new SystemException(e.getMessage(), e);
 								}
 								_file = new File(_file.getParent(), _file.getName() + "." + PNG);
 								contentType = IMAGEPREFIX + PNG;
 							}
-						} catch (IOException e) {
+						} catch (Exception e) {
 							throw new SystemException(e.getMessage(), e);
 						}
 					}
@@ -223,7 +221,7 @@ public class UploadServiceImpl implements UploadService {
 		}
 		ImageInfo info = null;
 		try {
-			info = im4javas.getImageInfo(dest.getAbsolutePath());
+			info = im4javas.read(dest);
 		} catch (BadImageException e) {
 			throw new LogicException("error.upload.badImage");
 		}
@@ -243,7 +241,7 @@ public class UploadServiceImpl implements UploadService {
 					String.format("将文件%s修改为%s后缀失败", dest.getAbsolutePath(), info.getType().toLowerCase()));
 		}
 		try {
-			im4javas.strip(rename.getAbsolutePath());
+			im4javas.strip(rename,rename);
 		} catch (Exception e) {
 			throw new SystemException(e.getMessage(), e);
 		}
@@ -261,7 +259,7 @@ public class UploadServiceImpl implements UploadService {
 			String coverName = Files.getFilename(toCreate.getName()) + "." + JPEG;
 			cover = new File(dir, coverName);
 			try {
-				im4javas.writeFirstFrameOfGif(toCreate.getAbsolutePath(), cover.getAbsolutePath());
+				im4javas.writeFirstFrameOfGif(toCreate, cover);
 			} catch (Exception e) {
 				throw new SystemException(e);
 			}
