@@ -34,7 +34,9 @@ public class MyFileManageServiceImpl extends MyFileServiceImpl implements MyFile
 		MyFile db = getMyFile(id);
 		MyFile cover = db.getCover();
 		deleteFile(db);
-		deleteFile(cover);
+		if(cover != null){
+			deleteFile(cover);
+		}
 		tipMessage.setReceiver(db.getUser());
 		tipMessage.setSender(UserContext.getUser());
 		tipServer.sendTip(tipMessage);
