@@ -33,6 +33,7 @@ public class ManageMyFileController extends ManageBaseController {
 		param.setStatus(FileStatus.NORMAL);
 		param.setCurrentPage(currentPage);
 		param.setPageSize(pageSize);
+		param.setShowCover(false);
 		param.validate();
 
 		model.put(PAGE, service.findMyFiles(param));

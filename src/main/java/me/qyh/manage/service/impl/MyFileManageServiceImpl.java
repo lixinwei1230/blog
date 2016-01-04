@@ -33,30 +33,27 @@ public class MyFileManageServiceImpl extends MyFileServiceImpl implements MyFile
 	public void deleteMyFile(Integer id, TipMessage tipMessage) throws LogicException {
 		MyFile db = getMyFile(id);
 		MyFile cover = db.getCover();
-		if(cover != null){
-			deleteFile(cover);
-		}
 		deleteFile(db);
-		
+		deleteFile(cover);
 		tipMessage.setReceiver(db.getUser());
 		tipMessage.setSender(UserContext.getUser());
 		tipServer.sendTip(tipMessage);
 	}
-	
-	private void deleteFile(MyFile db){
+
+	private void deleteFile(MyFile db) {
 		FileStorage storage = db.getStore();
 		String url = storage.delUrl(db);
 		Info info = new Info(false);
-		try{
+		try {
 			String result = Https.sendPost(url);
 			JsonParser parser = reader.getFactory().createParser(result);
 			info = reader.readValue(parser, Info.class);
-		}catch(Exception e){
-			throw new SystemException(e.getMessage(),e);
+		} catch (Exception e) {
+			throw new SystemException(e.getMessage(), e);
 		}
-		if(info.getSuccess()){
+		if (info.getSuccess()) {
 			fileDao.deleteById(db.getId());
-		}else{
+		} else {
 			super.deleteMyFile(db);
 		}
 	}

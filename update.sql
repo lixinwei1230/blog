@@ -32,3 +32,5 @@ VALUES((SELECT id FROM blog_user WHERE user_name = 'test'),(SELECT id FROM role 
 UPDATE message_send SET message_type = 2 WHERE message_type = 3;
 
 UPDATE blog_file SET file_store = 0 WHERE file_store = -1;
+
+ALTER TABLE blog_file DROP FOREIGN KEY blog_file_ibfk_2;

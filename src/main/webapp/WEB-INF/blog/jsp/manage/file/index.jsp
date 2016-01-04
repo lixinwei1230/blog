@@ -50,11 +50,26 @@
 										<tr>
 											<td><c:choose>
 													<c:when test="${file.image }">
-														<img
-															src="${file.url}/200"
-															class="img-responsive"
-															style="max-width:200px;max-height:200px"
-															onerror="javascript:this.src='${ctx}/static/imgs/img-missing.png'" />
+														<c:choose>
+															<c:when test="${file.cover != null }">
+																<div class="videos">
+																	<a
+																		data-play="${file.url}"
+																		class="video"> <span></span> <img
+																		src="${file.cover.url}"
+																		class="img-responsive"
+																		onerror="javascript:this.src='${ctx}/static/imgs/img-missing.png'" />
+																	</a>
+																</div>
+															</c:when>
+															<c:otherwise>
+																<img
+																	src="${file.url}/200"
+																	class="img-responsive"
+																	style="max-width: 200px; max-height: 200px"
+																	onerror="javascript:this.src='${ctx}/static/imgs/img-missing.png'" />
+															</c:otherwise>
+														</c:choose>
 													</c:when>
 													<c:otherwise>
 														<c:choose>

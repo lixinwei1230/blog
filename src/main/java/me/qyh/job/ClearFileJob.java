@@ -51,10 +51,6 @@ public class ClearFileJob {
 		JsonParser parser = reader.getFactory().createParser(result);
 		Info info = reader.readValue(parser, Info.class);
 		if (info.getSuccess()) {
-			MyFile cover = file.getCover();
-			if (cover != null) {
-				fileDao.deleteById(cover.getId());
-			}
 			fileDao.deleteById(file.getId());
 		}
 	}
@@ -83,8 +79,7 @@ public class ClearFileJob {
 			for (MyFile file : files) {
 				try {
 					deleteMyFile(file);
-				} catch (Exception e) {
-				}
+				} catch (Exception e) {}
 			}
 		}
 	}
