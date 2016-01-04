@@ -24,7 +24,7 @@ import me.qyh.utils.Times;
 public class MyFileServiceImpl extends BaseServiceImpl implements MyFileService {
 
 	@Autowired
-	private FileDao fileDao;
+	protected FileDao fileDao;
 
 	@Override
 	@Transactional(readOnly = true)
