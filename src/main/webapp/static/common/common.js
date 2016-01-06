@@ -1,18 +1,7 @@
-var img = $("<img />").attr('src', contextPath + '/static/imgs/favicon.webp')
-	.on('load', function() {
-	    if (!(!this.complete || typeof this.naturalWidth == "undefined" || this.naturalWidth == 0)) {
-	    	setRootCookie("WEBP_SUPPORT", "true", 24*60*60*1000*30)
-	    } else{
-	    	setRootCookie("WEBP_SUPPORT", "false", 24*60*60*1000*30)
-	    }
-	}).on("error",function(){
-		setRootCookie("WEBP_SUPPORT", "false", 24*60*60*1000*30)
-	});
-
 String.prototype.endWith=function(str){     
   var reg=new RegExp(str+"$");     
   return reg.test(this);        
-}
+};
 
 Date.prototype.pattern=function(fmt) {         
     var o = {         
@@ -88,14 +77,41 @@ function getToReadMessageCount(){
 }
 
 $(document).ready(function(){
-	
+	if(getCookie("WEBP_SUPPORT") == null){
+		$('img').each(function(){
+			var me = $(this);
+			var src = me.attr("src");
+			me.attr("data-webp-src",src);
+			me.removeAttr("src").hide();
+		});
+		$("<img />").attr('src', contextPath + '/static/imgs/favicon.webp').on('load', function() {
+		    if (!(!this.complete || typeof this.naturalWidth == "undefined" || this.naturalWidth == 0)) {
+		    	setRootCookie("WEBP_SUPPORT", "true", 24*60*60*1000*30)
+		    } else{
+		    	setRootCookie("WEBP_SUPPORT", "false", 24*60*60*1000*30)
+		    }
+		    $('img').each(function(){
+				var me = $(this);
+				var src = me.attr("data-webp-src");
+				me.attr("src",src);
+				me.removeAttr("data-webp-src").show();
+			});
+		}).on("error",function(){
+			setRootCookie("WEBP_SUPPORT", "false", 24*60*60*1000*30);
+			$('img').each(function(){
+				var me = $(this);
+				var src = me.attr("data-webp-src");
+				me.attr("src",src);
+				me.removeAttr("data-webp-src").show();
+			});
+		});
+	}
 	getToReadMessageCount();
 	if(isGetToReadMessageCount){
 		setInterval(function(){
 			getToReadMessageCount();
 		}, 20000);
 	}
-	writerUserInTargetContainer($("body"));
 	$("img.avatar").error(function(){
 		var me = $(this);
 		me.attr("src",contextPath + "/static/imgs/guest_160.png")
@@ -112,7 +128,7 @@ $(document).ready(function(){
 			span.hide();
 			loading.remove();
 			me.parent().show();
-		})
+		});
 	}); 
 });
 
@@ -165,58 +181,11 @@ function get(url,data,success_fn,error_fn,complete_fn){
     });
 }
 
-function getUserInfoBySpaces(ids,success_fn){
-	var url = contextPath + "/user/info/";
-	$.get(url,{"spaces":ids.toString()},function callBack(data){
-		if(data.success){
-			success_fn(data.result);
-		}
-	});
-}
-
-
-var usersCache = [];
-
-function getUserInfoByIds(ids,success_fn){
-	var url = contextPath + "/user/info/";
-	$.get(url,{"ids":ids.toString()},function callBack(data){
-		if(data.success){
-			success_fn(data.result);
-		}
-	});
-}
-
-function getUser(id,users,type){
-	for(var i=0;i<users.length;i++){
-		var user = users[i];
-		if(type == "space"){
-			if(user.space.id == id){
-				return user;
-			}
-		}
-		if(type == "user"){
-			if(user.id == id){
-				return user;
-			}
-		}
-		
-	}
-	return null;
-}
-
 function setRootCookie(name,value,time){
 	var exp = new Date();
     exp.setTime(exp.getTime() +time);
     document.cookie = name + "="+ escape (value) + ";expires=" + exp.toGMTString()+";path=/;domain="+getRootDomain();
 }
-
-function setCookie(name,value,time)
-{
-    var exp = new Date();
-    exp.setTime(exp.getTime() +time);
-    document.cookie = name + "="+ escape (value) + ";expires=" + exp.toGMTString();
-}
-
 //读取cookies
 function getCookie(name)
 {
@@ -228,80 +197,3 @@ function getCookie(name)
     else
         return null;
 }
-
-//删除cookies
-function delCookie(name)
-{
-    var exp = new Date();
-    exp.setTime(exp.getTime() - 1);
-    var cval=getCookie(name);
-    if(cval!=null)
-        document.cookie= name + "="+cval+";expires="+exp.toGMTString();
-}
-
-function writerUserInTargetContainer(container){
-	var spaceIds = [];
-	var userIds = [];
-	container.find(".user-info").each(function(){
-		var _this = $(this);
-		if(_this.attr("space-id")){
-			spaceIds.push(_this.attr("space-id"));
-		}
-		if(_this.attr("user-id")){
-			userIds.push(_this.attr("user-id"));
-		}
-	});	
-	if(userIds.length > 0){
-		getUserInfoByIds(userIds,function(users){
-			$(".user-info").each(function(){
-				var _this = $(this);
-				writeUserInfo("user",_this,users);
-			});	
-		});
-	}
-	if(spaceIds.length > 0){
-		getUserInfoBySpaces(spaceIds,function(users){
-			$(".user-info").each(function(){
-				var _this = $(this);
-				writeUserInfo("space",_this,users);
-			});	
-		});
-	}
-}
-
-function writeUserInfo(type,_this,users){
-	var user = null;
-	if(type == "space"){
-		user = getUser(_this.attr("space-id"), users,type);
-	}else{
-		user = getUser(_this.attr("user-id"), users,type);
-	}
-	
-	var mode = _this.attr("info-mode");
-	var name = "";
-	var format = _this.attr("info-format");
-	if(format){
-		
-		if(format == "username"){
-			name = user.username;
-		}else if(format == "nickname"){
-			name = user.nickname;
-		}else if(format == "nickname(username)"){
-			name = user.nickname(user.username);
-		}
-	}else{
-		name = user.nickname;
-	}
-	if(mode && mode == 'simple'){
-		_this.html('<a href="'+getUrlByUser(user, false)+'/index">' +name + '</a>');
-	}else{
-		var avatar = "";
-		if(user.avatar){
-			avatar = '<img alt="'+name+'" class="img-circle"  src="'+user.avatar.url+'/64" onerror="javascript:this.src=\''+contextPath+'/static/imgs/guest_64.png\'" title="'+name+'"/>';
-		}else{
-			avatar = '<img alt="'+name+'" src="'+contextPath+'/static/imgs/guest_64.png" title="'+name+'" class="img-circle"/>'
-		}
-		_this.html('<a href="'+getUrlByUser(user, false)+'/index">'+avatar+'</a>');
-	}
-}
-
