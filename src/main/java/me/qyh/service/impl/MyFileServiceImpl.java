@@ -8,16 +8,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectReader;
+
 import me.qyh.dao.FileDao;
 import me.qyh.entity.FileStatus;
 import me.qyh.entity.MyFile;
 import me.qyh.bean.DateFileIndex;
 import me.qyh.bean.DateFileIndexs;
+import me.qyh.bean.Info;
 import me.qyh.exception.LogicException;
+import me.qyh.exception.SystemException;
 import me.qyh.pageparam.MyFilePageParam;
 import me.qyh.pageparam.Page;
 import me.qyh.security.UserContext;
 import me.qyh.service.MyFileService;
+import me.qyh.upload.server.FileStorage;
+import me.qyh.utils.Https;
 import me.qyh.utils.Times;
 
 @Service("myFileService")
@@ -25,6 +32,8 @@ public class MyFileServiceImpl extends BaseServiceImpl implements MyFileService 
 
 	@Autowired
 	protected FileDao fileDao;
+	@Autowired
+	private ObjectReader reader;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -56,11 +65,7 @@ public class MyFileServiceImpl extends BaseServiceImpl implements MyFileService 
 		if (db.getIsCover()) {
 			throw new LogicException("error.file.canNotDeleteCover");
 		}
-		deleteMyFile(db);
-		MyFile cover = db.getCover();
-		if (cover != null) {
-			deleteMyFile(cover);
-		}
+		deleteFile(db);
 	}
 	
 	@Override
@@ -73,8 +78,26 @@ public class MyFileServiceImpl extends BaseServiceImpl implements MyFileService 
 		return db;
 	}
 
-	protected void deleteMyFile(MyFile db) {
-		db.setStatus(FileStatus.RECYCLER);
-		fileDao.update(db);
+	protected void deleteFile(MyFile db) {
+		FileStorage storage = db.getStore();
+		String url = storage.delUrl(db);
+		Info info = new Info(false);
+		try {
+			String result = Https.sendPost(url);
+			JsonParser parser = reader.getFactory().createParser(result);
+			info = reader.readValue(parser, Info.class);
+		} catch (Exception e) {
+			throw new SystemException(e.getMessage(), e);
+		}
+		if (info.getSuccess()) {
+			fileDao.deleteById(db.getId());
+		} else {
+			db.setStatus(FileStatus.RECYCLER);
+			fileDao.update(db);
+		}
+		MyFile cover = db.getCover();
+		if (cover != null) {
+			deleteFile(cover);
+		}
 	}
 }
