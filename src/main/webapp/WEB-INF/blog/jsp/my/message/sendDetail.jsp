@@ -72,7 +72,8 @@
 					for(var i=0;i<datas.length;i++){
 						var data = datas[i];
 						html += '<tr>';
-						html += '<td class="user-info" user-id="'+data.receiver.id+'" info-mode="simple">';
+						html += '<td>';
+						html += data.receiver.nickname;
 						html += '</td>';
 						if(data.isRead){
 							html += '<td> <spring:message code="page.message.read" /></td>';
@@ -98,7 +99,6 @@
 	    			html += '</div>';
 	    		}
 				$("#receives-container").html(html);
-				writerUserInTargetContainer($("#receives-container"));
 			}else{
 				$.messager.popup(data.result);
 			}

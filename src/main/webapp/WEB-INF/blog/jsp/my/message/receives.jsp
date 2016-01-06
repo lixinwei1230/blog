@@ -4,6 +4,7 @@
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@taglib prefix="sec"
 	uri="http://www.springframework.org/security/tags"%>
+<%@taglib prefix="u" uri="/url" %>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -57,8 +58,7 @@
 														<span class="glyphicon glyphicon-star" aria-hidden="true"></span>
 													</c:when>
 												</c:choose> <c:out value="${message.message.detail.title }" /></td>
-											<td class="user-info" user-id="${message.message.sender.id }"
-												info-mode="simple"></td>
+											<td><a href="<u:url user="${message.message.sender}"/>/index" target="_blank">${message.message.sender.nickname }</a> </td>
 											<td><fmt:formatDate value="${message.message.sendDate }"
 													pattern="yyyy-MM-dd HH:mm:ss" /></td>
 											<td><c:choose>
