@@ -13,6 +13,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<association property="user" javaType="User">
 			<id column="user_id" property="id" />
 			<id column="user_nickname" property="nickname" />
+			<association property="avatar" javaType="MyFile">
+				<result column="file_name" property="name" />
+				<result column="file_store" property="store" typeHandler="FileStorageTypeHandler" />
+				<result column="relativePath" property="relativePath" />
+			</association>
 		</association>
 		<association property="parent" javaType="Comment">
 			<id column="parent_id" property="id" />
@@ -37,22 +42,24 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</insert>
 
 	<select id="selectById" resultMap="CommentDetail">
-		SELECT c.id,comment_title,parent_id,user_id,scope_id,comment_date,reply_id,
+		SELECT c.id,comment_title,parent_id,c.user_id,scope_id,comment_date,reply_id,
 		anonymous,content,reply_to,bu.nickname AS user_nickname,bu2.nickname
-		AS reply_nickname
+		AS reply_nickname,file_name,file_store,relativePath
 		FROM comment_ c
 		LEFT OUTER JOIN blog_user bu ON c.user_id = bu.id
+		LEFT OUTER JOIN blog_file bf ON bu.avatar = bf.id
 		LEFT OUTER JOIN blog_user bu2 ON c.reply_to = bu2.id
 		WHERE c.id = #{id}
 	</select>
 
 	<select id="selectPage" resultMap="CommentDetail">
 		SELECT
-		c.id,comment_title,parent_id,user_id,scope_id,comment_date,reply_id,
+		c.id,comment_title,parent_id,c.user_id,scope_id,comment_date,reply_id,
 		anonymous,content,reply_to,bu.nickname AS user_nickname,bu2.nickname
-		AS reply_nickname
+		AS reply_nickname,file_name,file_store,relativePath
 		FROM comment_ c
 		LEFT OUTER JOIN blog_user bu ON c.user_id = bu.id
+		LEFT OUTER JOIN blog_file bf ON bu.avatar = bf.id
 		LEFT OUTER JOIN blog_user bu2 ON c.reply_to = bu2.id
 		WHERE scope_id = #{scope.id}
 		<choose>

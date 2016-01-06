@@ -3,19 +3,11 @@ package me.qyh.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.util.HtmlUtils;
-
 import me.qyh.config.CommentConfig;
 import me.qyh.config.ConfigServer;
 import me.qyh.config.FrequencyLimit;
 import me.qyh.dao.CommentDao;
 import me.qyh.dao.CommentScopeDao;
-import me.qyh.dao.UserDao;
 import me.qyh.entity.Comment;
 import me.qyh.entity.CommentScope;
 import me.qyh.entity.RoleEnum;
@@ -32,6 +24,13 @@ import me.qyh.server.TipServer;
 import me.qyh.service.CommentHandler;
 import me.qyh.service.CommentService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.HtmlUtils;
+
 public class CommentServiceImpl extends BaseServiceImpl implements CommentService {
 
 	private static final Logger logger = LoggerFactory.getLogger(CommentServiceImpl.class);
@@ -44,8 +43,6 @@ public class CommentServiceImpl extends BaseServiceImpl implements CommentServic
 	private ConfigServer configServer;
 	@Autowired
 	private HtmlContentHandler commentHtmlHandler;
-	@Autowired
-	private UserDao userDao;
 	@Autowired
 	private TipServer tipServer;
 	private List<CommentHandler> handlers = new ArrayList<CommentHandler>();
@@ -107,8 +104,6 @@ public class CommentServiceImpl extends BaseServiceImpl implements CommentServic
 		handler.tip(owner, comment, tipServer);
 
 		Comment inserted = cleanComment(commentDao.selectById(comment.getId()), config.getAllowHtml());
-		User _user = inserted.getUser();
-		_user.setAvatar(userDao.selectAvatar(_user.getId()));
 		return inserted;
 	}
 
@@ -200,8 +195,6 @@ public class CommentServiceImpl extends BaseServiceImpl implements CommentServic
 		List<Comment> datas = commentDao.selectPage(param);
 		if (!datas.isEmpty()) {
 			for (Comment comment : datas) {
-				User user = comment.getUser();
-				user.setAvatar(userDao.selectAvatar(user.getId()));
 				cleanComment(comment, config.getAllowHtml());
 			}
 		}
