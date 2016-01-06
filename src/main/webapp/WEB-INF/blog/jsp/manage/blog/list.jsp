@@ -61,7 +61,7 @@
 												</c:choose> <a href="<u:url space="${space }" />/blog/${blog.id}"><c:out
 														value="${title }" /></a> (<fmt:formatDate
 													value="${blog.writeDate }" pattern="yyyy-MM-dd HH:mm" />)</td>
-											<td class="user-info" info-format="username" info-mode="simple" space-id="${blog.space.id }"></td>
+											<td>${blog.space.user.nickname }</td>
 											<td>${blog.hits }</td>
 											<td>${blog.comments }</td>
 											<td><a href="javascript:void(0)"

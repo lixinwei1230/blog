@@ -38,6 +38,7 @@
 				<c:choose>
 					<c:when test="${not empty blogs }">
 						<c:forEach var="blog" items="${blogs}">
+							<c:set value="${blog.space.user }" var="user"/>
 							<div class="well" id="blog-${blog.id }">
 								<h4>
 									<c:if test="${blog.isPrivate }">
@@ -87,8 +88,16 @@
 								<div>
 									<c:out value="${blog.summary }..." />
 								</div>
-								<div style="float: right" class="user-info"
-									space-id="${blog.space.id }"></div>
+								<div style="float: right">
+									<c:choose>
+										<c:when test="${user.avatar!=null}">
+											<a href="<u:url space="${blog.space }"/>/index"><img src="${user.avatar.url }/64" class="img-circle"/></a>
+										</c:when>
+										<c:otherwise>
+											<a href="<u:url space="${blog.space }"/>/index"><img src="${ctx }/static/imgs/guest_64.png" class="img-circle"/></a>
+										</c:otherwise>
+									</c:choose>
+								</div>
 								<div style="clear: both"></div>
 							</div>
 						</c:forEach>

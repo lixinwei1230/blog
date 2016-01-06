@@ -25,6 +25,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</association>
 		<association property="space" javaType="Space">
 			<id column="space_id" property="id" />
+			<association property="user" javaType="User">
+				<id column="user_id" property="id"/>
+				<result column="nickname" property="nickname" />
+				<association property="avatar" javaType="MyFile">
+					<result column="file_name" property="name" />
+					<result column="file_store" property="store" typeHandler="FileStorageTypeHandler" />
+					<result column="relativePath" property="relativePath" />
+				</association>
+			</association>
 		</association>
 	</resultMap>
 
@@ -84,8 +93,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="selectPage" resultMap="BlogDetail">
 		SELECT
 		DISTINCT(b.id),b.summary,b.write_date,b.title,b.hits,b.blog_from,b.blog_level,
-		b.category,b.space_id,bc.category_name,scope,b.comment_scope,b.recommend
+		b.category,b.space_id,bc.category_name,scope,b.comment_scope,b.recommend,bs.id AS user_id,file_name,file_store,relativePath,nickname
 		FROM blog b
+		LEFT OUTER JOIN user_space us ON b.space_id = us.id
+		LEFT OUTER JOIN blog_user bs ON us.user_id = bs.id
+		LEFT OUTER JOIN blog_file bf ON bs.avatar = bf.id
 		LEFT OUTER JOIN blog_category bc ON b.category = bc.id
 		<if test="tags != null and !tags.isEmpty()">
 			LEFT OUTER JOIN blog_tag bt ON bt.blog = b.id
