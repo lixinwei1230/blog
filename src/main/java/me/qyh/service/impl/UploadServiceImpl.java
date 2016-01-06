@@ -5,14 +5,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
 import me.qyh.bean.I18NMessage;
 import me.qyh.config.ConfigServer;
 import me.qyh.config.FileUploadConfig;
@@ -24,8 +16,8 @@ import me.qyh.entity.User;
 import me.qyh.exception.LogicException;
 import me.qyh.exception.SystemException;
 import me.qyh.helper.file.BadImageException;
-import me.qyh.helper.file.Im4javas;
 import me.qyh.helper.file.ImageInfo;
+import me.qyh.helper.file.ImageProcessing;
 import me.qyh.security.UserContext;
 import me.qyh.service.UploadService;
 import me.qyh.upload.server.FileMapper;
@@ -34,6 +26,14 @@ import me.qyh.upload.server.FileStorage;
 import me.qyh.upload.server.UploadedResult;
 import me.qyh.utils.Files;
 import me.qyh.utils.Strings;
+
+import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class UploadServiceImpl implements UploadService {
@@ -45,7 +45,7 @@ public class UploadServiceImpl implements UploadService {
 	@Value("${config.tempdir}")
 	private String tempDir;
 	@Autowired
-	private Im4javas im4javas;
+	private ImageProcessing im4javas;
 	@Autowired
 	private FileServer fileServer;
 
@@ -133,7 +133,7 @@ public class UploadServiceImpl implements UploadService {
 					_file = rename;
 					if (!GIF.equalsIgnoreCase(ii.getType())) {
 						try {
-							im4javas.strip(_file,_file);
+							im4javas.compress(_file,_file);
 						} catch (Exception e) {
 							throw new SystemException(e.getMessage(), e);
 						}
@@ -241,7 +241,7 @@ public class UploadServiceImpl implements UploadService {
 					String.format("将文件%s修改为%s后缀失败", dest.getAbsolutePath(), info.getType().toLowerCase()));
 		}
 		try {
-			im4javas.strip(rename,rename);
+			im4javas.compress(rename,rename);
 		} catch (Exception e) {
 			throw new SystemException(e.getMessage(), e);
 		}
