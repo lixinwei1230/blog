@@ -34,7 +34,16 @@
 					<c:when test="${not empty users }">
 						<c:forEach var="user" items="${users}">
 							<div class="media well">
-								<div class="media-left user-info" user-id="${user.id }"></div>
+								<div class="media-left">
+									<c:choose>
+										<c:when test="${user.avatar!=null}">
+											<a href="<u:url user="${user }"/>/index" target="_blank"><img src="${user.avatar.url }/64" class="img-circle"/></a>
+										</c:when>
+										<c:otherwise>
+											<a href="<u:url user="${user }"/>/index" target="_blank"><img src="${ctx }/static/imgs/guest_64.png" class="img-circle"/></a>
+										</c:otherwise>
+									</c:choose>
+								</div>
 								<div class="media-body">
 									<h4 class="media-heading">
 										<strong>用户名</strong>:${user.username }
