@@ -19,11 +19,4 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		DELETE FROM blog_tag WHERE blog = #{id}
 	</delete>
 
-	<select id="selectByBlog" resultMap="TagDetail">
-		SELECT wt.id,tag_name FROM
-		blog_tag bt
-		LEFT OUTER JOIN tag wt ON bt.tag_id = wt.id
-		WHERE blog = #{id}
-	</select>
-
 </mapper>

@@ -10,12 +10,14 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-co
 			alias="EnumTypeHandler" />
 		<typeAlias type="me.qyh.mybatis.handler.FileStorageTypeHandler"
 			alias="FileStorageTypeHandler" />
+		<typeAlias type="me.qyh.mybatis.handler.TagSetTypeHandler"
+			alias="TagSetTypeHandler" />
 
 		<typeAlias type="me.qyh.entity.User" alias="User" />
 		<typeAlias type="me.qyh.entity.Role" alias="Role" />
 		<typeAlias type="me.qyh.entity.UserCode" alias="UserCode" />
 		<typeAlias type="me.qyh.entity.RoleEnum" alias="RoleEnum" />
-		<typeAlias type="me.qyh.entity.LoginInfo" alias="LoginInfo"/>
+		<typeAlias type="me.qyh.entity.LoginInfo" alias="LoginInfo" />
 
 		<typeAlias type="me.qyh.entity.MyFile" alias="MyFile" />
 		<typeAlias type="me.qyh.entity.FileStatus" alias="FileStatus" />

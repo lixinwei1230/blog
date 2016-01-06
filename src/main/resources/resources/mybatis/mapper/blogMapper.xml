@@ -19,6 +19,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="scope" column="scope" typeHandler="EnumOrdinalTypeHandler" />
 		<result property="status" column="blog_status" typeHandler="EnumOrdinalTypeHandler" />
 		<result property="from" column="blog_from" typeHandler="EnumOrdinalTypeHandler" />
+		<result property="tags" column="tagList" typeHandler="TagSetTypeHandler"/>
 		<association property="category" javaType="BlogCategory">
 			<id column="category" property="id" />
 			<result property="name" column="category_name" />
@@ -84,25 +85,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<select id="selectById" resultMap="BlogDetail">
 		SELECT
-		b.id,b.summary,b.blog_level,b.write_date,b.title,b.hits,b.blog_from,b.category,b.space_id,bc.category_name,b.scope,comment_scope,blog_status,b.content,b.recommend
+		b.id,b.summary,b.blog_level,b.write_date,b.title,b.hits,b.blog_from,b.category,b.space_id,bc.category_name,b.scope,comment_scope,blog_status,b.content,b.recommend,GROUP_CONCAT(CONCAT(t.tag_name,'_',t.id)) AS tagList
 		FROM blog b
 		LEFT OUTER JOIN blog_category bc ON b.category = bc.id
+		LEFT OUTER JOIN blog_tag bt ON bt.blog = b.id
+		LEFT OUTER JOIN tag t ON bt.tag_id = t.id
 		WHERE b.id = #{id}
+		GROUP BY b.id
 	</select>
 
 	<select id="selectPage" resultMap="BlogDetail">
 		SELECT
-		DISTINCT(b.id),b.summary,b.write_date,b.title,b.hits,b.blog_from,b.blog_level,
-		b.category,b.space_id,bc.category_name,scope,b.comment_scope,b.recommend,bs.id AS user_id,file_name,file_store,relativePath,nickname
+		b.id,b.summary,b.write_date,b.title,b.hits,b.blog_from,b.blog_level,
+		b.category,b.space_id,bc.category_name,scope,b.comment_scope,b.recommend,bs.id AS user_id,file_name,file_store,relativePath,nickname,GROUP_CONCAT(CONCAT(tag_name,'_',t.`id`)) AS tagList
 		FROM blog b
 		LEFT OUTER JOIN user_space us ON b.space_id = us.id
 		LEFT OUTER JOIN blog_user bs ON us.user_id = bs.id
 		LEFT OUTER JOIN blog_file bf ON bs.avatar = bf.id
 		LEFT OUTER JOIN blog_category bc ON b.category = bc.id
-		<if test="tags != null and !tags.isEmpty()">
-			LEFT OUTER JOIN blog_tag bt ON bt.blog = b.id
-			LEFT OUTER JOIN tag t ON bt.tag_id = t.id
-		</if>
+		LEFT OUTER JOIN blog_tag bt ON bt.blog = b.id
+		LEFT OUTER JOIN tag t ON bt.tag_id = t.id
 		<where>
 			<if test="recommend != null">
 				recommend = #{recommend}
@@ -146,6 +148,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 				)
 			</if>
 		</where>
+		GROUP BY b.id
 		<choose>
 			<when test="space != null and !ignoreLevel">
 				ORDER BY b.blog_level DESC,id DESC

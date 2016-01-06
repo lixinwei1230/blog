@@ -151,8 +151,6 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		BlogConfig config = configServer.getBlogConfig(user);
 		blog.setContent(config.getClean().handle(blog.getContent()));
 		blog.setComments(getComments(blog));
-		blog.setTags(new HashSet<Tag>(getTag(blog)));
-
 		return blog;
 	}
 
@@ -202,7 +200,6 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		List<Blog> datas = blogDao.selectPage(param);
 		if (!datas.isEmpty()) {
 			for (Blog data : datas) {
-				data.setTags(new HashSet<Tag>(getTag(data)));
 				data.setComments(getComments(data));
 			}
 		}
@@ -245,7 +242,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		setBlogSummray(toUpdate, summaryLength);
 		blogDao.update(toUpdate);
 
-		List<Tag> oldTags = getTag(db);
+		Set<Tag> oldTags = db.getTags();
 		if (!oldTags.isEmpty()) {
 			blogTagDao.deleteByBlog(db);
 		}
@@ -388,10 +385,6 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		param.setParent(null);
 
 		return commentDao.selectCount(param);
-	}
-
-	private List<Tag> getTag(Blog blog) {
-		return blogTagDao.selectByBlog(blog);
 	}
 
 	private void insertBlogTag(Blog blog) {
