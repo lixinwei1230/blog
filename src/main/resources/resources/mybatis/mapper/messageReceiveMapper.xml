@@ -11,6 +11,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result column="isRead" property="isRead" />
 		<association property="receiver" javaType="User">
 			<id column="receiver" property="id" />
+			<result column="receiver_nickname" property="nickname"/>
 		</association>
 		<association property="message" javaType="MessageSend">
 			<result column="message" property="id" />
@@ -22,6 +23,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			</association>
 			<association property="sender" javaType="User">
 				<id column="sender" property="id" />
+				<result column="nickname" property="nickname"/>
 			</association>
 		</association>
 	</resultMap>
@@ -70,11 +72,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<select id="selectPage" resultMap="MessageReceiveDetail">
 		SELECT
-		mr.id,message_status,receiver,isRead,message,sendDate,sender,detail,title
+		mr.id,message_status,receiver,isRead,message,sendDate,sender,detail,title,bu.nickname,bu2.nickname AS receiver_nickname
 		FROM message_receive mr
 		LEFT OUTER JOIN message_send ms ON mr.message =
 		ms.id
 		LEFT OUTER JOIN message_detail md ON ms.detail = md.id
+		LEFT OUTER JOIN blog_user bu ON bu.id = sender
+		LEFT OUTER JOIN blog_user bu2 ON bu2.id = receiver
 		WHERE
 		mr.isDeleted = false
 		<if test="receiver != null">
