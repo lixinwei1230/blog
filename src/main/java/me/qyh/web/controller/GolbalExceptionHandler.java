@@ -104,8 +104,13 @@ public class GolbalExceptionHandler extends BaseController {
 
 	@ExceptionHandler(SystemException.class)
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public ModelAndView handleSystemException(SystemException se) throws Exception {
+	public ModelAndView handleSystemException(SystemException se,HttpServletRequest request,HttpServletResponse response) throws Exception {
 		logger.error(se.getMessage(), se);
+		if (Webs.isAjaxRequest(request)) {
+			String message = messageSource.getMessage("error.systemError",new Object [] {}, request.getLocale());
+			Webs.writeInfo(response, objectWriter, new Info(false, message));
+			return null;
+		}
 		return new ModelAndView("/error/500");
 	}
 	
