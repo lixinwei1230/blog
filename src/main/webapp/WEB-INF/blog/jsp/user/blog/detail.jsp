@@ -51,8 +51,9 @@
 				<div class="clearfix">&nbsp;</div>
 				<div id="around"></div>
 				<div id="attContainer"></div>
-				<div id="editor-container"></div>
+				<hr/>
 				<div id="comment-container"></div>
+				<div id="editor-container"></div>
 			</div>
 			<div class="col-lg-4 col-md-4 col-sm-4 text">
 				<jsp:include page="/WEB-INF/user_right_column.jsp" />
