@@ -13,20 +13,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.request.ServletWebRequest;
-import org.springframework.web.util.WebUtils;
-
 import me.qyh.bean.Info;
 import me.qyh.config.ConfigServer;
 import me.qyh.config.FileWriteConfig;
@@ -44,6 +30,20 @@ import me.qyh.utils.Files;
 import me.qyh.utils.Validators;
 import me.qyh.web.InvalidParamException;
 import me.qyh.web.Webs;
+
+import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.util.WebUtils;
 
 @Controller
 @RequestMapping("file")
@@ -98,8 +98,7 @@ public class LocalFileController extends BaseController {
 			try {
 				OutputStream out = response.getOutputStream();
 				FileUtils.copyFile(seek, out);
-			} catch (IOException e) {
-			}
+			} catch (IOException e) {}
 			return;
 		}
 		// 头像不能检查last modified
@@ -109,15 +108,15 @@ public class LocalFileController extends BaseController {
 			return;
 		}
 		StringBuilder sb = new StringBuilder(imageCacheDir);
-		SizeFormat format = parseSize(size);
+		Resize format = parseSize(size);
 		ImageZoomMatcher zm = config.getZoomMatcher();
-		boolean zoom = format != null && zm.zoom(format.size, seek) && needZoom(seek, format);
+		boolean zoom = format != null && zm.zoom(format.getSize(), seek) && needZoom(seek, format);
 		String _path = path;
 		if (isAvatar) {
 			_path = Files.appendFilename(_path, seek.lastModified());
 		}
 		if (zoom) {
-			_path = Files.appendFilename(_path, format.size);
+			_path = Files.appendFilename(_path, format.getSize());
 		}
 		sb.append(_path);
 		boolean supportWebp = (this.supportWebp && supportWebp(request.getRequest(), path));
@@ -137,22 +136,24 @@ public class LocalFileController extends BaseController {
 			if (!zoom && !supportWebp) {
 				file = seek;
 			} else {
-				if (supportWebp) {
-					response.setContentType(WEBP_CONTENT_TYPE);
-					try {
-						im4javas.format(seek, new File(Files.getFilename(absPath)), WEBP);
-					} catch (Exception e) {
-						throw new SystemException(e);
-					}
-					seek = file;
-				}
-				if (zoom) {
-					try {
-						Resize _size = new Resize();
-						_size.setSize(format.size);
-						im4javas.zoom(seek, file, _size);
-					} catch (Exception e) {
-						throw new SystemException(e);
+				synchronized(this){
+					if(!file.exists()){
+						if (supportWebp) {
+							response.setContentType(WEBP_CONTENT_TYPE);
+							try {
+								im4javas.format(seek, new File(Files.getFilename(absPath)), WEBP);
+							} catch (Exception e) {
+								throw new SystemException(e);
+							}
+							seek = file;
+						}
+						if (zoom) {
+							try {
+								im4javas.zoom(seek, file, format);
+							} catch (Exception e) {
+								throw new SystemException(e);
+							}
+						}
 					}
 				}
 			}
@@ -201,12 +202,11 @@ public class LocalFileController extends BaseController {
 		return new Info(true);
 	}
 
-	private boolean needZoom(File file, SizeFormat format) {
-		if (!format.force) {
-			int size = format.size;
-			ImageInfo info;
+	private boolean needZoom(File file, Resize resize) {
+		if (!resize.isForce()) {
+			int size = resize.getSize();
 			try {
-				info = im4javas.read(file);
+				ImageInfo info = im4javas.read(file);
 				if (info.getHeight() < size && info.getWidth() < size) {
 					return false;
 				}
@@ -269,18 +269,7 @@ public class LocalFileController extends BaseController {
 		return avatarStore.id() == store.id();
 	}
 
-	private final class SizeFormat {
-		private Integer size;
-		private boolean force;
-
-		public SizeFormat(int size, boolean force) {
-			super();
-			this.size = size;
-			this.force = force;
-		}
-	}
-
-	private SizeFormat parseSize(String _size) {
+	private Resize parseSize(String _size) {
 		if (Validators.isEmptyOrNull(_size, true)) {
 			return null;
 		} else {
@@ -289,11 +278,13 @@ public class LocalFileController extends BaseController {
 			if (pos != -1) {
 				force = true;
 			}
-
 			String strSize = pos == -1 ? _size : _size.substring(0, pos);
 			try {
 				int size = Integer.parseInt(strSize);
-				return new SizeFormat(size, force);
+				Resize resize = new Resize();
+				resize.setForce(force);
+				resize.setSize(size);
+				return resize;
 			} catch (Exception e) {
 				throw new InvalidParamException();
 			}
