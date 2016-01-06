@@ -3,6 +3,8 @@ package me.qyh.entity;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import me.qyh.upload.server.FileStorage;
 import me.qyh.utils.Files;
@@ -14,6 +16,7 @@ import me.qyh.web.Webs;
  * @author mhlx
  * 
  */
+@JsonIgnoreProperties({"uploadDate","status","relativePath"})
 public class MyFile extends Id {
 
 	/**
@@ -103,6 +106,7 @@ public class MyFile extends Id {
 		this.relativePath = relativePath;
 	}
 
+	@JsonProperty
 	public String getUrl() {
 		return store == null ? null : store.fileUrl(this);
 	}
