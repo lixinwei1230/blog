@@ -54,5 +54,5 @@ public interface ImageProcessing {
 	void writeFirstFrameOfGif(File gif,File desc) throws Exception;
 	
 	
-	void strip(File src , File desc) throws Exception;
+	void compress(File src , File desc) throws Exception;
 }

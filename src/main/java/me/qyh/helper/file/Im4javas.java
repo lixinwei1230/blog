@@ -49,7 +49,14 @@ public class Im4javas implements InitializingBean , ImageProcessing {
 	public void zoom(File src, File dest, Resize size) throws Exception {
 		IMOperation op = new IMOperation();
 		op.addImage();
-		op.resize(size.getSize());
+		int _size = size.getSize();
+		if(!size.isForce()){
+			op.resize(_size , _size, ">");
+		}else{
+			op.resize(_size);
+		}
+		op.strip();
+		op.p_profile("*");
 		op.addImage();
 		getConvertCmd().run(op, src.getAbsolutePath() +"[0]", dest.getAbsolutePath());
 	}
@@ -67,6 +74,7 @@ public class Im4javas implements InitializingBean , ImageProcessing {
 	public void format(File src, File dest, String format) throws Exception {
 		IMOperation op = new IMOperation();
 		op.addImage();
+		op.format(format);
 		op.addImage();
 		getConvertCmd().run(op, src.getAbsolutePath() + "[0]", dest.getAbsolutePath() + "." + format);
 	}
@@ -115,11 +123,12 @@ public class Im4javas implements InitializingBean , ImageProcessing {
 	}
 
 	@Override
-	public void strip(File src, File desc) throws Exception {
+	public void compress(File src, File desc) throws Exception {
 		IMOperation op = new IMOperation();
 		op.addImage();
 		op.strip();
-		op.quality(92D);
+		op.p_profile("*");
+		op.quality(85D);
 		op.addImage();
 		getConvertCmd().run(op, src.getAbsolutePath() + "[0]", desc.getAbsolutePath());
 	}
