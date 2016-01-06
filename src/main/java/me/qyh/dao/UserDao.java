@@ -1,16 +1,14 @@
 package me.qyh.dao;
 
 import java.util.List;
-import java.util.Set;
 
-import org.apache.ibatis.annotations.Param;
-
-import me.qyh.entity.MyFile;
 import me.qyh.entity.Role;
 import me.qyh.entity.RoleEnum;
 import me.qyh.entity.Space;
 import me.qyh.entity.User;
 import me.qyh.pageparam.UserPageParam;
+
+import org.apache.ibatis.annotations.Param;
 
 public interface UserDao extends BaseDao<User, Integer> {
 
@@ -24,13 +22,7 @@ public interface UserDao extends BaseDao<User, Integer> {
 
 	User selectById(Integer id);
 
-	List<User> selectBySpaces(@Param("spaces") Set<String> spaces);
-
-	List<User> selectByIds(@Param("ids") Set<Integer> ids);
-
 	List<User> selectByRole(RoleEnum role);
-
-	MyFile selectAvatar(Integer userId);
 
 	List<User> selectPage(UserPageParam param);
 

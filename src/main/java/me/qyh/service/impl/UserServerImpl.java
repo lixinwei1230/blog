@@ -1,21 +1,19 @@
 package me.qyh.service.impl;
 
 import java.util.List;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import me.qyh.bean.Scopes;
 import me.qyh.dao.RoleDao;
 import me.qyh.dao.UserDao;
-import me.qyh.entity.MyFile;
 import me.qyh.entity.RoleEnum;
 import me.qyh.entity.Space;
 import me.qyh.entity.User;
 import me.qyh.exception.LogicException;
 import me.qyh.server.UserServer;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class UserServerImpl implements UserServer {
@@ -43,24 +41,6 @@ public class UserServerImpl implements UserServer {
 		validUser(user);
 		user.setRoles(roleDao.selectByUser(user));
 		return user;
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public List<User> findUserBySpaces(Set<String> spaces) {
-		return userDao.selectBySpaces(spaces);
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public List<User> findUserByIds(Set<Integer> ids) {
-		return userDao.selectByIds(ids);
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public MyFile getAvatar(Integer id) {
-		return userDao.selectAvatar(id);
 	}
 
 	@Override

@@ -1,10 +1,8 @@
 package me.qyh.server;
 
 import java.util.List;
-import java.util.Set;
 
 import me.qyh.bean.Scopes;
-import me.qyh.entity.MyFile;
 import me.qyh.entity.Space;
 import me.qyh.entity.User;
 import me.qyh.exception.LogicException;
@@ -20,12 +18,6 @@ public interface UserServer {
 	User getUserById(Integer id) throws LogicException;
 
 	User getUserByNameOrEmail(String nameOrEmail) throws LogicException;
-
-	List<User> findUserBySpaces(Set<String> spaces);
-
-	List<User> findUserByIds(Set<Integer> ids);
-
-	MyFile getAvatar(Integer id);
 
 	Scopes userRelationship(User one, User two);
 
