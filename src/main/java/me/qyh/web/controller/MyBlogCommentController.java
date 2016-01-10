@@ -15,18 +15,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import me.qyh.bean.Info;
-import me.qyh.entity.Comment;
-import me.qyh.exception.CommentAuthencationException;
+import me.qyh.entity.blog.BlogComment;
 import me.qyh.exception.LogicException;
 import me.qyh.security.UserContext;
-import me.qyh.service.CommentService;
+import me.qyh.service.BlogService;
 
 @Controller
 @RequestMapping("my/comment")
-public class MyCommentController extends BaseController {
+public class MyBlogCommentController extends BaseController {
 
 	@Autowired
-	private CommentService commentService;
+	private BlogService blogService;
 	@Autowired
 	private Validator commentValidator;
 
@@ -37,16 +36,16 @@ public class MyCommentController extends BaseController {
 
 	@RequestMapping(value = "add", method = RequestMethod.POST)
 	@ResponseBody
-	public Info send(@Validated @RequestBody Comment comment) throws CommentAuthencationException, LogicException {
+	public Info send(@Validated @RequestBody BlogComment comment) throws LogicException {
 		comment.setUser(UserContext.getUser());
 		comment.setCommentDate(new Date());
-		return new Info(true, commentService.insertComment(comment));
+		return new Info(true, blogService.insertComment(comment));
 	}
 
 	@RequestMapping(value = "delete/{id}", method = RequestMethod.POST)
 	@ResponseBody
 	public Info delete(@PathVariable("id") int id) throws LogicException {
-		commentService.deleteComment(id);
+		blogService.deleteComment(id);
 		return new Info(true);
 	}
 

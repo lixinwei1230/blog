@@ -16,6 +16,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="lastModifyDate" column="lastModifyDate" />
 		<result property="level" column="blog_level" />
 		<result property="recommend" column="recommend"/>
+		<result property="comments" column="comments"/>
 		<result property="scope" column="scope" typeHandler="EnumOrdinalTypeHandler" />
 		<result property="status" column="blog_status" typeHandler="EnumOrdinalTypeHandler" />
 		<result property="from" column="blog_from" typeHandler="EnumOrdinalTypeHandler" />
@@ -63,7 +64,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		space_id,
 		comment_scope,
 		blog_level,
-		recommend
+		recommend,
+		comments
 		)
 		VALUES
 		(
@@ -79,13 +81,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		#{space.id},
 		#{commentScope,javaType=Scope,typeHandler=EnumOrdinalTypeHandler},
 		#{level},
-		#{recommend}
+		#{recommend},
+		0
 		)
 	</insert>
 
 	<select id="selectById" resultMap="BlogDetail">
 		SELECT
-		b.id,b.summary,b.blog_level,b.write_date,b.title,b.hits,b.blog_from,b.category,b.space_id,bc.category_name,b.scope,comment_scope,blog_status,b.content,b.recommend,GROUP_CONCAT(CONCAT(t.tag_name,'_',t.id)) AS tagList
+		b.id,b.summary,b.blog_level,b.write_date,b.title,b.hits,b.blog_from,b.category,b.space_id,bc.category_name,b.scope,comment_scope,blog_status,b.content,b.recommend,GROUP_CONCAT(CONCAT(t.tag_name,'_',t.id)) AS tagList,comments
 		FROM blog b
 		LEFT OUTER JOIN blog_category bc ON b.category = bc.id
 		LEFT OUTER JOIN blog_tag bt ON bt.blog = b.id
@@ -97,7 +100,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="selectPage" resultMap="BlogDetail">
 		SELECT
 		b.id,b.summary,b.write_date,b.title,b.hits,b.blog_from,b.blog_level,
-		b.category,b.space_id,bc.category_name,scope,b.comment_scope,b.recommend,bs.id AS user_id,file_name,file_store,relativePath,nickname,GROUP_CONCAT(CONCAT(tag_name,'_',t.`id`)) AS tagList
+		b.category,b.space_id,bc.category_name,scope,b.comment_scope,b.recommend,bs.id AS user_id,file_name,file_store,relativePath,nickname,GROUP_CONCAT(CONCAT(tag_name,'_',t.`id`)) AS tagList,comments
 		FROM blog b
 		LEFT OUTER JOIN user_space us ON b.space_id = us.id
 		LEFT OUTER JOIN blog_user bs ON us.user_id = bs.id
@@ -264,6 +267,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		SET hits = hits + #{hits}
 		WHERE id = #{id}
 	</update>
+	
+	<update id="updateComments">
+		UPDATE blog
+		SET comments = comments + #{comments}
+		WHERE id = #{id}
+	</update>
 
 	<select id="selectDateFile" resultType="me.qyh.bean.DateFileIndex">
 		SELECT write_date AS date,COUNT(id) AS count FROM blog
@@ -414,5 +423,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		ORDER BY b.id ASC
 		LIMIT 0,1
 	</select>
+	
 
 </mapper>

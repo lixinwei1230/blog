@@ -136,14 +136,6 @@
 
 	<context:component-scan
 		base-package="me.qyh.common,me.qyh.config,me.qyh.helper,me.qyh.service.impl,me.qyh.manage.service.impl" />
-	<bean id="commentService" class="me.qyh.service.impl.CommentServiceImpl">
-		<property name="handlers">
-			<list>
-				<bean class="me.qyh.helper.commenthandler.PageCommentHandler" />
-				<bean class="me.qyh.helper.commenthandler.BlogCommentHandler" />
-			</list>
-		</property>
-	</bean>
 
 	<bean id="widgetService" class="me.qyh.service.impl.WidgetServiceImpl">
 		<property name="systemWidgetHandlers">

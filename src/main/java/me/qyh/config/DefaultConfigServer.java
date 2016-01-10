@@ -13,9 +13,9 @@ import org.springframework.web.multipart.MultipartFile;
 import me.qyh.config.FileUploadConfig.SizeLimit;
 import me.qyh.config.FileUploadConfig._Config;
 import me.qyh.config.FileUploadConfig._ImageConfig;
-import me.qyh.entity.CommentScope;
 import me.qyh.entity.RoleEnum;
 import me.qyh.entity.User;
+import me.qyh.entity.blog.Blog;
 import me.qyh.helper.htmlclean.HtmlContentHandler;
 import me.qyh.page.PageType;
 import me.qyh.upload.server.FileStorage;
@@ -45,12 +45,6 @@ public class DefaultConfigServer implements ConfigServer {
 	private String[] image_allowFileTypes;
 	@Value("${config.upload.image.maxSizeOfQueue}")
 	private int image_maxSizeOfQueue;
-	@Value("${config.comment.allowAnonymous}")
-	private boolean allowAnonymous;
-	@Value("${config.comment.commentOnAuthorOnly}")
-	private boolean commentOnAuthorOnly;
-	@Value("${config.comment.allowHtml}")
-	private boolean allowHtml;
 	@Value("${config.page.maxWidgetsAtHomePage}")
 	private int maxWidgetsAtHomePage;
 	@Value("${config.page.maxWidgetsAtOthers}")
@@ -65,14 +59,14 @@ public class DefaultConfigServer implements ConfigServer {
 	private int avatar_imageMaxWidth;
 	@Value("${config.upload.avatar.maxHeight}")
 	private int avatar_imageMaxHeight;
-	@Value("${config.comment.frequency.limit.minute}")
-	private int comment_minute;
-	@Value("${config.comment.frequency.limit.count}")
-	private int comment_count;
 	@Value("${config.blog.frequency.limit.minute}")
 	private int blog_minute;
 	@Value("${config.blog.frequency.limit.count}")
 	private int blog_count;
+	@Value("${config.comment.frequency.limit.minute}")
+	private int comment_minute;
+	@Value("${config.comment.frequency.limit.count}")
+	private int comment_count;
 	@Value("${config.upload.image.maxWidth}")
 	private int imageMaxWidth;
 	@Value("${config.upload.image.maxHeight}")
@@ -93,20 +87,6 @@ public class DefaultConfigServer implements ConfigServer {
 	private HtmlContentHandler widgetHtmlHandler;
 	@Autowired
 	private LocalFileStorage avatarStore;
-
-	@Override
-	public CommentConfig getCommentConfig(CommentScope target) {
-		CommentConfig config = new CommentConfig();
-		config.setCommentOnAuthorOnly(commentOnAuthorOnly);
-		config.setAllowAnonymous(allowAnonymous);
-		config.setAllowHtml(allowHtml);
-
-		Date now = new Date();
-		Date small = DateUtils.addMinutes(now, -comment_minute);
-
-		config.setLimit(new FrequencyLimit(small, now, comment_count));
-		return config;
-	}
 
 	@Override
 	public PageConfig getPageConfig(User user) {
@@ -209,5 +189,14 @@ public class DefaultConfigServer implements ConfigServer {
 			this.maxSizeOfOneFile = maxSizeOfOneFile;
 		}
 
+	}
+
+	@Override
+	public BlogCommentConfig getBlogCommentConfig(Blog blog, User user) {
+		BlogCommentConfig config = new BlogCommentConfig();
+		Date now = new Date();
+		Date small = DateUtils.addMinutes(now, -comment_minute);
+		config.setLimit(new FrequencyLimit(small, now, comment_count));
+		return config;
 	}
 }

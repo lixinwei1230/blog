@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="me.qyh.dao.CommentDao">
+<mapper namespace="me.qyh.dao.BlogCommentDao">
 
-	<resultMap type="Comment" id="CommentDetail">
+	<resultMap type="BlogComment" id="CommentDetail">
 		<id column="id" property="id" />
 		<result column="comment_title" property="title" />
 		<result column="content" property="content" />
@@ -19,33 +19,33 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 				<result column="relativePath" property="relativePath" />
 			</association>
 		</association>
-		<association property="parent" javaType="Comment">
+		<association property="parent" javaType="BlogComment">
 			<id column="parent_id" property="id" />
 		</association>
 		<association property="replyTo" javaType="User">
 			<id column="reply_to" property="id" />
 			<id column="reply_nickname" property="nickname" />
 		</association>
-		<association property="reply" javaType="Comment">
+		<association property="reply" javaType="BlogComment">
 			<id column="reply_id" property="id" />
 		</association>
-		<association property="scope" javaType="CommentScope">
-			<id column="scope_id" property="id" />
+		<association property="blog" javaType="Blog">
+			<id column="blog_id" property="id" />
 		</association>
 	</resultMap>
 
 	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
 		INSERT
 		INTO
-		comment_(comment_title,parent_id,user_id,scope_id,comment_date,anonymous,content,reply_to,reply_id)
-		VALUES(#{title},#{parent.id},#{user.id},#{scope.id},#{commentDate},#{isAnonymous},#{content},#{replyTo.id},#{reply.id})
+		blog_comment(comment_title,parent_id,user_id,blog_id,comment_date,anonymous,content,reply_to,reply_id)
+		VALUES(#{title},#{parent.id},#{user.id},#{blog.id},#{commentDate},#{isAnonymous},#{content},#{replyTo.id},#{reply.id})
 	</insert>
 
 	<select id="selectById" resultMap="CommentDetail">
-		SELECT c.id,comment_title,parent_id,c.user_id,scope_id,comment_date,reply_id,
+		SELECT c.id,comment_title,parent_id,c.user_id,blog_id,comment_date,reply_id,
 		anonymous,content,reply_to,bu.nickname AS user_nickname,bu2.nickname
 		AS reply_nickname,file_name,file_store,relativePath
-		FROM comment_ c
+		FROM blog_comment c
 		LEFT OUTER JOIN blog_user bu ON c.user_id = bu.id
 		LEFT OUTER JOIN blog_file bf ON bu.avatar = bf.id
 		LEFT OUTER JOIN blog_user bu2 ON c.reply_to = bu2.id
@@ -54,14 +54,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<select id="selectPage" resultMap="CommentDetail">
 		SELECT
-		c.id,comment_title,parent_id,c.user_id,scope_id,comment_date,reply_id,
+		c.id,comment_title,parent_id,c.user_id,blog_id,comment_date,reply_id,
 		anonymous,content,reply_to,bu.nickname AS user_nickname,bu2.nickname
 		AS reply_nickname,file_name,file_store,relativePath
-		FROM comment_ c
+		FROM blog_comment c
 		LEFT OUTER JOIN blog_user bu ON c.user_id = bu.id
 		LEFT OUTER JOIN blog_file bf ON bu.avatar = bf.id
 		LEFT OUTER JOIN blog_user bu2 ON c.reply_to = bu2.id
-		WHERE scope_id = #{scope.id}
+		WHERE blog_id = #{blog.id}
 		<choose>
 			<when test="parent == null">
 				AND parent_id IS NULL
@@ -78,8 +78,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 
 	<select id="selectCount" resultType="int">
-		SELECT COUNT(id) FROM comment_
-		WHERE scope_id = #{scope.id}
+		SELECT COUNT(id) FROM blog_comment
+		WHERE blog_id = #{blog.id}
 		<choose>
 			<when test="parent == null">
 				AND parent_id IS NULL
@@ -94,20 +94,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 
 	<delete id="deleteByParent">
-		DELETE FROM comment_ WHERE parent_id = #{id}
+		DELETE FROM blog_comment WHERE parent_id = #{id}
 	</delete>
 
 	<delete id="deleteById">
-		DELETE FROM comment_ WHERE id = #{id}
+		DELETE FROM blog_comment WHERE id = #{id}
 	</delete>
 
-	<delete id="deleteByCommentScope">
-		DELETE FROM comment_ WHERE scope_id = #{id}
+	<delete id="deleteByBlog">
+		DELETE FROM blog_comment WHERE blog_id = #{id}
 	</delete>
 
 	<select id="selectCountByDate" resultType="int">
 		SELECT COUNT(id) FROM
-		comment_
+		blog_comment
 		WHERE user_id = #{user.id}
 		AND comment_date BETWEEN #{begin} AND #{end}
 	</select>

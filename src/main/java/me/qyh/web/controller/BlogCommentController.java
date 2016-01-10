@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import me.qyh.bean.Info;
 import me.qyh.exception.LogicException;
 import me.qyh.pageparam.CommentPageParam;
-import me.qyh.service.CommentService;
+import me.qyh.service.BlogService;
 
 @Controller
-@RequestMapping("comment")
-public class CommentController extends BaseController {
+@RequestMapping("blog/comment")
+public class BlogCommentController extends BaseController {
 
 	@Autowired
-	private CommentService commentService;
+	private BlogService blogService;
 	@Value("${config.pagesize.comment}")
 	private int pageSize;
 
@@ -28,7 +28,7 @@ public class CommentController extends BaseController {
 		param.setCurrentPage(currentPage);
 		param.setPageSize(pageSize);
 		param.validate();
-		return new Info(true, commentService.findComments(param));
+		return new Info(true, blogService.findComments(param));
 	}
 
 }

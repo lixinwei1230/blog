@@ -1,8 +1,8 @@
 package me.qyh.config;
 
 import me.qyh.config.FileUploadConfig._ImageConfig;
-import me.qyh.entity.CommentScope;
 import me.qyh.entity.User;
+import me.qyh.entity.blog.Blog;
 import me.qyh.upload.server.FileStorage;
 
 /**
@@ -23,15 +23,6 @@ public interface ConfigServer {
 	FileUploadConfig getFileUploadConfig(User user);
 
 	/**
-	 * 根据评论空间获取评论配置
-	 * 
-	 * @param target
-	 *            {@code CommentScope}
-	 * @return {@code CommentConfig}
-	 */
-	CommentConfig getCommentConfig(CommentScope target);
-
-	/**
 	 * 根据用户获取自定义页面配置
 	 * 
 	 * @param user
@@ -50,5 +41,7 @@ public interface ConfigServer {
 	BlogConfig getBlogConfig(User user);
 
 	FileWriteConfig getFileWriteConfig(FileStorage store);
+	
+	BlogCommentConfig getBlogCommentConfig(Blog blog , User user);
 
 }

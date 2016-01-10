@@ -31,9 +31,6 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-co
 		<typeAlias type="me.qyh.entity.message.MessageDetail" alias="MessageDetail" />
 		<typeAlias type="me.qyh.entity.message.MessageStatus" alias="MessageStatus" />
 
-		<typeAlias type="me.qyh.entity.Comment" alias="Comment" />
-		<typeAlias type="me.qyh.entity.CommentScope" alias="CommentScope" />
-
 		<typeAlias type="me.qyh.entity.Scope" alias="Scope" />
 
 		<typeAlias type="me.qyh.entity.blog.BlogCategory" alias="BlogCategory" />
@@ -42,6 +39,7 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-co
 		<typeAlias type="me.qyh.entity.blog.BlogFrom" alias="BlogFrom" />
 		<typeAlias type="me.qyh.entity.blog.TemporaryBlog" alias="TemporaryBlog" />
 		<typeAlias type="me.qyh.entity.blog.BlogTag" alias="BlogTag" />
+		<typeAlias type="me.qyh.entity.blog.BlogComment" alias="BlogComment" />
 
 		<typeAlias type="me.qyh.entity.Space" alias="Space" />
 		<typeAlias type="me.qyh.entity.SpaceStatus" alias="SpaceStatus" />
@@ -79,11 +77,9 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-co
 		<mapper resource="resources/mybatis/mapper/messageDetailMapper.xml" />
 		<mapper resource="resources/mybatis/mapper/messageReceiveMapper.xml" />
 
-		<mapper resource="resources/mybatis/mapper/commentMapper.xml" />
-		<mapper resource="resources/mybatis/mapper/commentScopeMapper.xml" />
-
 		<mapper resource="resources/mybatis/mapper/blogCategoryMapper.xml" />
 		<mapper resource="resources/mybatis/mapper/blogMapper.xml" />
+		<mapper resource="resources/mybatis/mapper/blogCommentMapper.xml" />
 		<mapper resource="resources/mybatis/mapper/temporaryBlogMapper.xml" />
 
 		<mapper resource="resources/mybatis/mapper/spaceMapper.xml" />

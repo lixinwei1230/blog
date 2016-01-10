@@ -3,50 +3,19 @@ package me.qyh.service.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
-
-import me.qyh.bean.Scopes;
-import me.qyh.config.BlogConfig;
-import me.qyh.config.ConfigServer;
-import me.qyh.config.FrequencyLimit;
-import me.qyh.dao.BlogCategoryDao;
-import me.qyh.dao.BlogDao;
-import me.qyh.dao.BlogTagDao;
-import me.qyh.dao.CommentDao;
-import me.qyh.dao.CommentScopeDao;
-import me.qyh.dao.TagDao;
-import me.qyh.dao.TemporaryBlogDao;
-import me.qyh.dao.UserTagDao;
-import me.qyh.entity.CommentScope;
-import me.qyh.entity.Space;
-import me.qyh.entity.User;
-import me.qyh.entity.blog.Blog;
-import me.qyh.entity.blog.BlogCategory;
-import me.qyh.entity.blog.BlogStatus;
-import me.qyh.entity.blog.BlogTag;
-import me.qyh.entity.blog.TemporaryBlog;
-import me.qyh.entity.tag.Tag;
-import me.qyh.entity.tag.UserTag;
-import me.qyh.exception.LogicException;
-import me.qyh.exception.SystemException;
-import me.qyh.helper.cache.SignCache;
-import me.qyh.helper.cache.SignCacheEvict;
-import me.qyh.pageparam.BlogPageParam;
-import me.qyh.pageparam.CommentPageParam;
-import me.qyh.pageparam.Page;
-import me.qyh.security.UserContext;
-import me.qyh.server.SpaceServer;
-import me.qyh.server.UserServer;
-import me.qyh.service.BlogService;
-import me.qyh.utils.Strings;
-import me.qyh.utils.Validators;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,8 +24,53 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+import me.qyh.bean.Scopes;
+import me.qyh.config.BlogCommentConfig;
+import me.qyh.config.BlogConfig;
+import me.qyh.config.ConfigServer;
+import me.qyh.config.FrequencyLimit;
+import me.qyh.dao.BlogCategoryDao;
+import me.qyh.dao.BlogCommentDao;
+import me.qyh.dao.BlogDao;
+import me.qyh.dao.BlogTagDao;
+import me.qyh.dao.TagDao;
+import me.qyh.dao.TemporaryBlogDao;
+import me.qyh.dao.UserTagDao;
+import me.qyh.entity.RoleEnum;
+import me.qyh.entity.Scope;
+import me.qyh.entity.Space;
+import me.qyh.entity.User;
+import me.qyh.entity.blog.Blog;
+import me.qyh.entity.blog.BlogCategory;
+import me.qyh.entity.blog.BlogComment;
+import me.qyh.entity.blog.BlogStatus;
+import me.qyh.entity.blog.BlogTag;
+import me.qyh.entity.blog.TemporaryBlog;
+import me.qyh.entity.tag.Tag;
+import me.qyh.entity.tag.UserTag;
+import me.qyh.exception.BusinessAccessDeinedException;
+import me.qyh.exception.LogicException;
+import me.qyh.exception.SystemException;
+import me.qyh.helper.cache.SignCache;
+import me.qyh.helper.cache.SignCacheEvict;
+import me.qyh.helper.freemaker.WebFreemarkers;
+import me.qyh.helper.htmlclean.HtmlContentHandler;
+import me.qyh.pageparam.BlogPageParam;
+import me.qyh.pageparam.CommentPageParam;
+import me.qyh.pageparam.Page;
+import me.qyh.security.UserContext;
+import me.qyh.server.SpaceServer;
+import me.qyh.server.TipMessage;
+import me.qyh.server.TipServer;
+import me.qyh.server.UserServer;
+import me.qyh.service.BlogService;
+import me.qyh.utils.Strings;
+import me.qyh.utils.Validators;
+
 @Service("blogService")
 public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
+
+	private static final String COMMENT_TIP_TEMPLATE = "tip/comment_blog.ftl";
 
 	@Autowired
 	private BlogCategoryDao blogCategoryDao;
@@ -69,9 +83,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	@Autowired
 	private UserTagDao userTagDao;
 	@Autowired
-	private CommentDao commentDao;
-	@Autowired
-	private CommentScopeDao commentScopeDao;
+	private BlogCommentDao commentDao;
 	@Autowired
 	private TemporaryBlogDao temporaryBlogDao;
 	@Autowired
@@ -92,6 +104,14 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	private ConfigServer configServer;
 	@Value("${config.blog.temporarySaveFrequency}")
 	private long temporarySaveFrequency;
+	@Autowired
+	private HtmlContentHandler commentHtmlHandler;
+	@Autowired
+	private TipServer tipServer;
+	@Autowired
+	private MessageSource messageSource;
+	@Autowired
+	private WebFreemarkers freeMarkers;
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
@@ -125,16 +145,9 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	protected void deleteBlogFromDb(Blog blog) {
 		temporaryBlogDao.deleteByBlog(blog);
 		blogTagDao.deleteByBlog(blog);
+		commentDao.deleteByBlog(blog);
 
-		Integer id = blog.getId();
 		blogDao.deleteById(blog.getId());
-
-		CommentScope scope = commentScopeDao.selectByScopeAndScopeId(Blog.class.getSimpleName(), id.toString());
-
-		if (scope != null) {
-			commentDao.deleteByCommentScope(scope);
-			commentScopeDao.deleteById(scope.getId());
-		}
 	}
 
 	@Override
@@ -150,7 +163,6 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		User user = userServer.getUserBySpace(blog.getSpace());
 		BlogConfig config = configServer.getBlogConfig(user);
 		blog.setContent(config.getClean().handle(blog.getContent()));
-		blog.setComments(getComments(blog));
 		return blog;
 	}
 
@@ -198,11 +210,6 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	public Page<Blog> findBlogs(BlogPageParam param) {
 		validBlogPageParam(param);
 		List<Blog> datas = blogDao.selectPage(param);
-		if (!datas.isEmpty()) {
-			for (Blog data : datas) {
-				data.setComments(getComments(data));
-			}
-		}
 		int count = blogDao.selectCount(param);
 		return new Page<Blog>(param, count, datas);
 	}
@@ -372,19 +379,110 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		return blogs;
 	}
 
-	private int getComments(Blog blog) {
-		CommentScope scope = commentScopeDao.selectByScopeAndScopeId(Blog.class.getSimpleName(),
-				blog.getId().toString());
+	@Override
+	@Transactional(readOnly = true)
+	public Page<BlogComment> findComments(CommentPageParam param) throws LogicException {
+		Blog query = param.getBlog();
+		if(query != null){
+			Blog blog = blogDao.selectById(param.getBlog().getId());
+			if (blog == null || blog.getStatus().equals(BlogStatus.RECYCLER)) {
+				throw new LogicException("error.blog.notexists");
+			}
+			if (blog.getIsPrivate() && !blog.getSpace().equals(UserContext.getSpace())) {
+				throw new BusinessAccessDeinedException();
+			}
+		}
+		Page<BlogComment> page = _findComments(param);
+		if (param.getParent() == null) {
+			List<BlogComment> datas = page.getDatas();
+			if (!datas.isEmpty()) {
+				for (BlogComment comment : datas) {
+					param.setCurrentPage(1);
+					param.setParent(comment);
+					comment.setPage(_findComments(param));
+				}
+			}
+		}
+		return page;
+	}
 
-		if (scope == null) {
-			return 0;
+	@Override
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public BlogComment insertComment(BlogComment comment) throws LogicException {
+		Blog blog = blogDao.selectById(comment.getBlog().getId());
+		if (blog == null || BlogStatus.RECYCLER.equals(blog.getStatus())) {
+			throw new LogicException("error.blog.notexists");
+		}
+		if (blog.getIsPrivate() && !blog.getSpace().equals(UserContext.getSpace())) {
+			throw new BusinessAccessDeinedException();
+		}
+		if (Scope.PRIVATE.equals(blog.getCommentScope()) && !blog.getSpace().equals(UserContext.getSpace())) {
+			throw new LogicException("error.blog.notAllowComment");
+		}
+		
+		BlogCommentConfig config = configServer.getBlogCommentConfig(blog, comment.getUser());
+		checkCommentFrequencyLimit(config.getLimit(), comment.getUser());
+
+		BlogComment parent = comment.getParent();
+		if (parent != null) {
+			parent = commentDao.selectById(parent.getId());
+			if (parent == null) {
+				throw new LogicException("error.comment.parentNotFound");
+			}
+			if (parent.getParent() != null) {
+				throw new SystemException("当前评论不能作为父评论，因为当前评论的父评论还有父评论");
+			}
+			BlogComment reply = commentDao.selectById(comment.getReply().getId());
+			if (reply == null) {
+				throw new LogicException("error.comment.replyNotFound");
+			}
+			comment.setReply(reply);
+			comment.setReplyTo(reply.getIsAnonymous() ? null : reply.getUser());
+		}
+		
+		if(parent == null){
+			blogDao.updateComments(blog.getId(), 1);
 		}
 
-		CommentPageParam param = new CommentPageParam();
-		param.setScope(scope);
-		param.setParent(null);
+		commentDao.insert(comment);
 
-		return commentDao.selectCount(param);
+		sendCommentTip(comment, blog);
+
+		BlogComment inserted = cleanComment(commentDao.selectById(comment.getId()));
+		return inserted;
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	public void deleteComment(Integer id) throws LogicException {
+		BlogComment comment = commentDao.selectById(id);
+		if (comment == null) {
+			throw new LogicException("error.comment.notFound");
+		}
+
+		User current = UserContext.getUser();
+		User owner = comment.getUser();
+		boolean hasParent = (comment.getParent() != null);
+		Blog blog = blogDao.selectById(comment.getBlog().getId());
+		Space space = blog.getSpace();
+		// 如果当前用户不是评论域拥有人、回复所有人或者评论所有人,或者超级管理员
+		if (!space.equals(UserContext.getSpace()) && !current.equals(owner)
+				&& !current.hasRole(RoleEnum.ROLE_SUPERVISOR)) {
+			boolean hasPermission = false;
+			if (hasParent) {
+				BlogComment parent = commentDao.selectById(comment.getParent().getId());
+				User parentOwner = parent.getUser();
+				hasPermission = current.equals(parentOwner);
+			}
+			if (!hasPermission) {
+				throw new BusinessAccessDeinedException();
+			}
+		}
+		if (!hasParent) {
+			blogDao.updateComments(blog.getId(), -1);
+			commentDao.deleteByParent(comment);
+		}
+		commentDao.deleteById(id);
 	}
 
 	private void insertBlogTag(Blog blog) {
@@ -511,5 +609,81 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		if (!Validators.isEmptyOrNull(tags) && tags.size() > tagsMaxSizeWhenSearch) {
 			param.setTags(new HashSet<String>(new ArrayList<String>(tags).subList(0, tagsMaxSizeWhenSearch)));
 		}
+	}
+
+	private Page<BlogComment> _findComments(CommentPageParam param) {
+		int total = commentDao.selectCount(param);
+		List<BlogComment> datas = commentDao.selectPage(param);
+		if (!datas.isEmpty()) {
+			for (BlogComment comment : datas) {
+				cleanComment(comment);
+			}
+		}
+		return new Page<BlogComment>(param, total, datas);
+	}
+
+	private BlogComment cleanComment(BlogComment comment) {
+		String content = comment.getContent();
+		comment.setContent(commentHtmlHandler.handle(content));
+		return comment;
+	}
+
+	protected void checkCommentFrequencyLimit(FrequencyLimit limit, User user) throws LogicException {
+		if (limit != null) {
+			int count = commentDao.selectCountByDate(limit.getBegin(), limit.getEnd(), user);
+
+			if (count >= limit.getLimit()) {
+				throw new LogicException("error.frequency.limit.comment");
+			}
+		}
+	}
+
+	private void sendCommentTip(BlogComment comment, Blog blog) throws LogicException {
+		String title = "";
+		User receiver = null;
+		BlogComment reply = comment.getReply();
+		User commenter = comment.getUser();
+		User scopeUser = userServer.getUserBySpace(blog.getSpace());
+		boolean sendTip;
+		if (reply != null) {
+			sendTip = !reply.getUser().equals(commenter);
+		} else {
+			sendTip = !scopeUser.equals(commenter);
+		}
+		if (!sendTip) {
+			return;
+		}
+		Locale locale = LocaleContextHolder.getLocale();
+		if (reply != null) {
+			if (comment.getIsAnonymous()) {
+				title = messageSource.getMessage("blog.comment.anonymous.reply", new Object[] {}, locale);
+			} else {
+				title = messageSource.getMessage("blog.comment.user.reply", new Object[] { commenter.getNickname() },
+						locale);
+			}
+			receiver = reply.getUser();
+		} else {
+			if (comment.getIsAnonymous()) {
+				title = messageSource.getMessage("blog.comment.anonymous.comment", new Object[] {}, locale);
+			} else {
+				title = messageSource.getMessage("blog.comment.user.comment", new Object[] { commenter.getNickname() },
+						locale);
+			}
+			receiver = scopeUser;
+		}
+
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("title", title);
+		model.put("comment", comment);
+		model.put("space", blog.getSpace());
+		String content = freeMarkers.processTemplateIntoString(COMMENT_TIP_TEMPLATE, model);
+
+		TipMessage message = new TipMessage();
+		message.setTitle(title);
+		message.setContent(content);
+		message.setReceiver(receiver);
+		message.setSender(userServer.getMessagers().get(0));
+
+		tipServer.sendTip(message);
 	}
 }

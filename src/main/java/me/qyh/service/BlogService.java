@@ -5,9 +5,11 @@ import java.util.List;
 import me.qyh.entity.Space;
 import me.qyh.entity.blog.Blog;
 import me.qyh.entity.blog.BlogCategory;
+import me.qyh.entity.blog.BlogComment;
 import me.qyh.entity.blog.TemporaryBlog;
 import me.qyh.exception.LogicException;
 import me.qyh.pageparam.BlogPageParam;
+import me.qyh.pageparam.CommentPageParam;
 import me.qyh.pageparam.Page;
 
 public interface BlogService {
@@ -43,5 +45,11 @@ public interface BlogService {
 	Blog getBlog(Integer id) throws LogicException;
 	
 	List<Blog> findAroundBlogs(Integer id, BlogPageParam param);
+
+	Page<BlogComment> findComments(CommentPageParam param) throws LogicException;
+
+	BlogComment insertComment(BlogComment comment) throws LogicException;
+
+	void deleteComment(Integer id) throws LogicException;
 
 }

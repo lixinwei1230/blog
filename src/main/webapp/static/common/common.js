@@ -76,34 +76,35 @@ function getToReadMessageCount(){
 	}
 }
 
+var hasWebP = (function() {
+    var images = {
+        basic: "data:image/webp;base64,UklGRjIAAABXRUJQVlA4ICYAAACyAgCdASoCAAEALmk0mk0iIiIiIgBoSygABc6zbAAA/v56QAAAAA==",
+        lossless: "data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAQAAAAfQ//73v/+BiOh/AAA="
+    };
+    
+    return function(feature) {
+        var deferred = $.Deferred();
+        
+        $("<img>").on("load", function() {
+            if(this.width === 2 && this.height === 1) {
+                deferred.resolve();
+            } else {
+                deferred.reject();
+            }
+        }).on("error", function() {
+            deferred.reject();
+        }).attr("src", images[feature || "basic"]);
+        
+        return deferred.promise();
+    }
+})();
+
 $(document).ready(function(){
 	if(getCookie("WEBP_SUPPORT") == null){
-		$('img').each(function(){
-			var me = $(this);
-			var src = me.attr("src");
-			me.attr("data-webp-src",src);
-			me.removeAttr("src").hide();
-		});
-		$("<img />").attr('src', contextPath + '/static/imgs/favicon.webp').on('load', function() {
-		    if (!(!this.complete || typeof this.naturalWidth == "undefined" || this.naturalWidth == 0)) {
-		    	setRootCookie("WEBP_SUPPORT", "true", 24*60*60*1000*30)
-		    } else{
-		    	setRootCookie("WEBP_SUPPORT", "false", 24*60*60*1000*30)
-		    }
-		    $('img').each(function(){
-				var me = $(this);
-				var src = me.attr("data-webp-src");
-				me.attr("src",src);
-				me.removeAttr("data-webp-src").show();
-			});
-		}).on("error",function(){
+		hasWebP().then(function() {
+			setRootCookie("WEBP_SUPPORT", "true", 24*60*60*1000*30)
+		}, function() {
 			setRootCookie("WEBP_SUPPORT", "false", 24*60*60*1000*30);
-			$('img').each(function(){
-				var me = $(this);
-				var src = me.attr("data-webp-src");
-				me.attr("src",src);
-				me.removeAttr("data-webp-src").show();
-			});
 		});
 	}
 	getToReadMessageCount();

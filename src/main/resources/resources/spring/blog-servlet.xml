@@ -22,8 +22,6 @@
 	</bean>
 
 	<mvc:view-controller path="login" view-name="/login" />
-	<mvc:view-controller path="bug" view-name="/bug" />
-
 
 	<!-- 静态资源，缓存控制 -->
 	<mvc:resources location="/static/" mapping="/static/**"

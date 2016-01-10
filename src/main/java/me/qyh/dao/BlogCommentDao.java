@@ -5,20 +5,20 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-import me.qyh.entity.Comment;
-import me.qyh.entity.CommentScope;
 import me.qyh.entity.User;
+import me.qyh.entity.blog.Blog;
+import me.qyh.entity.blog.BlogComment;
 import me.qyh.pageparam.CommentPageParam;
 
-public interface CommentDao extends BaseDao<Comment, Integer> {
+public interface BlogCommentDao extends BaseDao<BlogComment, Integer> {
 
-	void deleteByCommentScope(CommentScope target);
+	void deleteByBlog(Blog blog);
 
-	void deleteByParent(Comment comment);
+	void deleteByParent(BlogComment comment);
 
 	int selectCount(CommentPageParam param);
 
-	List<Comment> selectPage(CommentPageParam param);
+	List<BlogComment> selectPage(CommentPageParam param);
 
 	int selectCountByDate(@Param("begin") Date begin, @Param("end") Date end, @Param("user") User user);
 }

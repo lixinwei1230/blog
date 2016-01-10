@@ -1,13 +1,11 @@
 var comment_container;
 var scopeId;
-var scope;
 (function ($) {
 	
 	$.fn.comment = function (options) {
 		var opts = $.extend({}, $.fn.comment.defaults, options);    
 		
 		scopeId = (typeof opts.scopeId === 'function') ? opts.scopeId.call() : opts.scopeId;
-		scope = opts.scope;
 		var editor_container = $("#"+opts.editor_container);
 		comment_container = $("#"+opts.comment_container);
 		return this.each(function(){
@@ -38,10 +36,7 @@ var scope;
 				var data = {};
 				data.title = $("#comment-title").val();
 				data.content = getContent();
-				var _scope = {};
-				_scope.scopeId = scopeId;
-				_scope.scope = scope;
-				data.scope = _scope;
+				data.blog={"id":scopeId};
 				data.isAnonymous=$("#comment-anonymous").is(':checked');
 				btn.button("loading");
 				post(contextPath+"/my/comment/add",data,function(data){
@@ -77,7 +72,6 @@ var scope;
     
     $.fn.comment.defaults = {    
    		scopeId: null,    
-   		scope : null,
    		editor_container:null,
    		comment_container:null
    	};
@@ -125,8 +119,8 @@ var scope;
 function writeComment(currentPage){
 	$.ajax({
 		type: "GET",
-		url: contextPath + "/comment/list/"+currentPage,
-		data:{"scope.scopeId":scopeId,"scope.scope":scope},
+		url: contextPath + "/blog/comment/list/"+currentPage,
+		data:{"blog.id":scopeId},
 		dataType: "json",
 		success: function(data){
 			if(data.success){
@@ -162,7 +156,7 @@ function writeReply(currentPage,pId,o){
 	$.ajax({
 		type: "GET",
 		url: contextPath + "/comment/list/"+currentPage,
-		data:{"scope.scopeId":scopeId,"scope.scope":scope,"parent.id":pId},
+		data:{"blog.id":scopeId,"parent.id":pId},
 		dataType: "json",
 		success: function(data){
 			if(data.success){
@@ -348,10 +342,7 @@ function showReplyEditor(replyId,parentId){
 		}else{
 			data.content = $("#reply-editor").val();
 		}
-		var _scope = {};
-		_scope.scopeId = scopeId;
-		_scope.scope = scope;
-		data.scope = _scope;
+		data.blog = {"id":scopeId};
 		data.isAnonymous=$("#reply-anonymous").is(':checked');
 		var parent = {};
 		parent.id = parentId;

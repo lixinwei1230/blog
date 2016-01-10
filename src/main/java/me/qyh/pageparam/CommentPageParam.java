@@ -1,8 +1,8 @@
 package me.qyh.pageparam;
 
-import me.qyh.entity.Comment;
-import me.qyh.entity.CommentScope;
 import me.qyh.entity.User;
+import me.qyh.entity.blog.Blog;
+import me.qyh.entity.blog.BlogComment;
 import me.qyh.web.InvalidParamException;
 
 public class CommentPageParam extends PageParam {
@@ -12,23 +12,23 @@ public class CommentPageParam extends PageParam {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private CommentScope scope;
-	private Comment parent;
+	private Blog blog;
+	private BlogComment parent;
 	private User user;
 
-	public CommentScope getScope() {
-		return scope;
+	public Blog getBlog() {
+		return blog;
 	}
 
-	public void setScope(CommentScope scope) {
-		this.scope = scope;
+	public void setBlog(Blog blog) {
+		this.blog = blog;
 	}
 
-	public Comment getParent() {
+	public BlogComment getParent() {
 		return parent;
 	}
 
-	public void setParent(Comment parent) {
+	public void setParent(BlogComment parent) {
 		this.parent = parent;
 	}
 
@@ -43,7 +43,7 @@ public class CommentPageParam extends PageParam {
 	@Override
 	public void validate() throws InvalidParamException {
 		super.validate();
-		if (scope == null || scope.getScopeId() == null || scope.getScope() == null) {
+		if(blog == null){
 			throw new InvalidParamException();
 		}
 	}

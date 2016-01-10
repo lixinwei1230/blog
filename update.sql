@@ -34,3 +34,11 @@ UPDATE message_send SET message_type = 2 WHERE message_type = 3;
 UPDATE blog_file SET file_store = 0 WHERE file_store = -1;
 
 ALTER TABLE blog_file DROP FOREIGN KEY blog_file_ibfk_2;
+
+ALTER TABLE comment_ DROP FOREIGN KEY comment__ibfk_2;
+DELETE FROM comment_;
+ALTER TABLE comment_ RENAME blog_comment;
+ALTER TABLE blog_comment CHANGE scope_id blog_id INT(11) NOT NULL;
+ALTER TABLE blog_comment ADD CONSTRAINT blog_comment_ibfk_2 FOREIGN KEY (blog_id) REFERENCES blog(id);
+DROP TABLE comment_scope;
+ALTER TABLE blog ADD COLUMN comments INT NOT NULL DEFAULT 0;

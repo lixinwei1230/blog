@@ -27,4 +27,6 @@ public interface BlogDao extends BaseDao<Blog, Integer> {
 	Blog getPreviousBlog(@Param("id") Integer id,@Param("param") BlogPageParam param);
 	
 	Blog getNextBlog(@Param("id") Integer id,@Param("param") BlogPageParam param);
+
+	int updateComments(@Param("id") Integer blog, @Param("comments") int comments);
 }

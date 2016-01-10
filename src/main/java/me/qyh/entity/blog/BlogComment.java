@@ -1,9 +1,11 @@
-package me.qyh.entity;
+package me.qyh.entity.blog;
 
 import java.util.Date;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import me.qyh.entity.Id;
+import me.qyh.entity.User;
 import me.qyh.helper.htmlclean.JsonHtmlXssSerializer;
 import me.qyh.pageparam.Page;
 
@@ -13,32 +15,24 @@ import me.qyh.pageparam.Page;
  * @author mhlx
  *
  */
-public class Comment extends Id {
+public class BlogComment extends Id {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private CommentScope scope;// 评论域
+	private Blog blog;
 	@JsonSerialize(using = JsonHtmlXssSerializer.class)
 	private String title;// 标题
 	private String content;// 内容
 	private User user;// 评论人
 	private boolean isAnonymous;// 是否匿名评论
 	private Date commentDate;// 评论日期
-	private Comment parent;// 父评论
+	private BlogComment parent;// 父评论
 	private User replyTo;// 回复对象
-	private Comment reply;// 回复评论
-	private Page<Comment> page;// 子评论
-
-	public CommentScope getScope() {
-		return scope;
-	}
-
-	public void setScope(CommentScope scope) {
-		this.scope = scope;
-	}
+	private BlogComment reply;// 回复评论
+	private Page<BlogComment> page;// 子评论
 
 	public String getTitle() {
 		return title;
@@ -80,11 +74,11 @@ public class Comment extends Id {
 		this.commentDate = commentDate;
 	}
 
-	public Comment getParent() {
+	public BlogComment getParent() {
 		return parent;
 	}
 
-	public void setParent(Comment parent) {
+	public void setParent(BlogComment parent) {
 		this.parent = parent;
 	}
 
@@ -96,27 +90,28 @@ public class Comment extends Id {
 		this.replyTo = replyTo;
 	}
 
-	public Page<Comment> getPage() {
+	public Page<BlogComment> getPage() {
 		return page;
 	}
 
-	public void setPage(Page<Comment> page) {
+	public void setPage(Page<BlogComment> page) {
 		this.page = page;
 	}
 
-	public Comment getReply() {
+	public BlogComment getReply() {
 		return reply;
 	}
 
-	public void setReply(Comment reply) {
+	public void setReply(BlogComment reply) {
 		this.reply = reply;
 	}
 
-	@Override
-	public String toString() {
-		return "Comment [scope=" + scope + ", title=" + title + ", content=" + content + ", user=" + user
-				+ ", isAnonymous=" + isAnonymous + ", commentDate=" + commentDate + ", parent=" + parent + ", replyTo="
-				+ replyTo + ", reply=" + reply + ", page=" + page + "]";
+	public Blog getBlog() {
+		return blog;
+	}
+
+	public void setBlog(Blog blog) {
+		this.blog = blog;
 	}
 
 }

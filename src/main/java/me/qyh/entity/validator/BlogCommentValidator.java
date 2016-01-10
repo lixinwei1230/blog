@@ -5,17 +5,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import me.qyh.entity.Comment;
-import me.qyh.entity.CommentScope;
+import me.qyh.entity.blog.Blog;
+import me.qyh.entity.blog.BlogComment;
 import me.qyh.utils.Validators;
 
 @Component("commentValidator")
-public class CommentValidator implements Validator {
+public class BlogCommentValidator implements Validator {
 
-	@Value("${config.validation.comment.scope.scopeMaxLength}")
-	private int scopeMaxLength;
-	@Value("${config.validation.comment.scope.scopeIdMaxLength}")
-	private int scopeIdMaxLength;
 	@Value("${config.validation.comment.titleMaxLength}")
 	private int titleMaxLength;
 	@Value("${config.validation.comment.contentMaxLength}")
@@ -23,35 +19,15 @@ public class CommentValidator implements Validator {
 
 	@Override
 	public boolean supports(Class<?> clazz) {
-		return Comment.class.equals(clazz);
+		return BlogComment.class.equals(clazz);
 	}
 
 	@Override
 	public void validate(Object o, Errors e) {
-		Comment comment = (Comment) o;
-		CommentScope target = comment.getScope();
-		if (target == null) {
-			e.rejectValue("scope", "validation.comment.scope.empty");
-			return;
-		}
-		String scope = target.getScope();
-		if (Validators.isEmptyOrNull(scope, true)) {
-			e.rejectValue("scope", "validation.comment.scope.scope.empty");
-			return;
-		}
-		if (scope.length() > scopeMaxLength) {
-			e.rejectValue("scope", "validation.comment.scope.scope.toolong", new Object[] { scopeMaxLength },
-					"目标空间不能超过" + scopeMaxLength + "个字符");
-			return;
-		}
-		String tid = target.getScopeId();
-		if (Validators.isEmptyOrNull(tid, true)) {
-			e.rejectValue("scope", "validation.comment.scope.scopeId.empty");
-			return;
-		}
-		if (tid.length() > scopeIdMaxLength) {
-			e.rejectValue("scope", "validation.comment.scope.scopeId.toolong", new Object[] { scopeIdMaxLength },
-					"目标空间ID不能超过" + scopeIdMaxLength + "个字符");
+		BlogComment comment = (BlogComment) o;
+		Blog blog = comment.getBlog();
+		if (blog == null) {
+			e.rejectValue("scope", "validation.comment.blog.empty");
 			return;
 		}
 		String title = comment.getTitle();
