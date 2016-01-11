@@ -1,4 +1,4 @@
-package me.qyh.web.controller;
+package me.qyh.upload.server.inner;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,30 +6,13 @@ import java.io.OutputStream;
 import java.net.URLConnection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.TimeZone;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import me.qyh.bean.Info;
-import me.qyh.config.ConfigServer;
-import me.qyh.config.FileWriteConfig;
-import me.qyh.config.ImageZoomMatcher;
-import me.qyh.exception.MyFileNotFoundException;
-import me.qyh.exception.SystemException;
-import me.qyh.helper.file.BadImageException;
-import me.qyh.helper.file.ImageInfo;
-import me.qyh.helper.file.ImageProcessing;
-import me.qyh.helper.file.Resize;
-import me.qyh.upload.server.FileServer;
-import me.qyh.upload.server.FileStorage;
-import me.qyh.upload.server.inner.LocalFileStorage;
-import me.qyh.utils.Files;
-import me.qyh.utils.Validators;
-import me.qyh.web.InvalidParamException;
-import me.qyh.web.Webs;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,9 +28,26 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.util.WebUtils;
 
+import me.qyh.bean.Info;
+import me.qyh.config.ConfigServer;
+import me.qyh.config.FileWriteConfig;
+import me.qyh.config.ImageZoomMatcher;
+import me.qyh.exception.MyFileNotFoundException;
+import me.qyh.exception.SystemException;
+import me.qyh.helper.file.BadImageException;
+import me.qyh.helper.file.ImageInfo;
+import me.qyh.helper.file.ImageProcessing;
+import me.qyh.helper.file.Resize;
+import me.qyh.utils.Files;
+import me.qyh.utils.Validators;
+import me.qyh.web.InvalidParamException;
+import me.qyh.web.SpringContextHolder;
+import me.qyh.web.Webs;
+import me.qyh.web.controller.BaseController;
+
 @Controller
 @RequestMapping("file")
-public class LocalFileController extends BaseController {
+public class LocalFileController extends BaseController  {
 
 	private static final String WEBP_SUPPORT_COOKIE = "WEBP_SUPPORT";
 	private static final String WEBP = "webp";
@@ -63,14 +63,18 @@ public class LocalFileController extends BaseController {
 	private ImageProcessing im4javas;
 	@Value("${config.image.thumb.cachedir}")
 	private String imageCacheDir;
-	@Autowired
-	private LocalFileStorage avatarStore;
-	@Autowired
-	private FileServer fileServer;
 	@Value("${config.file.webpSupport}")
 	private boolean supportWebp;
 	@Value("${config.file.maxAge}")
 	private long maxAge;
+	private Collection<LocalFileStorage> stores = null;
+	
+	@RequestMapping(value = "{storeId}/{y}/{m}/{d}/{name}/{ext}", method = RequestMethod.GET)
+	public void _write(@PathVariable("storeId") int storeId, @PathVariable("y") String y, @PathVariable("m") String m,
+			@PathVariable("d") String d, @PathVariable("name") String name, @PathVariable("ext") String ext,ServletWebRequest request, HttpServletResponse response)
+					throws MyFileNotFoundException {
+		this.write(storeId, y, m, d, name, ext, null, request, response);
+	}
 
 	@RequestMapping(value = "{storeId}/{y}/{m}/{d}/{name}/{ext}/{size}", method = RequestMethod.GET)
 	public void write(@PathVariable("storeId") int storeId, @PathVariable("y") String y, @PathVariable("m") String m,
@@ -79,7 +83,7 @@ public class LocalFileController extends BaseController {
 					throws MyFileNotFoundException {
 		String path = File.separator + y + File.separator + m + File.separator + d + File.separator + name + "." + ext;
 		if (!Webs.isSafeFilePath(path)) {
-			throw new MyFileNotFoundException();
+			throw new InvalidParamException();
 		}
 		LocalFileStorage store = seek(storeId);
 		FileWriteConfig config = configServer.getFileWriteConfig(store);
@@ -101,9 +105,7 @@ public class LocalFileController extends BaseController {
 			} catch (IOException e) {}
 			return;
 		}
-		// 头像不能检查last modified
-		boolean isAvatar = isAvatarStore(store);
-		if (!isAvatar && !isModified(request)) {
+		if (!isModified(request)) {
 			response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
 			return;
 		}
@@ -112,11 +114,8 @@ public class LocalFileController extends BaseController {
 		ImageZoomMatcher zm = config.getZoomMatcher();
 		boolean zoom = format != null && zm.zoom(format.getSize(), seek) && needZoom(seek, format);
 		String _path = path;
-		if (isAvatar) {
-			_path = Files.appendFilename(_path, seek.lastModified());
-		}
 		if (zoom) {
-			_path = Files.appendFilename(_path, format.getSize());
+			_path = Files.appendFilename(_path,"_", format.getSize());
 		}
 		sb.append(_path);
 		boolean supportWebp = (this.supportWebp && supportWebp(request.getRequest(), path));
@@ -159,24 +158,15 @@ public class LocalFileController extends BaseController {
 			}
 		}
 		response.setContentLength((int) file.length());
-		if (!isAvatar) {
-			response.addDateHeader("Last-Modified", System.currentTimeMillis());
-			response.addDateHeader("Expires", System.currentTimeMillis() + maxAge * 1000);
-			response.setHeader("Cache-Control", "max-age=" + maxAge);
-		}
+		response.addDateHeader("Last-Modified", System.currentTimeMillis());
+		response.addDateHeader("Expires", System.currentTimeMillis() + maxAge * 1000);
+		response.setHeader("Cache-Control", "max-age=" + maxAge);
 		response.setStatus(HttpServletResponse.SC_OK);
 		try {
 			OutputStream out = response.getOutputStream();
 			FileUtils.copyFile(file, out);
 		} catch (IOException e) {
 		}
-	}
-
-	@RequestMapping(value = "{storeId}/{y}/{m}/{d}/{name}/{ext}", method = RequestMethod.GET)
-	public void write(@PathVariable("storeId") int storeId, @PathVariable("y") String y, @PathVariable("m") String m,
-			@PathVariable("d") String d, @PathVariable("name") String name, @PathVariable("ext") String ext,
-			ServletWebRequest request, HttpServletResponse response) throws MyFileNotFoundException {
-		this.write(storeId, y, m, d, name, ext, null, request, response);
 	}
 
 	@RequestMapping(value = "{storeId}/{y}/{m}/{d}/{name}/{ext}/{key}/delete", method = RequestMethod.POST)
@@ -227,20 +217,18 @@ public class LocalFileController extends BaseController {
 	}
 
 	private LocalFileStorage seek(int id) {
-		LocalFileStorage storage = null;
-		if (id == avatarStore.id()) {
-			storage = avatarStore;
+		if(stores == null){
+			stores = SpringContextHolder.getBeansOfType(LocalFileStorage.class).values();
 		}
-		if (storage == null) {
-			FileStorage seeked = fileServer.getStore(id);
-			if (seeked != null && (seeked instanceof LocalFileStorage)) {
-				storage = (LocalFileStorage) seeked;
-			}
-		}
-		if (storage == null) {
+		if(Validators.isEmptyOrNull(stores)){
 			throw new InvalidParamException();
 		}
-		return storage;
+		for(LocalFileStorage storage : stores){
+			if(storage.id() == id){
+				return storage;
+			}
+		}
+		throw new InvalidParamException();
 	}
 
 	/**
@@ -256,17 +244,15 @@ public class LocalFileController extends BaseController {
 				simpleDateFormat.setTimeZone(GMT);
 				try {
 					long time = simpleDateFormat.parse(lastModifyTime).getTime();
-					return !req.checkNotModified(time);
+					if(req.checkNotModified(time)){
+						return false;
+					}
 				} catch (ParseException e) {
 					// ignore
 				}
 			}
 		}
 		return true;
-	}
-
-	private boolean isAvatarStore(LocalFileStorage store) {
-		return avatarStore.id() == store.id();
 	}
 
 	private Resize parseSize(String _size) {
@@ -290,4 +276,5 @@ public class LocalFileController extends BaseController {
 			}
 		}
 	}
+	
 }

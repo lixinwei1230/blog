@@ -249,19 +249,23 @@
 	<bean id="innerFileStore" class="me.qyh.upload.server.inner.LocalFileStorage">
 		<property name="id" value="1" />
 		<property name="absPath" value="${config.file.absPath}"/>
-		<property name="mapping" ref="simulationDomainFileMapping"/>
+		<property name="mapping" ref="myServerFileMapping"/>
 	</bean>
 
 	<bean id="avatarStore" class="me.qyh.upload.server.inner.LocalFileStorage">
 		<property name="id" value="0" />
 		<property name="absPath" value="${config.avatar.absPath}"/>
-		<property name="mapping" ref="simulationDomainFileMapping"/>
+		<property name="mapping" ref="myServerFileMapping"/>
 	</bean>
 	
-	<bean id="simulationDomainFileMapping" class="me.qyh.upload.server.inner.SimulationDomainFileMapping">
+	 <bean id="myServerFileMapping" class="me.qyh.upload.my.MyServerFileMapping">
 		<property name="prefix" value="f"/>
-	</bean>
-
+	</bean> 
+	
+	<!--<bean id="simulationDomainFileMapping" class="me.qyh.upload.server.inner.SimulationDomainFileMapping">
+		<property name="prefix" value="f"/>
+	</bean>-->
+	
 	<bean id="fileServer" class="me.qyh.upload.server.MemoryServer">
 		<property name="stores">
 			<list>

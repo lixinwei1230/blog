@@ -3,6 +3,15 @@ String.prototype.endWith=function(str){
   return reg.test(this);        
 };
 
+function getResizeUrl(url,size){
+	if(size && size != null){
+		var ext = url.split('.').pop();
+		var name = url.substring(0,url.indexOf(ext)-1);
+		url = name + "_" + size + "." + ext;
+	}
+	return url;
+}
+
 Date.prototype.pattern=function(fmt) {         
     var o = {         
     "M+" : this.getMonth()+1, //月份         

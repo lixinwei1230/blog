@@ -140,7 +140,7 @@ CKEDITOR.plugins.add('myfile', {
 							     html += '<div class="clearfix">&nbsp;</div>'
 								 html += '</div></td>'; 
 							}else{
-								html += '<td><img src="'+file.url+'/200"/></td>';
+								html += '<td><img src="'+getResizeUrl(file.url,200)+'"/></td>';
 							}
 						}else{
 							var name = file.originalFilenameWithoutExtension;

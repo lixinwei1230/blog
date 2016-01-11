@@ -6,6 +6,7 @@
 <%@taglib prefix="sec"
 	uri="http://www.springframework.org/security/tags"%>
 <%@taglib prefix="u" uri="/url"%>
+<%@taglib prefix="r" uri="/resize" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -37,7 +38,7 @@
 								<div class="media-left">
 									<c:choose>
 										<c:when test="${user.avatar!=null}">
-											<a href="<u:url user="${user }"/>/index" target="_blank"><img src="${user.avatar.url }/64" class="img-circle"/></a>
+											<a href="<u:url user="${user }"/>/index" target="_blank"><img src="<r:resize url="${user.avatar.url }" size="64"/>" class="img-circle"/></a>
 										</c:when>
 										<c:otherwise>
 											<a href="<u:url user="${user }"/>/index" target="_blank"><img src="${ctx }/static/imgs/guest_64.png" class="img-circle"/></a>

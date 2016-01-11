@@ -17,6 +17,7 @@ import freemarker.template.TemplateHashModel;
 import me.qyh.exception.SystemException;
 import me.qyh.helper.refresh.Refresh;
 import me.qyh.utils.Validators;
+import me.qyh.web.tag.url.ResizeTagHelpers;
 import me.qyh.web.tag.url.UrlHelper;
 
 /**
@@ -25,9 +26,10 @@ import me.qyh.web.tag.url.UrlHelper;
  * @author mhlx
  *
  */
-public class WebFreemarkers implements Refresh{
+public class WebFreemarkers implements Refresh {
 
 	private static final String URL_HELPER = "urlHelper";
+	private static final String RESIZE = "Resize";
 
 	@Autowired
 	private FreeMarkerConfigurer freeMarker;
@@ -54,9 +56,11 @@ public class WebFreemarkers implements Refresh{
 			/**
 			 * 将静态方法暴露给Freemarker
 			 */
+			BeansWrapper wrapper = BeansWrapper.getDefaultInstance();
+			TemplateHashModel staticModels = wrapper.getStaticModels();
+			TemplateHashModel resize = (TemplateHashModel) staticModels.get(ResizeTagHelpers.class.getName());
+			_model.put(RESIZE, resize);
 			if (!Validators.isEmptyOrNull(staticModels)) {
-				BeansWrapper wrapper = BeansWrapper.getDefaultInstance();
-				TemplateHashModel staticModels = wrapper.getStaticModels();
 				for (Map.Entry<String, String> m : this.staticModels.entrySet()) {
 					TemplateHashModel tsh = (TemplateHashModel) staticModels.get(m.getValue());
 					_model.put(m.getKey(), tsh);
@@ -69,7 +73,6 @@ public class WebFreemarkers implements Refresh{
 			if (!Validators.isEmptyOrNull(model)) {
 				_model.putAll(model);
 			}
-
 			tpl = freeMarker.getConfiguration().getTemplate(temlatePath, LocaleContextHolder.getLocale());
 			text = FreeMarkerTemplateUtils.processTemplateIntoString(tpl, _model);
 		} catch (IOException | TemplateException e) {
@@ -89,7 +92,7 @@ public class WebFreemarkers implements Refresh{
 	@Override
 	public void refresh() throws Exception {
 		CacheStorage cs = freeMarker.getConfiguration().getCacheStorage();
-		if(cs != null ){
+		if (cs != null) {
 			synchronized (cs) {
 				cs.clear();
 			}

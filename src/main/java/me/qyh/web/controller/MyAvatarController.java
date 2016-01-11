@@ -24,10 +24,9 @@ import me.qyh.bean.Info;
 import me.qyh.entity.MyFile;
 import me.qyh.exception.LogicException;
 import me.qyh.exception.MyFileNotFoundException;
-import me.qyh.service.MyFileService;
 import me.qyh.service.UploadService;
 import me.qyh.service.UserService;
-import me.qyh.upload.server.inner.LocalFileStorage;
+import me.qyh.upload.server.FileStorage;
 import me.qyh.utils.Files;
 
 @Controller
@@ -42,9 +41,7 @@ public class MyAvatarController extends BaseController {
 	@Autowired
 	private UserService userService;
 	@Autowired
-	private LocalFileStorage avatarStore;
-	@Autowired
-	private MyFileService myFileService;
+	private FileStorage avatarStore;
 
 	@RequestMapping(value = "index", method = RequestMethod.GET)
 	public String index(ModelMap model) {
@@ -56,19 +53,6 @@ public class MyAvatarController extends BaseController {
 	@ResponseBody
 	public Info upload(@RequestParam(value = "file") MultipartFile file, HttpSession session) throws LogicException {
 		session.setAttribute(AVATAR, uploadService.uploadAvatar(file));
-		return new Info(true);
-	}
-
-	@RequestMapping(value = "choose", method = RequestMethod.GET)
-	@ResponseBody
-	public Info choose(@RequestParam(value = "id") int id, HttpSession session) throws LogicException {
-		MyFile mf = myFileService.getMyFile(id);
-		try {
-			File file = avatarStore.seek(mf.getRelativePath()+mf.getName());
-			session.setAttribute(AVATAR, new AvatarFile(file.getAbsolutePath(), mf));
-		} catch (MyFileNotFoundException e) {
-			throw new LogicException(e.getI18nMessage());
-		}
 		return new Info(true);
 	}
 

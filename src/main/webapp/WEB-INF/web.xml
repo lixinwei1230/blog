@@ -10,6 +10,10 @@
 	        <taglib-uri>/url</taglib-uri>
 	        <taglib-location>/WEB-INF/tag/url.tld</taglib-location>
 	    </taglib>
+	    <taglib>
+	        <taglib-uri>/resize</taglib-uri>
+	        <taglib-location>/WEB-INF/tag/resize.tld</taglib-location>
+	    </taglib>
 	</jsp-config>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>

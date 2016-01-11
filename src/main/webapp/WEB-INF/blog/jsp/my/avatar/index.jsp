@@ -75,7 +75,6 @@
 					id="fileupload" type="file" name="file"
 					data-url="${ctx }/my/avatar/upload" multiple>
 				</span>
-				<button class="btn btn-primary" onclick="showChooseModal()" type="button">选择以前头像</button>
 				<div id="progress" style="margin-top: 5px" class="progress">
 					<div class="progress-bar progress-bar-success"></div>
 				</div>
@@ -270,7 +269,7 @@
 							     html += '<div class="clearfix">&nbsp;</div>'
 								 html += '</div></td>'; 
 							}else{
-								html += '<td><img src="'+file.url+'/200"/></td>';
+								html += '<td><img src="'+getResizeUrl(file.url,200)+'"/></td>';
 							}
 						}else{
 							var name = file.originalFilenameWithoutExtension;

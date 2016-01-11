@@ -1,5 +1,8 @@
 package me.qyh.web;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -11,7 +14,7 @@ import org.springframework.context.ApplicationContextAware;
  */
 public class SpringContextHolder implements ApplicationContextAware {
 
-	public static ApplicationContext applicationContext;
+	private static ApplicationContext applicationContext;
 
 	@Override
 	public void setApplicationContext(ApplicationContext application) throws BeansException {
@@ -28,5 +31,14 @@ public class SpringContextHolder implements ApplicationContextAware {
 
 	public static <T> T getBean(String name, Class<T> clazz) {
 		return applicationContext.getBean(name, clazz);
+	}
+	
+	public static <T> Map<String,T> getBeansOfType(Class<T> clazz){
+		Map<String,T> map = new HashMap<String,T>();
+		map.putAll(applicationContext.getBeansOfType(clazz));
+		if(applicationContext.getParent() != null){
+			map.putAll(applicationContext.getParent().getBeansOfType(clazz));
+		}
+		return map;
 	}
 }

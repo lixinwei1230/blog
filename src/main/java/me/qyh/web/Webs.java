@@ -94,8 +94,8 @@ public final class Webs {
 	public static boolean isSafeFilePath(String path) {
 		return (!Validators.isEmptyOrNull(path, true) && path.indexOf("..") == -1);
 	}
-	
-	public static String getReferer(HttpServletRequest request){
+
+	public static String getReferer(HttpServletRequest request) {
 		return request.getHeader(REFERER);
 	}
 }

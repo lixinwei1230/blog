@@ -6,6 +6,7 @@
 <%@taglib prefix="sec"
 	uri="http://www.springframework.org/security/tags"%>
 <%@taglib prefix="u" uri="/url"%>
+<%@taglib prefix="r" uri="/resize"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -64,7 +65,7 @@
 															</c:when>
 															<c:otherwise>
 																<img
-																	src="${file.url}/200"
+																	src="<r:resize url="${file.url}" size="200"/>"
 																	class="img-responsive"
 																	style="max-width: 200px; max-height: 200px"
 																	onerror="javascript:this.src='${ctx}/static/imgs/img-missing.png'" />

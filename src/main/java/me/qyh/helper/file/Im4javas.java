@@ -49,7 +49,7 @@ public class Im4javas implements InitializingBean , ImageProcessing {
 	public void zoom(File src, File dest, Resize size) throws Exception {
 		IMOperation op = new IMOperation();
 		op.addImage();
-		op.thumbnail(size.getSize());
+		op.thumbnail(size.getSize(),size.getSize(),">");
 		op.strip();
 		op.p_profile("*");
 		op.addImage();

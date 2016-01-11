@@ -10,8 +10,6 @@ import java.util.UUID;
 import javax.mail.MessagingException;
 
 import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,10 +47,9 @@ import me.qyh.pageparam.Page;
 import me.qyh.security.UserContext;
 import me.qyh.server.UserServer;
 import me.qyh.service.UserService;
-import me.qyh.upload.server.inner.LocalFileStorage;
+import me.qyh.upload.server.FileStorage;
 import me.qyh.utils.Files;
 import me.qyh.utils.Times;
-import me.qyh.web.controller.MyAvatarController.AvatarFile;
 
 @Service(value = "userService")
 public class UserServiceImpl extends BaseServiceImpl implements UserService, InitializingBean {
@@ -85,7 +82,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 	@Autowired
 	private FileDao fileDao;
 	@Autowired
-	private LocalFileStorage avatarStore;
+	private FileStorage avatarStore;
 	@Value("${config.avatar.absPath}")
 	private String absPath;
 	@Autowired
@@ -96,8 +93,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 	private static final String MAIL_ACTIVATE_TPL_PATH = "mail/activate.ftl";
 	private static final String MAIL_FINDPASSWORD_TPL_PATH = "mail/findPassword.ftl";
 	private static final String MAIL_REGISTER_SUCCESS_TPL_PATH = "mail/registerSuccess.ftl";
-
-	private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
@@ -263,15 +258,13 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 		File folder = new File(this.absPath + relativePath);
 		Files.forceMkdir(folder);
 		boolean croped = false;
-		boolean oldAvatar = (file instanceof AvatarFile);
 		try {
 			ImageInfo info = im4javas.read(file);
 			croped = (info.getWidth() != crop.getW() || info.getHeight() != crop.getH());
 		} catch (BadImageException e) {
 			throw new LogicException("error.upload.badImage");
 		}
-		String absPath = oldAvatar ? file.getAbsolutePath()
-				: folder.getAbsolutePath() + File.separator + file.getName();
+		String absPath = folder.getAbsolutePath() + File.separator + file.getName();
 		File dest = new File(absPath);
 		if (croped) {
 			try {
@@ -280,29 +273,18 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 			} catch (Exception e) {
 				throw new LogicException("error.avatar.badCrop");
 			}
-		} else if (!oldAvatar) {
+		} else {
 			try {
 				FileUtils.copyFile(file, dest);
 			} catch (IOException e) {
 				throw new SystemException(e.getMessage(), e);
 			}
 		}
-		MyFile avatar = null;
-		if (!oldAvatar) {
-			File cropFile = croped ? dest : file;
-			avatar = new MyFile(user, cropFile.length(), file.getName(), new Date(), file.getName());
-			avatar.setRelativePath(relativePath);
-			avatar.setStore(avatarStore);
-			fileDao.insert(avatar);
-		} else {
-			avatar = ((AvatarFile) file).getMyFile();
-			super.doAuthencation(user, avatar.getUser());
-			if (croped) {
-				if (!file.setLastModified(System.currentTimeMillis())) {
-					logger.warn("用户:{}更新了头像，但是无法改变物理文件:{}的最后操作时间，这将会导致无法刷新用户头像缓存", user, file);
-				}
-			}
-		}
+		File cropFile = croped ? dest : file;
+		MyFile avatar = new MyFile(user, cropFile.length(), file.getName(), new Date(), file.getName());
+		avatar.setRelativePath(relativePath);
+		avatar.setStore(avatarStore);
+		fileDao.insert(avatar);
 
 		user.setAvatar(avatar);
 		userDao.update(user);

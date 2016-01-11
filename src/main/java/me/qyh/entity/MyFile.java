@@ -28,7 +28,7 @@ public class MyFile extends Id {
 	private Date uploadDate;
 	private transient FileStorage store;
 	private FileStatus status;
-	private String relativePath;
+	private String relativePath;//关键字段
 	private String originalFilename;// 原始文件名
 	private MyFile cover;// 封面 gif图片会用到
 	private String filenameWithoutExtension;

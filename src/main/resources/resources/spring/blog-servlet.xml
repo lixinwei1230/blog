@@ -104,4 +104,6 @@
 
 	<bean id="blogRssView" class="me.qyh.web.rss.SpaceBlogRssFeedView" />
 	<bean class="me.qyh.oauth2.web.controller.BindController"/>
+	
+	<bean class="me.qyh.upload.my.FileWriteController"/>
 </beans>
