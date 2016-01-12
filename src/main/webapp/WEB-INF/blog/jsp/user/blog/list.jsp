@@ -14,12 +14,7 @@
 <meta name="_csrf" content="${_csrf.token}" />
 <meta name="_csrf_header" content="${_csrf.headerName}" />
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="page" />
-<link href="${ctx}/static/plugins/bootstrap/3.3.5/css/bootstrap.min.css"
-	rel="stylesheet">
-<!--[if lt IE 9]>
-	      <script src="${pageContext.request.contextPath}/plugins/html5shiv/3.7.0/html5shiv.min.js"></script>
-	      <script src="${pageContext.request.contextPath}/plugins/respond/1.3.0/respond.min.js"></script>
-	    <![endif]-->
+<jsp:include page="/WEB-INF/head_source.jsp"></jsp:include>
 <title>${user.nickname }</title>
 </head>
 <body>

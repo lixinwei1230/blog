@@ -10,12 +10,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>登录</title>
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="page" />
-<link href="${ctx}/static/plugins/bootstrap/3.3.5/css/bootstrap.min.css"
-	rel="stylesheet">
-<!--[if lt IE 9]>
-	      <script src="${pageContext.request.contextPath}/plugins/html5shiv/3.7.0/html5shiv.min.js"></script>
-	      <script src="${pageContext.request.contextPath}/plugins/respond/1.3.0/respond.min.js"></script>
-	    <![endif]-->
+<jsp:include page="/WEB-INF/head_source.jsp"></jsp:include>
 </head>
 <body>
 	<jsp:include page="/WEB-INF/navbar.jsp"></jsp:include>
@@ -60,10 +55,10 @@
 							<table class="table">
 								<tr>
 									<td><a href="<u:url/>/oauth2/qq/login"><img
-											src="${ctx }/static/imgs/oauth_qq.png" />QQ登录</a>
+											src="${staticSourcePrefix}/imgs/oauth_qq.png" />QQ登录</a>
 									</td>
 									<td><a href="<u:url/>/oauth2/sina/login"><img
-											src="${ctx }/static/imgs/oauth_sina.png" />新浪微博登录</a>
+											src="${staticSourcePrefix}/imgs/oauth_sina.png" />新浪微博登录</a>
 									</td>
 								</tr>
 							</table>
@@ -84,6 +79,7 @@
 			</div>
 		</div>
 	</div>
+	<jsp:include page="/WEB-INF/foot.jsp"></jsp:include>
 	<jsp:include page="/WEB-INF/scripts.jsp"></jsp:include>
 	<script type="text/javascript">
 		$("#submit-login").click(function() {

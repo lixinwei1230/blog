@@ -3,7 +3,7 @@
 	<hr>
 	<footer>
 		<p>
-			<span class="glyphicon glyphicon-copyright-mark"></span> WWW.QYH.ME&nbsp;&nbsp;钱宇豪
+			<span class="glyphicon glyphicon-copyright-mark"></span>&nbsp;2016&nbsp;qyh.me&nbsp;&nbsp;All rights Reserved
 		</p>
 	</footer>
 </div>

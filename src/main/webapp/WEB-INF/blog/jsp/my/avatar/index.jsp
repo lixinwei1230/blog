@@ -15,16 +15,12 @@
 <meta name="_csrf_header" content="${_csrf.headerName}" />
 <title><sec:authentication property='principal.nickname' /></title>
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="page" />
-<link href="${ctx}/static/plugins/bootstrap/3.3.5/css/bootstrap.min.css"
-	rel="stylesheet">
+<jsp:include page="/WEB-INF/head_source.jsp"></jsp:include>
 <link
-	href="${ctx}/static/plugins/jupload/9.5.7/css/jquery.fileupload.css"
+	href="${staticSourcePrefix }/plugins/jupload/9.5.7/css/jquery.fileupload.css"
 	rel="stylesheet">
-<link href="${ctx}/static/plugins/crop/cropper.min.css" rel="stylesheet">
-<!--[if lt IE 9]>
-	      <script src="${pageContext.request.contextPath}/plugins/html5shiv/3.7.0/html5shiv.min.js"></script>
-	      <script src="${pageContext.request.contextPath}/plugins/respond/1.3.0/respond.min.js"></script>
-	    <![endif]-->
+<link href="${staticSourcePrefix }/plugins/crop/cropper.min.css" rel="stylesheet">
+
 <style type="text/css">
 .img-container, .img-preview {
 	background-color: #f7f7f7;
@@ -124,16 +120,17 @@
 		</div>
 	</div>
 	<jsp:include page="/WEB-INF/scripts.jsp"></jsp:include>
+	<jsp:include page="/WEB-INF/foot.jsp"></jsp:include>
 	<script type="text/javascript"
-		src="${ctx}/static/plugins/jupload/canvas-to-blob.min.js"></script>
+		src="${staticSourcePrefix }/plugins/jupload/canvas-to-blob.min.js"></script>
 	<script type="text/javascript"
-		src="${ctx}/static/plugins/jupload/9.5.7/js/vendor/jquery.ui.widget.js"></script>
+		src="${staticSourcePrefix }/plugins/jupload/9.5.7/js/vendor/jquery.ui.widget.js"></script>
 	<script type="text/javascript"
-		src="${ctx}/static/plugins/jupload/9.5.7/js/jquery.iframe-transport.js"></script>
+		src="${staticSourcePrefix }/plugins/jupload/9.5.7/js/jquery.iframe-transport.js"></script>
 	<script type="text/javascript"
-		src="${ctx}/static/plugins/jupload/9.5.7/js/jquery.fileupload.js"></script>
+		src="${staticSourcePrefix }/plugins/jupload/9.5.7/js/jquery.fileupload.js"></script>
 	<script type="text/javascript"
-		src="${ctx}/static/plugins/crop/cropper.min.js"></script>
+		src="${staticSourcePrefix }/plugins/crop/cropper.min.js"></script>
 	<script type="text/javascript">
 	var token = $("meta[name='_csrf']").attr("content");
 	var header = $("meta[name='_csrf_header']").attr("content");

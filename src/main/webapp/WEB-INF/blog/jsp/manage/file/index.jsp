@@ -19,15 +19,10 @@
 <sec:authentication property='principal.space' var="space" />
 <title><sec:authentication property='principal.nickname' />
 </title>
-<link href="${ctx}/static/plugins/bootstrap/3.3.5/css/bootstrap.min.css"
-	rel="stylesheet">
+<jsp:include page="/WEB-INF/head_source.jsp"></jsp:include>
 <link
-	href="${ctx}/static/plugins/jupload/9.5.7/css/jquery.fileupload.css"
+	href="${staticSourcePrefix }/plugins/jupload/9.5.7/css/jquery.fileupload.css"
 	rel="stylesheet">
-<!--[if lt IE 9]>
-	      <script src="${pageContext.request.contextPath}/plugins/html5shiv/3.7.0/html5shiv.min.js"></script>
-	      <script src="${pageContext.request.contextPath}/plugins/respond/1.3.0/respond.min.js"></script>
-	    <![endif]-->
 </head>
 <body>
 	<jsp:include page="/WEB-INF/my_navbar.jsp"></jsp:include>
@@ -59,7 +54,7 @@
 																		class="video"> <span></span> <img
 																		src="${file.cover.url}"
 																		class="img-responsive"
-																		onerror="javascript:this.src='${ctx}/static/imgs/img-missing.png'" />
+																		onerror="javascript:this.src='${staticSourcePrefix }/imgs/img-missing.png'" />
 																	</a>
 																</div>
 															</c:when>
@@ -68,7 +63,7 @@
 																	src="<r:resize url="${file.url}" size="200"/>"
 																	class="img-responsive"
 																	style="max-width: 200px; max-height: 200px"
-																	onerror="javascript:this.src='${ctx}/static/imgs/img-missing.png'" />
+																	onerror="javascript:this.src='${staticSourcePrefix }/imgs/img-missing.png'" />
 															</c:otherwise>
 														</c:choose>
 													</c:when>

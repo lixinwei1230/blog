@@ -4,6 +4,6 @@
  */
 
 CKEDITOR.editorConfig = function( config ) {
-	config.contentsCss = [contextPath +'/static/plugins/bootstrap/3.3.5/css/bootstrap.min.css'];
+	config.contentsCss = [staticSourcePrefix +'/plugins/bootstrap/3.3.5/css/bootstrap.min.css'];
 
 };

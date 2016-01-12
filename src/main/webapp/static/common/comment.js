@@ -192,13 +192,13 @@ function getCommentHtml(comment){
 	var html = '<div class="media">';
 	html += '<div class="media-left">';
 	if(comment.isAnonymous){
-		html += '<img class="media-object" src="'+contextPath+'/static/imgs/guest_64.png" style="width:64px;height:64px"/>';
+		html += '<img class="media-object" src="'+staticSourcePrefix+'/imgs/guest_64.png" style="width:64px;height:64px"/>';
 	}else{
 		var avatar = "";
 		if(comment.user.avatar){
-			avatar = '<img class="media-object" src="'+getResizeUrl(comment.user.avatar.url,64)+'" onerror="javascript:this.src=\''+contextPath+'/static/imgs/guest_64.png\'" style="width:64px;height:64px"/>';
+			avatar = '<img class="media-object" src="'+getResizeUrl(comment.user.avatar.url,64)+'" onerror="javascript:this.src=\''+staticSourcePrefix+'/imgs/guest_64.png\'" style="width:64px;height:64px"/>';
 		}else{
-			avatar = '<img class="media-object" src="'+contextPath+'/static/imgs/guest_64.png" style="width:64px;height:64px"/>';
+			avatar = '<img class="media-object" src="'+staticSourcePrefix+'/imgs/guest_64.png" style="width:64px;height:64px"/>';
 		}
 		html += '<a href="'+getUrlByUser(comment.user, false)+'/index">'+avatar+'</a>';
 	}
@@ -238,13 +238,13 @@ function getReplyHtml(reply){
 	var html = '<div class="media">';
 	html += '<div class="media-left">';
 	if(reply.isAnonymous){
-		html += '<img class="media-object" src="'+contextPath+'/static/imgs/guest_64.png" style="width:64px;height:64px"/>';
+		html += '<img class="media-object" src="'+staticSourcePrefix+'/imgs/guest_64.png" style="width:64px;height:64px"/>';
 	}else{
 		var avatar = "";
 		if(reply.user.avatar){
-			avatar = '<img class="media-object" src="'+getResizeUrl(reply.user.avatar.url,64)+'" onerror="javascript:this.src=\''+contextPath+'/static/imgs/guest_64.png\'" style="width:64px;height:64px"/>';
+			avatar = '<img class="media-object" src="'+getResizeUrl(reply.user.avatar.url,64)+'" onerror="javascript:this.src=\''+staticSourcePrefix+'/imgs/guest_64.png\'" style="width:64px;height:64px"/>';
 		}else{
-			avatar = '<img class="media-object" src="'+contextPath+'/static/imgs/guest_64.png" style="width:64px;height:64px"/>';
+			avatar = '<img class="media-object" src="'+staticSourcePrefix+'/imgs/guest_64.png" style="width:64px;height:64px"/>';
 		}
 		html += '<a href="'+getUrlByUser(reply.user, false)+'/index">'+avatar+'</a>';
 	}

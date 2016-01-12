@@ -62,7 +62,7 @@ function getFirstDayOfNextMonth(date){
 }
 
 var isLogin = $("#isLogin").val() == "true";
-
+var staticSourcePrefix = $("#staticSourcePrefix").val();
 var isGetToReadMessageCount = isLogin;
 
 function getToReadMessageCount(){
@@ -124,12 +124,12 @@ $(document).ready(function(){
 	}
 	$("img.avatar").error(function(){
 		var me = $(this);
-		me.attr("src",contextPath + "/static/imgs/guest_160.png")
+		me.attr("src",staticSourcePrefix+"/imgs/guest_160.png")
 	});
 	
 	$(document).on("click","a[data-play]",function(){
 		var me = $(this);
-		var loading = $('<img src="'+contextPath+'/static/imgs/loading-64.gif" class="img-responsive"/>');
+		var loading = $('<img src="'+staticSourcePrefix+'/imgs/loading-64.gif" class="img-responsive"/>');
 		me.parent().hide().after(loading);
 		var img = $(me.find("img")[0]);
 		img.attr("src",$(this).attr("data-play"));

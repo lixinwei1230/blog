@@ -11,12 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>注册</title>
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="page" />
-<link href="${ctx}/static/plugins/bootstrap/3.3.5/css/bootstrap.min.css"
-	rel="stylesheet">
-<!--[if lt IE 9]>
-	      <script src="${pageContext.request.contextPath}/plugins/html5shiv/3.7.0/html5shiv.min.js"></script>
-	      <script src="${pageContext.request.contextPath}/plugins/respond/1.3.0/respond.min.js"></script>
-	    <![endif]-->
+<jsp:include page="/WEB-INF/head_source.jsp"></jsp:include>
 </head>
 <body>
 	<jsp:include page="/WEB-INF/navbar.jsp"></jsp:include>
@@ -101,7 +96,7 @@
 							<label>第三方登录</label>
 							<div>
 								<a href="<u:url/>/oauth2/qq/login"><img
-									src="${ctx }/static/imgs/oauth_qq.png" />QQ登录</a>
+									src="${staticSourcePrefix }/imgs/oauth_qq.png" />QQ登录</a>
 							</div>
 						</div>
 						<div class="form-group">

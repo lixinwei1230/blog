@@ -195,7 +195,7 @@ CKEDITOR.plugins.add('myfile', {
 									 html += '</div>'; 
 									me.editor.insertHtml(html);
 								}else{
-									me.editor.insertHtml('<img class="img-responsive" src="'+file.url+'/600"/>');
+									me.editor.insertHtml('<img class="img-responsive" src="'+getResizeUrl(file.url,600)+'"/>');
 								}
 							}else{
 								me.editor.insertHtml('<a href="'+file.url+'">'+file.originalFilename+'</a>');

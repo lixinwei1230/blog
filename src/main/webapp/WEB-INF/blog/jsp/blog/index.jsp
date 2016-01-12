@@ -16,12 +16,7 @@
 <meta name="_csrf" content="${_csrf.token}" />
 <meta name="_csrf_header" content="${_csrf.headerName}" />
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="page" />
-<link href="${ctx}/static/plugins/bootstrap/3.3.5/css/bootstrap.min.css"
-	rel="stylesheet">
-<!--[if lt IE 9]>
-	      <script src="${pageContext.request.contextPath}/plugins/html5shiv/3.7.0/html5shiv.min.js"></script>
-	      <script src="${pageContext.request.contextPath}/plugins/respond/1.3.0/respond.min.js"></script>
-	    <![endif]-->
+<jsp:include page="/WEB-INF/head_source.jsp"></jsp:include>
 <title>梦海澜心</title>
 </head>
 <body>
@@ -95,7 +90,7 @@
 											<a href="<u:url space="${blog.space }"/>/index"><img src="<r:resize url="${user.avatar.url }" size="64"/>" class="img-circle"/></a>
 										</c:when>
 										<c:otherwise>
-											<a href="<u:url space="${blog.space }"/>/index" ><img alt="${blog.space.user.nickname }" src="${ctx }/static/imgs/guest_64.png" class="img-circle"/></a>
+											<a href="<u:url space="${blog.space }"/>/index" ><img alt="${blog.space.user.nickname }" src="${staticSourcePrefix }/imgs/guest_64.png" class="img-circle"/></a>
 										</c:otherwise>
 									</c:choose>
 								</div>
@@ -223,8 +218,6 @@
 								id="search-blog-btn">查询</button>
 						</div>
 					</div>
-					
-					
 				</form>
 			</div>
 		</div>

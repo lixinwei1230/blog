@@ -13,8 +13,7 @@
 <meta name="_csrf" content="${_csrf.token}" />
 <meta name="_csrf_header" content="${_csrf.headerName}" />
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="page" />
-<link href="${ctx}/static/plugins/bootstrap/3.3.5/css/bootstrap.min.css"
-	rel="stylesheet">
+<jsp:include page="/WEB-INF/head_source.jsp"></jsp:include>
 <title><sec:authentication property='principal.nickname' /></title>
 </head>
 <body>
@@ -262,7 +261,7 @@
 	</div>
 </div>
 <jsp:include page="/WEB-INF/scripts.jsp"></jsp:include>
-<script type="text/javascript" src="${ctx }/static/common/widgets.js"></script>
+<script type="text/javascript" src="${staticSourcePrefix }/common/widgets.js"></script>
 <script type="text/javascript">
 var toPutWidth = {};
 var root = '${ctx}';

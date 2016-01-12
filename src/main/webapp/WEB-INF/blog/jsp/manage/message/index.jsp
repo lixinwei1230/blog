@@ -18,12 +18,7 @@
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="page" />
 <sec:authentication property='principal.space' var="space" />
 <title>message manage</title>
-<link href="${ctx}/static/plugins/bootstrap/3.3.5/css/bootstrap.min.css"
-	rel="stylesheet">
-<!--[if lt IE 9]>
-	      <script src="${pageContext.request.contextPath}/plugins/html5shiv/3.7.0/html5shiv.min.js"></script>
-	      <script src="${pageContext.request.contextPath}/plugins/respond/1.3.0/respond.min.js"></script>
-	    <![endif]-->
+<jsp:include page="/WEB-INF/head_source.jsp"></jsp:include>
 </head>
 <body>
 	<jsp:include page="/WEB-INF/my_navbar.jsp"></jsp:include>
