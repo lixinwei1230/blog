@@ -40,4 +40,12 @@ resources/config.properties 可以配置一些分页每页记录数、字段验�
 支持qq、sina微博的oauth登录<br/>
 
 <br/><strong>不支持也不会支持metaweblog</strong><br/>
-<strong>bug</strong>信息可以在http://www.qyh.me/bug  看到或提出(需要登录)
+去掉了bug的反馈页面，因为评论现在属于博客。
+
+如果不希望多域名支持：
+1.resouces/webConfig.properties中enableSpaceDomain为false
+2.在WEB-INF/head_source.jsp的staticSourcePrefix中指明静态文件的域名，例如：http://www.qyh.me/static
+3.resouces/spring/application.xml中LocalFileStorage中不要设定mapping属性
+(去除me.qyh.upload.my.MyServerFileMapping)
+4.resouces/spring/blog-servlet.xml中配置me.qyh.upload.server.inner.LocalFileController来展现和下载文件
+(去除me.qyh.upload.my.FileWriteController)
