@@ -21,6 +21,7 @@ public class LocalFileStorage implements FileStorage, InitializingBean {
 	private String absPath;
 	private int id;
 	private FileMapping mapping = new DefaultMapping();
+	private DelMapping delMapping = new DefaultDelMapping();
 	private String key;
 	private StoreType type = StoreType.ALL;
 
@@ -42,15 +43,7 @@ public class LocalFileStorage implements FileStorage, InitializingBean {
 
 	@Override
 	public String delUrl(MyFile file) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(urlHelper.getUrl());
-		sb.append("/file/");
-		sb.append(id);
-		sb.append(Strings.cleanPath(file.getRelativePath()));
-		sb.append(Files.getFilename(file.getName())).append("/");
-		sb.append(Files.getFileExtension(file.getName())).append("/");
-		sb.append(key).append("/delete");
-		return sb.toString();
+		return delMapping.mapping(file, this, key);
 	}
 
 	@Override
@@ -95,7 +88,23 @@ public class LocalFileStorage implements FileStorage, InitializingBean {
 			sb.append(Files.getFileExtension(file.getName()));
 			return sb.toString();
 		}
+	}
+	
+	private final class DefaultDelMapping implements DelMapping{
 
+		@Override
+		public String mapping(MyFile file, FileStorage storage, String key) {
+			StringBuilder sb = new StringBuilder();
+			sb.append(urlHelper.getUrl());
+			sb.append("/file/");
+			sb.append(id);
+			sb.append(Strings.cleanPath(file.getRelativePath()));
+			sb.append(Files.getFilename(file.getName())).append("/");
+			sb.append(Files.getFileExtension(file.getName())).append("/");
+			sb.append(key).append("/delete");
+			return sb.toString();
+		}
+		
 	}
 
 	public void setAbsPath(String absPath) {
@@ -116,7 +125,7 @@ public class LocalFileStorage implements FileStorage, InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.key = Strings.getMd5(Strings.getMd5(this.getClass().getName() + "-" + id));
+		this.key = Strings.getMd5(Strings.getMd5(this.getClass().getName() + "-" + id ));
 	}
 	
 	public void setType(StoreType type) {
@@ -130,4 +139,9 @@ public class LocalFileStorage implements FileStorage, InitializingBean {
 	public enum StoreType{
 		IMAGE_ONLY,ALL
 	}
+
+	public void setDelMapping(DelMapping delMapping) {
+		this.delMapping = delMapping;
+	}
+	
 }
