@@ -37,7 +37,7 @@ public final class Webs {
 		return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
 	}
 
-	private static String[] HEADERS_TO_TRY = { "REMOTE_ADDR", "X-Forwarded-For" };
+	private static String[] HEADERS_TO_TRY = { "REMOTE_ADDR", "X-Forwarded-For" , "X-Real-IP" };
 
 	public static String getClientIpAddress(HttpServletRequest request) {
 		for (String header : HEADERS_TO_TRY) {

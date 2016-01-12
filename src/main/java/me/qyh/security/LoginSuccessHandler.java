@@ -15,7 +15,6 @@ import me.qyh.web.Webs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -38,14 +37,7 @@ public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws IOException, ServletException {
 
-		Object detail = authentication.getDetails();
-		String remoteAddress;
-		if(detail instanceof WebAuthenticationDetails){
-			WebAuthenticationDetails _detail = (WebAuthenticationDetails)detail;
-			remoteAddress = _detail.getRemoteAddress();
-		}else{
-			remoteAddress = Webs.getClientIpAddress(request);
-		}
+		String remoteAddress = Webs.getClientIpAddress(request);
 		LoginInfo info = new LoginInfo();
 		info.setRemoteAddress(remoteAddress);
 		info.setUser(UserContext.getUser());
