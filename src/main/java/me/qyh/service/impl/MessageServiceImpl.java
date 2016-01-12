@@ -67,7 +67,7 @@ public class MessageServiceImpl extends BaseServiceImpl implements MessageServic
 		int unreadFromSources = handleGlobalMessage(user);
 		Map<String, Object> map = (Map<String, Object>) messageCache.get(user.getId());
 		if (map != null && map.containsKey(UNREAD_COUNT)) {
-			int totalCount = (int) map.get(UNREAD_COUNT) + unreadFromSources;
+			int totalCount = (Integer) map.get(UNREAD_COUNT) + unreadFromSources;
 			addCount(user, unreadFromSources);
 			return totalCount;
 		}
@@ -302,7 +302,7 @@ public class MessageServiceImpl extends BaseServiceImpl implements MessageServic
 		Map<String, Object> map = (Map<String, Object>) messageCache.get(user.getId());
 		if(map != null){
 			if(map.containsKey(UNREAD_COUNT)){
-				_count = (int) map.get(UNREAD_COUNT);
+				_count = (Integer) map.get(UNREAD_COUNT);
 			}
 		} else {
 			map = new HashMap<String , Object>();
