@@ -333,23 +333,23 @@
 {% } %}
 </script>
 	<script type="text/javascript"
-		src="${staticSourcePrefix }/plugins/jupload/9.5.7/js/load-image.min.js"></script>
+		src="${urlHelper.getStaticResourcePrefix(1) }/plugins/jupload/9.5.7/js/load-image.min.js"></script>
 	<script type="text/javascript"
-		src="${staticSourcePrefix }/plugins/jupload/tmpl.min.js"></script>
+		src="${urlHelper.getStaticResourcePrefix(1) }/plugins/jupload/tmpl.min.js"></script>
 	<script type="text/javascript"
-		src="${staticSourcePrefix }/plugins/jupload/canvas-to-blob.min.js"></script>
+		src="${urlHelper.getStaticResourcePrefix(1) }/plugins/jupload/canvas-to-blob.min.js"></script>
 	<script type="text/javascript"
-		src="${staticSourcePrefix }/plugins/jupload/9.5.7/js/vendor/jquery.ui.widget.js"></script>
+		src="${urlHelper.getStaticResourcePrefix(1) }/plugins/jupload/9.5.7/js/vendor/jquery.ui.widget.js"></script>
 	<script type="text/javascript"
-		src="${staticSourcePrefix }/plugins/jupload/9.5.7/js/jquery.fileupload.js"></script>
+		src="${urlHelper.getStaticResourcePrefix(1) }/plugins/jupload/9.5.7/js/jquery.fileupload.js"></script>
 	<script type="text/javascript"
-		src="${staticSourcePrefix }/plugins/jupload/9.5.7/js/jquery.fileupload-process.js"></script>
+		src="${urlHelper.getStaticResourcePrefix(1) }/plugins/jupload/9.5.7/js/jquery.fileupload-process.js"></script>
 	<script type="text/javascript"
-		src="${staticSourcePrefix }/plugins/jupload/9.5.7/js/jquery.fileupload-image.js"></script>
+		src="${urlHelper.getStaticResourcePrefix(1) }/plugins/jupload/9.5.7/js/jquery.fileupload-image.js"></script>
 	<script type="text/javascript"
-		src="${staticSourcePrefix }/plugins/jupload/9.5.7/js/jquery.fileupload-validate.js"></script>
+		src="${urlHelper.getStaticResourcePrefix(1) }/plugins/jupload/9.5.7/js/jquery.fileupload-validate.js"></script>
 	<script type="text/javascript"
-		src="${staticSourcePrefix }/plugins/jupload/9.5.7/js/jquery.fileupload-ui.js"></script>
+		src="${urlHelper.getStaticResourcePrefix(1) }/plugins/jupload/9.5.7/js/jquery.fileupload-ui.js"></script>
 <script type="text/javascript">
 		$(document).ready(function(){
 			$("#file-upload-btn").click(function(){
