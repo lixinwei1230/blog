@@ -10,7 +10,9 @@
 	value="${urlHelper.enableSpaceDomain }" />
 <sec:authorize ifAnyGranted="ROLE_USER,ROLE_OAUTH" var="isLogin" />
 <input type="hidden" id="isLogin" value="${isLogin }" />
-<input type="hidden" id="staticSourcePrefix" value="${staticSourcePrefix }" />
+<c:forEach var="ssp" items="${staticSourcePrefixs }">
+	<input type="hidden" class="staticSourcePrefix" value="${ssp }" />
+</c:forEach>
 <script type="text/javascript"
 	src="${staticSourcePrefix }/plugins/jquery/1.11/jquery.min.js"></script>
 <script type="text/javascript"

@@ -1,5 +1,6 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<c:set var="staticSourcePrefix" value="http://st.f.qyh.me" scope="request" />
+<c:set var="staticSourcePrefix" value="${urlHelper.getStaticResourcePrefix(0) }" scope="request" />
+<c:set var="staticSourcePrefixs" value="${urlHelper.getStaticResourcePrefixs() }" scope="request" />
 <link href="${staticSourcePrefix }/plugins/bootstrap/3.3.5/css/bootstrap.min.css"
 	rel="stylesheet">
 <!--[if lt IE 9]>

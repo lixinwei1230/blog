@@ -1,6 +1,7 @@
 package me.qyh.web.tag.url;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
 
 import me.qyh.entity.Space;
 import me.qyh.entity.User;
@@ -15,6 +16,10 @@ public class UrlHelper implements InitializingBean {
 	private String domain;
 	private String protocol;
 	private String rootDomain;
+
+	@Value("${staticResourcesPrefixs}")
+	private String[] staticResourcesPrefixs;
+	private int prefixMaxIndex;
 
 	public UrlHelper(String domainAndPort, boolean enableSpaceDomain, String contextPath, String protocol) {
 		this.domainAndPort = domainAndPort;
@@ -103,6 +108,17 @@ public class UrlHelper implements InitializingBean {
 	public String getProtocol() {
 		return protocol;
 	}
+	
+	public String [] getStaticResourcePrefixs(){
+		return staticResourcesPrefixs;
+	}
+	
+	public String getStaticResourcePrefix(int i){
+		if(i < 0 || i>prefixMaxIndex){
+			return staticResourcesPrefixs[0];
+		}
+		return staticResourcesPrefixs[i];
+	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -115,6 +131,10 @@ public class UrlHelper implements InitializingBean {
 		if (contextPath == null) {
 			throw new SystemException("contextPath不能为null");
 		}
+		if (Validators.isEmptyOrNull(staticResourcesPrefixs)) {
+			staticResourcesPrefixs = new String[] { protocol + "://" + domainAndPort + "/static" };
+		}
+		prefixMaxIndex = staticResourcesPrefixs.length - 1;
 	}
 
 	public String getRootDomain() {

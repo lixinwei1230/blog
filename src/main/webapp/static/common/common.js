@@ -62,7 +62,14 @@ function getFirstDayOfNextMonth(date){
 }
 
 var isLogin = $("#isLogin").val() == "true";
-var staticSourcePrefix = $("#staticSourcePrefix").val();
+var staticSourcePrefix = getStaticResoucePrefix(0);
+function getStaticResoucePrefix(i){
+	var len = $(".staticSourcePrefix").length;
+	if(i > len-1 || i<0){
+		return $(".staticSourcePrefix").eq(0).val();
+	}
+	return $(".staticSourcePrefix").eq(i).val();
+}
 var isGetToReadMessageCount = isLogin;
 
 function getToReadMessageCount(){
