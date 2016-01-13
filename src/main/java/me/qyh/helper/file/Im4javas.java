@@ -24,7 +24,7 @@ import me.qyh.utils.Validators;
 @Component
 public class Im4javas implements InitializingBean , ImageProcessing {
 
-	private static final boolean windows = (System.getProperty("os.name").toLowerCase().indexOf("win") != -1);
+	private static final boolean windows = File.separatorChar == '\\';
 	private static final String GIF = "GIF";
 	
 	@Value("${config.magick.path}")
