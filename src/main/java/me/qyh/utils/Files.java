@@ -20,8 +20,9 @@ public final class Files {
 	}
 
 	public static String getFilename(String filename) {
-		if (filename.indexOf('.') != -1) {
-			return filename.substring(0, filename.lastIndexOf('.'));
+		int lastPos = filename.lastIndexOf(".");
+		if (lastPos != -1) {
+			return filename.substring(0, lastPos);
 		}
 		return filename;
 	}
