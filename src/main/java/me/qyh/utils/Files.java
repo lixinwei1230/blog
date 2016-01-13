@@ -19,8 +19,11 @@ public final class Files {
 		return getFileExtension(file.getName());
 	}
 
-	public static String getFilename(String path) {
-		return FilenameUtils.getBaseName(path);
+	public static String getFilename(String filename) {
+		if (filename.indexOf('.') != -1) {
+			return filename.substring(0, filename.lastIndexOf('.'));
+		}
+		return filename;
 	}
 
 	/**
