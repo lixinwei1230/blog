@@ -18,6 +18,7 @@
 
 		<intercept-url pattern="/upload/**" access="ROLE_SPACE" />
 		<intercept-url pattern="/my/file/**" access="ROLE_SPACE" />
+		<intercept-url pattern="/my/tag/**" access="ROLE_SPACE" />
 		<intercept-url pattern="/my/blog/**" access="ROLE_SPACE" />
 		<intercept-url pattern="/my/avatar/**" access="ROLE_USER,ROLE_OAUTH" />
 		<intercept-url pattern="/my/nickname/**" access="ROLE_USER,ROLE_OAUTH" />
