@@ -92,7 +92,6 @@
 			</div>
 		</div>
 	</div>
-	<jsp:include page="/WEB-INF/foot.jsp"></jsp:include>
 	<input type="hidden" id="x" value="0" />
 	<input type="hidden" id="y" value="0" />
 	<input type="hidden" id="w" value="0" />

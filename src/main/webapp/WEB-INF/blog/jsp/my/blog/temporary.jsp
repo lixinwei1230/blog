@@ -273,26 +273,26 @@
     </tr>
 {% } %}
 </script>
-<script type="text/javascript"
-	src="${staticSourcePrefix }/plugins/jupload/9.5.7/js/load-image.min.js"></script>
-<script type="text/javascript"
-	src="${staticSourcePrefix }/plugins/jupload/tmpl.min.js"></script>
-<script type="text/javascript"
-	src="${staticSourcePrefix }/plugins/jupload/canvas-to-blob.min.js"></script>
-<script type="text/javascript"
-	src="${staticSourcePrefix }/plugins/jupload/9.5.7/js/vendor/jquery.ui.widget.js"></script>
-<script type="text/javascript"
-	src="${staticSourcePrefix }/plugins/jupload/9.5.7/js/jquery.fileupload.js"></script>
-<script type="text/javascript"
-	src="${staticSourcePrefix }/plugins/jupload/9.5.7/js/jquery.fileupload-process.js"></script>
-<script type="text/javascript"
-	src="${staticSourcePrefix }/plugins/jupload/9.5.7/js/jquery.fileupload-image.js"></script>
-<script type="text/javascript"
-	src="${staticSourcePrefix }/plugins/jupload/9.5.7/js/jquery.fileupload-validate.js"></script>
-<script type="text/javascript"
-	src="${staticSourcePrefix }/plugins/jupload/9.5.7/js/jquery.fileupload-ui.js"></script>
 	<script type="text/javascript"
 		src="${staticSourcePrefix }/plugins/ckeditor/ckeditor.js"></script>
+		<script type="text/javascript"
+		src="${urlHelper.getStaticResourcePrefix(1) }/plugins/jupload/9.5.7/js/load-image.min.js"></script>
+	<script type="text/javascript"
+		src="${urlHelper.getStaticResourcePrefix(1) }/plugins/jupload/tmpl.min.js"></script>
+	<script type="text/javascript"
+		src="${urlHelper.getStaticResourcePrefix(1) }/plugins/jupload/canvas-to-blob.min.js"></script>
+	<script type="text/javascript"
+		src="${urlHelper.getStaticResourcePrefix(1) }/plugins/jupload/9.5.7/js/vendor/jquery.ui.widget.js"></script>
+	<script type="text/javascript"
+		src="${urlHelper.getStaticResourcePrefix(1) }/plugins/jupload/9.5.7/js/jquery.fileupload.js"></script>
+	<script type="text/javascript"
+		src="${urlHelper.getStaticResourcePrefix(2) }/plugins/jupload/9.5.7/js/jquery.fileupload-process.js"></script>
+	<script type="text/javascript"
+		src="${urlHelper.getStaticResourcePrefix(2) }/plugins/jupload/9.5.7/js/jquery.fileupload-image.js"></script>
+	<script type="text/javascript"
+		src="${urlHelper.getStaticResourcePrefix(2) }/plugins/jupload/9.5.7/js/jquery.fileupload-validate.js"></script>
+	<script type="text/javascript"
+		src="${urlHelper.getStaticResourcePrefix(2) }/plugins/jupload/9.5.7/js/jquery.fileupload-ui.js"></script>
 	<script type="text/javascript">
 	var token = $("meta[name='_csrf']").attr("content");
 	var header = $("meta[name='_csrf_header']").attr("content");

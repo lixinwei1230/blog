@@ -10,11 +10,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import me.qyh.bean.Info;
 import me.qyh.pageparam.UserTagPageParam;
+import me.qyh.security.UserContext;
 import me.qyh.service.TagService;
 
-@RequestMapping("tag/user")
+@RequestMapping("my/tag")
 @Controller
-public class UserTagController extends BaseController {
+public class MyTagController extends BaseController {
 
 	@Autowired
 	private TagService tagService;
@@ -26,6 +27,7 @@ public class UserTagController extends BaseController {
 	public Info list(@PathVariable("currentPage") int currentPage, UserTagPageParam param) {
 		param.setCurrentPage(currentPage);
 		param.setPageSize(pageSize);
+		param.setUser(UserContext.getUser());
 		param.validate();
 		return new Info(true, tagService.findUserTags(param));
 	}

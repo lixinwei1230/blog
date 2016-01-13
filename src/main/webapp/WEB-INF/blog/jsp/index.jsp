@@ -155,7 +155,7 @@
 				</div>
 				<div class="alert alert-warning">
 					只在新版的chrome浏览器开发测试，别的浏览器不会做测试和支持<br /> 
-					鄙视用IE浏览器的(包括EDGE)
+					2016年了，你还在用IE吗？：）
 				</div>
 			</div>
 		</div>
