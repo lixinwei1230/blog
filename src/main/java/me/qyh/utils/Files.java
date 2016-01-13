@@ -5,27 +5,22 @@ import java.io.IOException;
 import java.util.Calendar;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 import me.qyh.exception.SystemException;
 
 public final class Files {
 
 	public static String getFileExtension(String filename) {
-		if (filename.indexOf('.') != -1) {
-			return filename.substring(filename.lastIndexOf('.') + 1);
-		}
-		return "";
+		return FilenameUtils.getExtension(filename);
 	}
-
+	
 	public static String getFileExtension(File file) {
 		return getFileExtension(file.getName());
 	}
 
-	public static String getFilename(String filename) {
-		if (filename.indexOf('.') != -1) {
-			return filename.substring(0, filename.lastIndexOf('.'));
-		}
-		return filename;
+	public static String getFilename(String path) {
+		return FilenameUtils.getBaseName(path);
 	}
 
 	/**
