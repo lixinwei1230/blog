@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.springframework.context.MessageSource;
-
 import me.qyh.bean.I18NMessage;
 import me.qyh.bean.Info;
-import me.qyh.upload.server.inner.FailedUploadFile;
-import me.qyh.upload.server.inner.I18NFailedUploadFile;
+import me.qyh.exception.SystemException;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
+import org.springframework.context.MessageSource;
 
 public class UploadedInfo extends Info {
 
@@ -19,7 +20,6 @@ public class UploadedInfo extends Info {
 	private static final long serialVersionUID = 1L;
 
 	private String error;
-
 	private List<UploadedFile> files = new ArrayList<UploadedFile>();
 
 	public UploadedInfo(UploadedResult result, MessageSource messageSource, Locale locale) {
@@ -28,17 +28,13 @@ public class UploadedInfo extends Info {
 			this.error = messageSource.getMessage(error.getCode(), error.getParams(), locale);
 		}
 		for (UploadedFile file : result.getFiles()) {
-			if (file.getSuccess()) {
-				files.add(file);
-			} else {
-				I18NFailedUploadFile _file = (I18NFailedUploadFile) file;
-				I18NMessage _error = _file.getError();
-				FailedUploadFile ff = new FailedUploadFile();
-				if (_error != null) {
-					ff.setError(messageSource.getMessage(_error.getCode(), _error.getParams(), locale));
-				}
-				files.add(ff);
+			_UploadedFile _file = new _UploadedFile(messageSource, locale);
+			try {
+				BeanUtils.copyProperties(file, _file);
+			} catch (BeansException e) {
+				throw new SystemException(e);
 			}
+			files.add(_file);
 		}
 	}
 
@@ -56,5 +52,27 @@ public class UploadedInfo extends Info {
 
 	public void setFiles(List<UploadedFile> files) {
 		this.files = files;
+	}
+
+	class _UploadedFile extends UploadedFile {
+
+		private MessageSource messageSource;
+		private Locale locale;
+
+		public _UploadedFile(MessageSource messageSource, Locale locale) {
+			this.messageSource = messageSource;
+			this.locale = locale;
+		}
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public String getErrorMessage() {
+			I18NMessage error = getError();
+			return error == null ? null : messageSource.getMessage(error.getCode(), error.getParams(), locale);
+		}
+
 	}
 }

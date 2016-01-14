@@ -23,6 +23,7 @@ import me.qyh.service.UploadService;
 import me.qyh.upload.server.FileMapper;
 import me.qyh.upload.server.FileServer;
 import me.qyh.upload.server.FileStorage;
+import me.qyh.upload.server.UploadedFile;
 import me.qyh.upload.server.UploadedResult;
 import me.qyh.utils.Files;
 import me.qyh.utils.Strings;
@@ -30,6 +31,7 @@ import me.qyh.utils.Strings;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,6 +58,7 @@ public class UploadServiceImpl implements UploadService {
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+	@PreAuthorize("hasRole('ROLE_SPACE')")
 	public UploadedResult upload(List<MultipartFile> files) {
 		User user = UserContext.getUser();
 		UploadedResult info = new UploadedResult(true);
@@ -73,24 +76,25 @@ public class UploadServiceImpl implements UploadService {
 		for (MultipartFile file : files) {
 			String originalFilename = file.getOriginalFilename();
 			if (file.getSize() == 0) {
-				info.addError(originalFilename, new I18NMessage("error.upload.emptyFile"));
+				info.addFile(new UploadedFile(originalFilename, new I18NMessage("error.upload.emptyFile")));
 				continue;
 			}
-			boolean image = maybeImage(file.getContentType());
+			String contentType = file.getContentType();
+			boolean image = maybeImage(contentType);
 			FileUploadConfig._Config _config = image ? config.getImageConfig() : config.getConfig();
 			SizeLimit sl = _config.getSizeLimit();
 			if (sl != null) {
 				Result result = sl.allow(file);
 				if (!result.isAllow()) {
-					info.addError(originalFilename,
-							new I18NMessage("error.upload.singlefile.oversize", result.getMaxAllowSize()));
+					info.addFile(new UploadedFile(originalFilename,
+							new I18NMessage("error.upload.singlefile.oversize", result.getMaxAllowSize())));
 					continue;
 				}
 			}
 			String extension = Files.getFileExtension(file.getOriginalFilename());
 
 			if (!image && !Strings.inArray(extension, _config.getAllowFileTypes(), true)) {
-				info.addError(originalFilename, new I18NMessage("error.upload.invalidExtension", extension));
+				info.addFile(new UploadedFile(originalFilename, new I18NMessage("error.upload.invalidExtension", extension)));
 				continue;
 			}
 
@@ -105,23 +109,22 @@ public class UploadServiceImpl implements UploadService {
 			} catch (Exception e1) {
 				throw new SystemException(e1);
 			}
-			String contentType = file.getContentType();
 			if (image) {
 				try {
 					ImageInfo ii = im4javas.read(_file);
 					if (!Strings.inArray(ii.getType(), _config.getAllowFileTypes(), true)) {
-						info.addError(originalFilename, new I18NMessage("error.upload.invalidExtension", ii.getType()));
+						info.addFile(new UploadedFile(originalFilename, new I18NMessage("error.upload.invalidExtension", ii.getType())));
 						continue;
 					}
 					FileUploadConfig._ImageConfig imConfig = (FileUploadConfig._ImageConfig) _config;
 					if (ii.getWidth() > imConfig.getMaxWidth()) {
-						info.addError(originalFilename,
-								new I18NMessage("error.upload.image.width.invalid", imConfig.getMaxWidth()));
+						info.addFile(new UploadedFile(originalFilename,
+								new I18NMessage("error.upload.image.width.invalid", imConfig.getMaxWidth())));
 						continue;
 					}
 					if (ii.getHeight() > imConfig.getMaxHeight()) {
-						info.addError(originalFilename,
-								new I18NMessage("error.upload.image.height.invalid", imConfig.getMaxWidth()));
+						info.addFile(new UploadedFile(originalFilename,
+								new I18NMessage("error.upload.image.height.invalid", imConfig.getMaxHeight())));
 						continue;
 					}
 					File rename = new File(_file.getParent(),
@@ -157,7 +160,7 @@ public class UploadServiceImpl implements UploadService {
 						}
 					}
 				} catch (BadImageException e) {
-					info.addError(originalFilename, new I18NMessage("error.upload.badImage"));
+					info.addFile(new UploadedFile(originalFilename, new I18NMessage("error.upload.badImage")));
 					continue;
 				}
 			}
@@ -188,7 +191,7 @@ public class UploadServiceImpl implements UploadService {
 			}
 			mf.setStore(storage);
 			fileDao.insert(mf);
-			info.addSuccess(originalFilename, _file.length());
+			info.addFile(new UploadedFile(originalFilename, mf.getSize(), mf.getUrl()));
 		}
 		return info;
 	}

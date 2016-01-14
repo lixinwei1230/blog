@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.qyh.bean.I18NMessage;
-import me.qyh.upload.server.inner.I18NFailedUploadFile;
-import me.qyh.upload.server.inner.SuccessUploadFile;
 
 public class UploadedResult implements Serializable {
 
@@ -16,20 +14,10 @@ public class UploadedResult implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private boolean success;
-
 	private List<UploadedFile> files = new ArrayList<UploadedFile>();
-
 	private I18NMessage error;
-
-	public void addError(String name, I18NMessage error) {
-		I18NFailedUploadFile file = new I18NFailedUploadFile(name);
-		file.setError(error);
-		files.add(file);
-	}
-
-	public void addSuccess(String name, long size) {
-		SuccessUploadFile file = new SuccessUploadFile(name);
-		file.setSize(size);
+	
+	public void addFile(UploadedFile file){
 		files.add(file);
 	}
 

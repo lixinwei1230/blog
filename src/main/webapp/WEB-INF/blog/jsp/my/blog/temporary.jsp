@@ -250,15 +250,15 @@
             <p class="name">
                 <span>{%=file.originalFilename%}</span>
             </p>
-            {% if (file.error) { %}
-                <div><span class="label label-danger"><spring:message code="global.error"/></span> {%=file.error%}</div>
+            {% if (file.errorMessage) { %}
+                <div><span class="label label-danger"><spring:message code="global.error"/></span> {%=file.errorMessage%}</div>
             {% } %}
         </td>
         <td>
             <span class="size">{%=o.formatFileSize(file.size)%}</span>
         </td>
         <td>
-            {% if (file.error) { %}
+            {% if (file.errorMessage) { %}
  			<button class="btn btn-warning cancel">
                     <i class="glyphicon glyphicon-ban-circle"></i>
                     <span><spring:message code="page.item.cancel"/></span>
