@@ -57,8 +57,8 @@
 									<li><a
 										href="<u:url user="${user }" myMenu="true"/>/blog/recycler/list/1">回收站</a></li>
 								</ul></li>
-								<li><a
-										href="<u:url user="${user }" myMenu="true"/>/file/list/1">文件管理</a></li>
+							<li><a
+								href="<u:url user="${user }" myMenu="true"/>/file/list/1">文件管理</a></li>
 						</sec:authorize>
 						<c:if test="${isUser or isOauth }">
 							<li class="dropdown"><a href="#" class="dropdown-toggle"
@@ -87,8 +87,26 @@
 												code="page.menu.message.unread" /></a></li>
 								</c:if>
 							</ul></li>
+						<sec:authorize ifAnyGranted="ROLE_SUPERVISOR">
+							<li class="dropdown"><a href="#" class="dropdown-toggle"
+								data-toggle="dropdown" role="button" aria-expanded="false">系统管理<span
+									class="caret"></span></a>
+								<ul class="dropdown-menu" role="menu">
+									<li><a href="<u:url/>/manage/blog/list/1">博客管理</a></li>
+									<li><a href="<u:url/>/manage/user/list/1">用户管理</a></li>
+									<li><a href="<u:url/>/manage/file/list/1">文件管理</a></li>
+									<li><a href="<u:url/>/manage/message/index">全局信息</a></li>
+									<li><a href="<u:url/>/manage/refresh/list">文件刷新</a></li>
+								</ul></li>
+						</sec:authorize>
 						<c:if test="${isUser or isOauth }">
-							<li><a href="javascript:void(0)" onclick="document.getElementById('logoutForm').submit()">退出</a><form style="display: none" action="<u:url/>/logout" method="post" id="logoutForm"><input type="hidden" name="${_csrf.parameterName}"value="${_csrf.token}" /></form></li>
+							<li><a href="javascript:void(0)"
+								onclick="document.getElementById('logoutForm').submit()">退出</a>
+								<form style="display: none" action="<u:url/>/logout"
+									method="post" id="logoutForm">
+									<input type="hidden" name="${_csrf.parameterName}"
+										value="${_csrf.token}" />
+								</form></li>
 						</c:if>
 					</c:if>
 				</ul>
