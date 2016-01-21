@@ -50,12 +50,15 @@ public class MyContextLoaderListener extends ContextLoaderListener {
 			sc.addFilter(spaceDomainFilter.getName(), spaceDomainFilter)
 					.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
 		}
-		if (domain.startsWith("www.")) {
-			domain = domain.substring(domain.indexOf("."));
-		} else {
-			domain = "." + domain;
+		
+		if(!domain.equalsIgnoreCase("localhost")){
+			if (domain.startsWith("www.")) {
+				domain = domain.substring(domain.indexOf("."));
+			} else {
+				domain = "." + domain;
+			}
+			SessionCookieConfig config = sc.getSessionCookieConfig();
+			config.setDomain(domain);
 		}
-		SessionCookieConfig config = sc.getSessionCookieConfig();
-		config.setDomain(domain);
 	}
 }
