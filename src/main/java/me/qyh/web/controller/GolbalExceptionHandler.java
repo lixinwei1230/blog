@@ -19,6 +19,7 @@ import me.qyh.web.Webs;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -44,6 +45,12 @@ public class GolbalExceptionHandler extends BaseController {
 	private ObjectWriter objectWriter;
 	@Autowired
 	private MessageSource messageSource;
+	
+	@ExceptionHandler(InvalidPropertyException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ModelAndView handleInvalidPropertyException(InvalidPropertyException e) {
+		return new ModelAndView("/error/400");
+	}
 
 	@ExceptionHandler(SpaceDisabledException.class)
 	@ResponseStatus(HttpStatus.OK)
