@@ -138,8 +138,7 @@
 									name="title" value="<c:out value="${param['title'] }"/>" />
 							</div>
 							<div style="text-align: right">
-								<button class="btn btn-primary" style="" type="button"
-									id="search-blog-btn">查询</button>
+								<button class="btn btn-primary" style="" type="submit">查询</button>
 							</div>
 						</div>
 					</form>
