@@ -42,11 +42,13 @@ public class BlogManageServiceImpl extends BlogServiceImpl implements BlogManage
 
 		blog.setRecommend(!blog.isRecommend());
 		blogDao.updateRecommend(blog);
-
+		
 		message.setSender(UserContext.getUser());
 		message.setReceiver(spaceDao.selectById(blog.getSpace().getId()).getUser());
 
 		tipServer.sendTip(message);
+		
+		blogIndexHandler.rebuildBlogIndex(blog);
 	}
 
 	private Blog load(int id) throws LogicException {

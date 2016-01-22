@@ -1,5 +1,6 @@
 package me.qyh.page.widget.support;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import me.qyh.entity.User;
 import me.qyh.entity.blog.Blog;
 import me.qyh.exception.LogicException;
 import me.qyh.exception.SpaceDisabledException;
+import me.qyh.helper.lucene.BlogIndexHandler;
 import me.qyh.page.LocationWidget;
 import me.qyh.page.widget.SystemWidgetConfigHandler;
 import me.qyh.page.widget.Widget;
@@ -22,19 +24,22 @@ import me.qyh.page.widget.WidgetType;
 import me.qyh.page.widget.config.WidgetConfig;
 import me.qyh.page.widget.config.support.BlogWidgetConfig;
 import me.qyh.pageparam.BlogPageParam;
+import me.qyh.pageparam.Page;
 import me.qyh.server.SpaceServer;
 import me.qyh.utils.Validators;
 
 public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 
 	@Autowired
-	private BlogDao blogDao;
-	@Autowired
 	private BlogWidgetConfigDao blogWidgetConfigDao;
 	@Autowired
 	private SpaceServer spaceServer;
 	@Value("${config.pagesize.blog}")
 	private int pageSize;
+	@Autowired
+	private BlogDao blogDao;
+	@Autowired
+	protected BlogIndexHandler blogIndexHandler;
 
 	public BlogWidgetHandler(Integer id, String name) {
 		super(id, name);
@@ -49,7 +54,7 @@ public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 	String getPreviewHtml(User user) {
 		BlogWidgetConfig config = (BlogWidgetConfig) (getConfigHandler()
 				.getDefaultWidgetConfig(user));
-		List<Blog> blogs = blogDao.selectPage(buildParam(config, user, user));
+		List<Blog> blogs = searchBlog(buildParam(config, user, user)).getDatas();
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("blogs", blogs);
 		map.put("widget", super.getSimpleWidget());
@@ -96,8 +101,8 @@ public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 		sw.setId(id);
 		sw.setName(name);
 
-		List<Blog> blogs = blogDao.selectPage(buildParam(_config, owner,
-				visitor));
+		List<Blog> blogs = searchBlog(buildParam(_config, owner,
+				visitor)).getDatas();
 
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("blogs", blogs);
@@ -123,6 +128,23 @@ public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 				throw new LogicException(e.getI18nMessage());
 			}
 		}
+	}
+	
+	public Page<Blog> searchBlog(BlogPageParam param){
+		Page<Blog> page = blogIndexHandler.search(param);
+		List<Blog> blogs = page.getDatas();
+		List<Blog> results = new ArrayList<Blog>();
+		if(!blogs.isEmpty()){
+			for(Blog blog : blogs){
+				Blog preview = blogDao.selectPreview(blog.getId());
+				if(preview != null){
+					preview.setTags(blog.getTags());
+					results.add(preview);
+				}
+			}
+			page.setDatas(results);
+		}
+		return page;
 	}
 
 	@Override

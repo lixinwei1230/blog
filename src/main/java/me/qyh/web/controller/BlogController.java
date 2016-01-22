@@ -27,7 +27,7 @@ public class BlogController extends BaseController {
 
 	@RequestMapping(value = "hit/{id}", method = RequestMethod.POST)
 	@ResponseBody
-	public Info hit(@PathVariable("id") int id) {
+	public Info hit(@PathVariable("id") int id) throws LogicException {
 		blogService.updateHits(id, 1);
 		return new Info(true);
 	}

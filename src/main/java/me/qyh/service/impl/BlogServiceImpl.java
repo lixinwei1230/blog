@@ -55,6 +55,7 @@ import me.qyh.helper.cache.SignCache;
 import me.qyh.helper.cache.SignCacheEvict;
 import me.qyh.helper.freemaker.WebFreemarkers;
 import me.qyh.helper.htmlclean.HtmlContentHandler;
+import me.qyh.helper.lucene.BlogIndexHandler;
 import me.qyh.pageparam.BlogPageParam;
 import me.qyh.pageparam.CommentPageParam;
 import me.qyh.pageparam.Page;
@@ -68,10 +69,10 @@ import me.qyh.utils.Strings;
 import me.qyh.utils.Validators;
 
 @Service("blogService")
-public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
+public class BlogServiceImpl extends BaseServiceImpl implements BlogService{
 
 	private static final String COMMENT_TIP_TEMPLATE = "tip/comment_blog.ftl";
-
+	
 	@Autowired
 	private BlogCategoryDao blogCategoryDao;
 	@Autowired
@@ -112,6 +113,8 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	private MessageSource messageSource;
 	@Autowired
 	private WebFreemarkers freeMarkers;
+	@Autowired
+	protected BlogIndexHandler blogIndexHandler;
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
@@ -126,7 +129,10 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		temporaryBlogDao.deleteByBlog(blog);
 		blogDao.insert(blog);
 		insertBlogTag(blog);
-
+		
+		blog.setCategory(category);
+		
+		blogIndexHandler.addBlogIndex(blog);
 	}
 
 	@Override
@@ -148,6 +154,8 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		commentDao.deleteByBlog(blog);
 
 		blogDao.deleteById(blog.getId());
+		
+		blogIndexHandler.removeBlogIndex(blog);
 	}
 
 	@Override
@@ -201,17 +209,35 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-	public void updateHits(Integer blog, int hits) {
+	public void updateHits(Integer blog, int hits) throws LogicException{
+		Blog db = loadBlog(blog);
+		if (isBlogDeleted(db)) {
+			throw new LogicException("error.blog.notexists");
+		}
 		blogDao.updateHits(blog, hits);
+		
+		db.setHits(db.getHits() + hits);
+		blogIndexHandler.rebuildBlogIndex(db);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public Page<Blog> findBlogs(BlogPageParam param) {
 		validBlogPageParam(param);
-		List<Blog> datas = blogDao.selectPage(param);
-		int count = blogDao.selectCount(param);
-		return new Page<Blog>(param, count, datas);
+		Page<Blog> page = blogIndexHandler.search(param);
+		List<Blog> blogs = page.getDatas();
+		List<Blog> results = new ArrayList<Blog>();
+		if(!blogs.isEmpty()){
+			for(Blog blog : blogs){
+				Blog preview = blogDao.selectPreview(blog.getId());
+				if(preview != null){
+					preview.setTags(blog.getTags());
+					results.add(preview);
+				}
+			}
+			page.setDatas(results);
+		}
+		return page;
 	}
 
 	@Override
@@ -228,6 +254,8 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 
 		blog.setStatus(BlogStatus.RECYCLER);
 		blogDao.update(blog);
+		
+		blogIndexHandler.rebuildBlogIndex(blog);
 	}
 
 	@Override
@@ -256,6 +284,8 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		insertBlogTag(toUpdate);
 
 		temporaryBlogDao.deleteByBlog(db);
+		
+		blogIndexHandler.rebuildBlogIndex(loadBlog(db.getId()));
 	}
 
 	@Override
@@ -297,6 +327,8 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 
 		blog.setStatus(BlogStatus.NORMAL);
 		blogDao.update(blog);
+		
+		blogIndexHandler.rebuildBlogIndex(blog);
 	}
 
 	@Override
@@ -409,9 +441,9 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public BlogComment insertComment(BlogComment comment) throws LogicException {
-		Blog blog = blogDao.selectById(comment.getBlog().getId());
-		if (blog == null || BlogStatus.RECYCLER.equals(blog.getStatus())) {
-			throw new LogicException("error.blog.notexists");
+		Blog blog = loadBlog(comment.getBlog().getId());
+		if (isBlogDeleted(blog)) {
+			throw new LogicException("error.blog.deleted");
 		}
 		if (blog.getIsPrivate() && !blog.getSpace().equals(UserContext.getSpace())) {
 			throw new BusinessAccessDeinedException();
@@ -442,6 +474,9 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		
 		if(parent == null){
 			blogDao.updateComments(blog.getId(), 1);
+			
+			blog.setComments(blog.getComments()+1);
+			blogIndexHandler.rebuildBlogIndex(blog);
 		}
 
 		commentDao.insert(comment);
@@ -463,7 +498,10 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		User current = UserContext.getUser();
 		User owner = comment.getUser();
 		boolean hasParent = (comment.getParent() != null);
-		Blog blog = blogDao.selectById(comment.getBlog().getId());
+		Blog blog = loadBlog(comment.getBlog().getId());
+		if (isBlogDeleted(blog)) {
+			throw new LogicException("error.blog.deleted");
+		}
 		Space space = blog.getSpace();
 		// 如果当前用户不是评论域拥有人、回复所有人或者评论所有人,或者超级管理员
 		if (!space.equals(UserContext.getSpace()) && !current.equals(owner)
@@ -481,6 +519,9 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		if (!hasParent) {
 			blogDao.updateComments(blog.getId(), -1);
 			commentDao.deleteByParent(comment);
+			
+			blog.setComments(blog.getComments() - 1);
+			blogIndexHandler.rebuildBlogIndex(blog);
 		}
 		commentDao.deleteById(id);
 	}
@@ -686,4 +727,5 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 
 		tipServer.sendTip(message);
 	}
+	
 }

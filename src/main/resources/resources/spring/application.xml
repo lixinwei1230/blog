@@ -284,4 +284,6 @@
 		<property name="cacheName" value="globalMessageCache"/>
 	</bean>
 	
+	<bean class="me.qyh.web.SpringContextHolder" />
+	
 </beans>      

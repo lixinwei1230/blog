@@ -97,10 +97,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		WHERE b.id = #{id}
 		GROUP BY b.id
 	</select>
+	
+	<select id="selectPreview" resultMap="BlogDetail">
+		SELECT
+		b.id,b.summary,blog_status,b.write_date,b.title,b.hits,b.blog_from,b.blog_level,
+		b.category,b.space_id,bc.category_name,scope,b.comment_scope,b.recommend,bs.id AS user_id,file_name,file_store,relativePath,nickname,comments,bf.id AS file_id
+		FROM blog b
+		LEFT OUTER JOIN user_space us ON b.space_id = us.id
+		LEFT OUTER JOIN blog_user bs ON us.user_id = bs.id
+		LEFT OUTER JOIN blog_file bf ON bs.avatar = bf.id
+		LEFT OUTER JOIN blog_category bc ON b.category = bc.id
+		WHERE b.id = #{id}
+	</select>
+	
 
 	<select id="selectPage" resultMap="BlogDetail">
 		SELECT
-		b.id,b.summary,b.write_date,b.title,b.hits,b.blog_from,b.blog_level,
+		b.id,b.summary,blog_status,b.write_date,b.title,b.hits,b.blog_from,b.blog_level,
 		b.category,b.space_id,bc.category_name,scope,b.comment_scope,b.recommend,bs.id AS user_id,file_name,file_store,relativePath,nickname,GROUP_CONCAT(CONCAT(tag_name,'_',CONVERT(t.id,CHAR))) AS tagList,comments,bf.id AS file_id
 		FROM blog b
 		LEFT OUTER JOIN user_space us ON b.space_id = us.id

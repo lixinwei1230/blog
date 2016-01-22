@@ -26,7 +26,7 @@ public interface BlogService {
 
 	Page<Blog> findBlogs(BlogPageParam param);
 
-	void updateHits(Integer blog, int hits);
+	void updateHits(Integer blog, int hits) throws LogicException;
 
 	void deleteBlogLogic(Integer id) throws LogicException;
 

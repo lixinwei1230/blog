@@ -7,12 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import me.qyh.entity.Id;
-import me.qyh.entity.Scope;
-import me.qyh.entity.Space;
-import me.qyh.entity.tag.Tag;
-import me.qyh.helper.htmlclean.JsonHtmlXssSerializer;
-
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -21,6 +15,12 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+
+import me.qyh.entity.Id;
+import me.qyh.entity.Scope;
+import me.qyh.entity.Space;
+import me.qyh.entity.tag.Tag;
+import me.qyh.helper.htmlclean.JsonHtmlXssSerializer;
 
 /**
  * 博客
@@ -98,6 +98,15 @@ public class Blog extends Id {
 			blogTags.add(new BlogTag(this, tag));
 		}
 		return blogTags;
+	}
+
+	public void addTags(Tag... tags) {
+		if (this.tags == null) {
+			this.tags = new HashSet<Tag>();
+		}
+		for (Tag tag : tags) {
+			this.tags.add(tag);
+		}
 	}
 
 	/**
@@ -244,6 +253,18 @@ public class Blog extends Id {
 
 	public void setRecommend(boolean recommend) {
 		this.recommend = recommend;
+	}
+
+	public Blog(Integer id) {
+		super(id);
+	}
+
+	@Override
+	public String toString() {
+		return "Blog [title=" + title + ", content=" + content + ", writeDate=" + writeDate + ", category=" + category
+				+ ", scope=" + scope + ", tags=" + tags + ", hits=" + hits + ", from=" + from + ", summary=" + summary
+				+ ", status=" + status + ", space=" + space + ", lastModifyDate=" + lastModifyDate + ", comments="
+				+ comments + ", commentScope=" + commentScope + ", level=" + level + ", recommend=" + recommend + "]";
 	}
 
 }

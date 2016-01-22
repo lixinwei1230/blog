@@ -16,7 +16,7 @@ public interface BlogDao extends BaseDao<Blog, Integer> {
 
 	List<Blog> selectPage(BlogPageParam param);
 
-	int updateHits(@Param("id") Integer blog, @Param("hits") int hits);
+	int updateHits(@Param("id") Integer id, @Param("hits") int hits);
 
 	List<DateFileIndex> selectDateFile(BlogFilesQueryBean bean);
 
@@ -29,4 +29,7 @@ public interface BlogDao extends BaseDao<Blog, Integer> {
 	Blog getNextBlog(@Param("id") Integer id,@Param("param") BlogPageParam param);
 
 	int updateComments(@Param("id") Integer blog, @Param("comments") int comments);
+	
+	Blog selectPreview(Integer id);
+	
 }
