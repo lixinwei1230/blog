@@ -3,6 +3,7 @@ package me.qyh.helper.lucene;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -41,6 +42,8 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery.Builder;
 import org.apache.lucene.search.FuzzyQuery;
@@ -80,7 +83,10 @@ public class BlogIndexHandlerImpl
 	private IndexReader reader;
 	private int maxResults = 1000;
 	private int maxTokenCount = 1000;
-	private boolean cleanAndBuildAllBlogsWhenContextStart = true;
+	/**
+	 * 数据量不大且当前没有为博客建立索引时候使用
+	 */
+	private boolean cleanAndBuildAllBlogsWhenContextStart = false;
 	
 	protected static final String ID = "id";
 	protected static final String SPACE = "space";
@@ -246,8 +252,12 @@ public class BlogIndexHandlerImpl
 		}
 		String title = param.getTitle();
 		if (!Validators.isEmptyOrNull(title, true)) {
-			Query query = new FuzzyQuery(new Term(TITLE, title + "~"));
-			builder.add(query, Occur.MUST);
+			QueryParser parser = new QueryParser(TITLE, getAnalyzer());
+			try {
+				builder.add(parser.parse(title), Occur.MUST);
+			} catch (ParseException e) {
+				//ignore
+			}
 		}
 		Scopes scopes = param.getScopes();
 		if (scopes != null && !scopes.isEmpty()) {
@@ -285,24 +295,24 @@ public class BlogIndexHandlerImpl
 		excute(op, false);
 	}
 
-	public void addBlogIndex(Blog blog) {
-		excute(new AddBlogIndexOperation(blog));
+	public void addBlogIndex(Blog ... blogs) {
+		excute(new AddBlogIndexOperation(Arrays.asList(blogs)));
 	}
 
-	public void rebuildBlogIndex(Blog blog) {
-		excute(new ReBlogIndexOperation(blog));
+	public void rebuildBlogIndex(Blog ... blogs) {
+		excute(new ReBlogIndexOperation(Arrays.asList(blogs)));
 	}
 
-	public void removeBlogIndex(Blog blog) {
-		excute(new RemoveBlogIndexOperation(blog), true);
+	public void removeBlogIndex(Blog ... blogs) {
+		excute(new RemoveBlogIndexOperation(Arrays.asList(blogs)), true);
 	}
 
 	private abstract class WriteToIndexOperation implements Runnable {
+		
+		protected List<Blog> blogs;
 
-		protected Blog blog;
-
-		public WriteToIndexOperation(Blog blog) {
-			this.blog = blog;
+		public WriteToIndexOperation(List<Blog> blogs) {
+			this.blogs = blogs;
 		}
 
 		protected IndexWriter getWriter() {
@@ -326,13 +336,15 @@ public class BlogIndexHandlerImpl
 		}
 
 		public void run() {
-			try {
-				rwl.writeLock().lock();
-				doRun();
-			} catch (Exception e) {
-				logger.error(e.getMessage(), e);
-			} finally {
-				rwl.writeLock().unlock();
+			if(!Validators.isEmptyOrNull(blogs)){
+				try {
+					rwl.writeLock().lock();
+					doRun();
+				} catch (Exception e) {
+					logger.error(e.getMessage(), e);
+				} finally {
+					rwl.writeLock().unlock();
+				}
 			}
 		}
 
@@ -341,16 +353,19 @@ public class BlogIndexHandlerImpl
 
 	private class AddBlogIndexOperation extends WriteToIndexOperation {
 
-		public AddBlogIndexOperation(Blog blog) {
-			super(blog);
+
+		public AddBlogIndexOperation(List<Blog> blogs) {
+			super(blogs);
 		}
 
 		@Override
 		void doRun() throws Exception {
 			IndexWriter writer = getWriter();
 			try {
-				if (writer != null) {
-					writer.addDocument(buildDocument(blog));
+				for(Blog blog : blogs){
+					if (writer != null) {
+						writer.addDocument(buildDocument(blog));
+					}
 				}
 			} finally {
 				closeWriter(writer);
@@ -360,8 +375,9 @@ public class BlogIndexHandlerImpl
 
 	private class ReBlogIndexOperation extends WriteToIndexOperation {
 
-		public ReBlogIndexOperation(Blog blog) {
-			super(blog);
+
+		public ReBlogIndexOperation(List<Blog> blogs) {
+			super(blogs);
 		}
 
 		@Override
@@ -369,9 +385,11 @@ public class BlogIndexHandlerImpl
 			IndexWriter writer = getWriter();
 			try {
 				if (writer != null) {
-					Term term = new Term(ID, blog.getId().toString());
-					writer.deleteDocuments(term);
-					writer.addDocument(buildDocument(blog));
+					for(Blog blog : blogs){
+						Term term = new Term(ID, blog.getId().toString());
+						writer.deleteDocuments(term);
+						writer.addDocument(buildDocument(blog));
+					}
 				}
 			} finally {
 				closeWriter(writer);
@@ -381,8 +399,8 @@ public class BlogIndexHandlerImpl
 
 	private class RemoveBlogIndexOperation extends WriteToIndexOperation {
 
-		public RemoveBlogIndexOperation(Blog blog) {
-			super(blog);
+		public RemoveBlogIndexOperation(List<Blog> blogs) {
+			super(blogs);
 		}
 
 		@Override
@@ -390,14 +408,40 @@ public class BlogIndexHandlerImpl
 			IndexWriter writer = getWriter();
 			try {
 				if (writer != null) {
-					Term term = new Term(ID, blog.getId().toString());
-					writer.deleteDocuments(term);
+					for(Blog blog : blogs){
+						Term term = new Term(ID, blog.getId().toString());
+						writer.deleteDocuments(term);
+					}
 					writer.commit();
 				}
 			} finally {
 				closeWriter(writer);
 			}
 		}
+	}
+	
+	private final class DeleteAllAndRebuildBlogsOperation extends WriteToIndexOperation{
+		
+
+		public DeleteAllAndRebuildBlogsOperation(List<Blog> blogs) {
+			super(blogs);
+		}
+
+		@Override
+		void doRun() throws Exception {
+			IndexWriter writer = getWriter();
+			try {
+				if (writer != null) {
+					writer.deleteAll();
+					for (Blog blog : blogs) {
+						writer.addDocument(buildDocument(blog));
+					}
+				}
+			} finally {
+				closeWriter(writer);
+			}
+		}
+		
 	}
 
 	protected class SortPro {
@@ -481,34 +525,17 @@ public class BlogIndexHandlerImpl
 				}
 			}
 			if (cleanAndBuildAllBlogsWhenContextStart && (event instanceof ContextRefreshedEvent)) {
+				cleanAndBuildAllBlogsWhenContextStart = false;
 				if (isRootApplicationContext(ctx)) {
-					// 只需要在加载主容器的时候使用
-					IndexWriter writer = null;
+					BlogDao blogDao = ctx.getBean(BlogDao.class);
+					BlogPageParam param = new BlogPageParam();
+					param.setCurrentPage(1);
+					param.setPageSize(Integer.MAX_VALUE);
+					List<Blog> blogs = blogDao.selectPage(param);
+					
 					try {
-						IndexWriterConfig config = new IndexWriterConfig(
-								new LimitTokenCountAnalyzer(getAnalyzer(), maxTokenCount));
-
-						writer = new IndexWriter(getIndexDirectory(), config);
-						writer.deleteAll();
-						BlogDao blogDao = ctx.getBean(BlogDao.class);
-						BlogPageParam param = new BlogPageParam();
-						param.setCurrentPage(1);
-						param.setPageSize(Integer.MAX_VALUE);
-						List<Blog> blogs = blogDao.selectPage(param);
-						if (!Validators.isEmptyOrNull(blogs)) {
-							for (Blog blog : blogs) {
-								writer.addDocument(buildDocument(blog));
-							}
-						}
-					} catch (IOException e) {
-						throw new SystemException(e.getMessage(), e);
-					} finally {
-						if (writer != null) {
-							try {
-								writer.close();
-							} catch (IOException e) {
-							}
-						}
+						excutorManager.excute(new DeleteAllAndRebuildBlogsOperation(blogs));
+					} catch (InterruptedException e) {
 					}
 				}
 			}
@@ -526,5 +553,13 @@ public class BlogIndexHandlerImpl
 			}
 		}
 		return blog;
+	}
+
+	/**
+	 * 数据量不大且当前没有为博客建立索引时候使用
+	 */
+	public void setCleanAndBuildAllBlogsWhenContextStart(
+			boolean cleanAndBuildAllBlogsWhenContextStart) {
+		this.cleanAndBuildAllBlogsWhenContextStart = cleanAndBuildAllBlogsWhenContextStart;
 	}
 }

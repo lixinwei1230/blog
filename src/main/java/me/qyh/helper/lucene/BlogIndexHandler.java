@@ -6,11 +6,11 @@ import me.qyh.pageparam.Page;
 
 public interface BlogIndexHandler {
 
-	public void addBlogIndex(Blog blog);
+	public void addBlogIndex(Blog ... blogs);
 
-	public void rebuildBlogIndex(Blog blog);
+	public void rebuildBlogIndex(Blog ... blogs);
 
-	public void removeBlogIndex(Blog blog);
+	public void removeBlogIndex(Blog ... blogs);
 
 	public Page<Blog> search(BlogPageParam param);
 
