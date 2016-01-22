@@ -43,9 +43,14 @@ resources/config.properties 可以配置一些分页每页记录数、字段验�
 去掉了bug的反馈页面，因为评论现在属于博客。
 
 如果不希望多域名支持：
-1.resouces/webConfig.properties中enableSpaceDomain为false
-2.在WEB-INF/head_source.jsp的staticSourcePrefix中指明静态文件的域名，例如：http://www.qyh.me/static
+1.resouces/webConfig.properties中enableSpaceDomain为false<br/>
+2.在WEB-INF/head_source.jsp的staticSourcePrefix中指明静态文件的域名，例如：http://www.qyh.me/static<br/>
 3.resouces/spring/application.xml中LocalFileStorage中不要设定mapping属性
-(去除me.qyh.upload.my.MyServerFileMapping)
-4.resouces/spring/blog-servlet.xml中配置me.qyh.upload.server.inner.LocalFileController来展现和下载文件
+(去除me.qyh.upload.my.MyServerFileMapping)<br/>
+4.resouces/spring/blog-servlet.xml中配置me.qyh.upload.server.inner.LocalFileController来展现和下载文件<br/>
 (去除me.qyh.upload.my.FileWriteController)
+
+博客索引
+/src/main/java/me/qyh/helper/lucene/BlogIndexHandlerImpl.java 用来操作博客索引和查询博客 <br/>
+在数据量不大的情况下可以设置<strong>cleanAndBuildAllBlogsWhenContextStart</strong>为true在容器启动的时候重新为所有博客构建索引<br/>
+在config.properties配置config.blog.index.dir可以更改索引目录
