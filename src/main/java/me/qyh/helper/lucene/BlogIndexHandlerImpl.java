@@ -88,7 +88,7 @@ public class BlogIndexHandlerImpl
 	/**
 	 * 数据量不大且当前没有为博客建立索引时候使用
 	 */
-	private boolean cleanAndBuildAllBlogsWhenContextStart = true;
+	private boolean cleanAndBuildAllBlogsWhenContextStart = false;
 
 	protected static final String ID = "id";
 	protected static final String SPACE = "space";
