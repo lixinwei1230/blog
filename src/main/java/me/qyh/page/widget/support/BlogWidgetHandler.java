@@ -130,7 +130,7 @@ public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 		}
 	}
 	
-	public Page<Blog> searchBlog(BlogPageParam param){
+	private Page<Blog> searchBlog(BlogPageParam param){
 		Page<Blog> page = blogIndexHandler.search(param);
 		List<Blog> blogs = page.getDatas();
 		List<Blog> results = new ArrayList<Blog>();

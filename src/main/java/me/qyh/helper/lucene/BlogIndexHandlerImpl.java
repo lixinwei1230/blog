@@ -10,23 +10,6 @@ import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import me.qyh.bean.Scopes;
-import me.qyh.dao.BlogDao;
-import me.qyh.entity.Scope;
-import me.qyh.entity.Space;
-import me.qyh.entity.blog.Blog;
-import me.qyh.entity.blog.BlogCategory;
-import me.qyh.entity.blog.BlogFrom;
-import me.qyh.entity.blog.BlogStatus;
-import me.qyh.entity.tag.Tag;
-import me.qyh.exception.SystemException;
-import me.qyh.helper.excutor.ExcutorManager;
-import me.qyh.pageparam.BlogPageParam;
-import me.qyh.pageparam.Order;
-import me.qyh.pageparam.OrderType;
-import me.qyh.pageparam.Page;
-import me.qyh.utils.Validators;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.miscellaneous.LimitTokenCountAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -34,6 +17,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.LongField;
 import org.apache.lucene.document.NumericDocValuesField;
+import org.apache.lucene.document.SortedDocValuesField;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.DirectoryReader;
@@ -58,6 +42,7 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.BytesRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -69,6 +54,23 @@ import org.springframework.context.event.ApplicationContextEvent;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
+
+import me.qyh.bean.Scopes;
+import me.qyh.dao.BlogDao;
+import me.qyh.entity.Scope;
+import me.qyh.entity.Space;
+import me.qyh.entity.blog.Blog;
+import me.qyh.entity.blog.BlogCategory;
+import me.qyh.entity.blog.BlogFrom;
+import me.qyh.entity.blog.BlogStatus;
+import me.qyh.entity.tag.Tag;
+import me.qyh.exception.SystemException;
+import me.qyh.helper.excutor.ExcutorManager;
+import me.qyh.pageparam.BlogPageParam;
+import me.qyh.pageparam.Order;
+import me.qyh.pageparam.OrderType;
+import me.qyh.pageparam.Page;
+import me.qyh.utils.Validators;
 
 @Component
 public class BlogIndexHandlerImpl
@@ -86,12 +88,13 @@ public class BlogIndexHandlerImpl
 	/**
 	 * 数据量不大且当前没有为博客建立索引时候使用
 	 */
-	private boolean cleanAndBuildAllBlogsWhenContextStart = false;
-	
+	private boolean cleanAndBuildAllBlogsWhenContextStart = true;
+
 	protected static final String ID = "id";
 	protected static final String SPACE = "space";
 	protected static final String TITLE = "title";
 	protected static final String CATEGORY_ID = "category";
+	protected static final String CATEGORY_NAME = "categoryName";
 	protected static final String SCOPE = "scope";
 	protected static final String RECOMMEND = "recommend";
 	protected static final String STATUS = "status";
@@ -100,7 +103,7 @@ public class BlogIndexHandlerImpl
 	protected static final String HITS = "hits";
 	protected static final String WRITE_DATE = "writeDate";
 	protected static final String TAGS = "tags";
-	
+
 	private final SortPro[] pros = new SortPro[] { new SortPro(HITS, Type.INT) };
 
 	protected Analyzer getAnalyzer() {
@@ -117,7 +120,7 @@ public class BlogIndexHandlerImpl
 				reader = DirectoryReader.open(getIndexDirectory());
 			} else {
 				IndexReader newReader = DirectoryReader.openIfChanged((DirectoryReader) reader);
-				if(newReader != null){
+				if (newReader != null) {
 					reader.close();
 					reader = newReader;
 				}
@@ -141,6 +144,8 @@ public class BlogIndexHandlerImpl
 		doc.add(new StringField(ID, blog.getId().toString(), Field.Store.YES));
 		doc.add(new StringField(SPACE, blog.getSpace().getId(), Field.Store.YES));
 		doc.add(new StringField(TITLE, blog.getTitle(), Field.Store.YES));
+		doc.add(new SortedDocValuesField(CATEGORY_NAME, new BytesRef(blog.getCategory().getName())));
+		doc.add(new StoredField(CATEGORY_NAME, blog.getCategory().getName()));
 		doc.add(new StringField(CATEGORY_ID, blog.getCategory().getId().toString(), Field.Store.YES));
 		doc.add(new StringField(SCOPE, blog.getScope().name().toLowerCase(), Field.Store.YES));
 		Integer level = blog.getLevel();
@@ -162,7 +167,7 @@ public class BlogIndexHandlerImpl
 		}
 		return doc;
 	}
-	
+
 	public Page<Blog> search(BlogPageParam param) {
 		IndexSearcher searcher = new IndexSearcher(getIndexReader());
 		Sort sort = parseSort(param);
@@ -175,11 +180,11 @@ public class BlogIndexHandlerImpl
 			if (offset < total) {
 				ScoreDoc[] docs = tds.scoreDocs;
 				int last = offset + param.getPageSize();
-				for (int i = offset; i < Math.min(last, total); i++) {
+				for (int i = offset; i < Math.min(Math.min(last, total), maxResults); i++) {
 					datas.add(parseToBlog(searcher.doc(docs[i].doc)));
 				}
 			}
-			return new Page<Blog>(param, total, datas);
+			return new Page<Blog>(param, Math.min(maxResults, total), datas);
 		} catch (IOException e) {
 			throw new SystemException(e);
 		}
@@ -256,7 +261,7 @@ public class BlogIndexHandlerImpl
 			try {
 				builder.add(parser.parse(title), Occur.MUST);
 			} catch (ParseException e) {
-				//ignore
+				// ignore
 			}
 		}
 		Scopes scopes = param.getScopes();
@@ -295,20 +300,20 @@ public class BlogIndexHandlerImpl
 		excute(op, false);
 	}
 
-	public void addBlogIndex(Blog ... blogs) {
+	public void addBlogIndex(Blog... blogs) {
 		excute(new AddBlogIndexOperation(Arrays.asList(blogs)));
 	}
 
-	public void rebuildBlogIndex(Blog ... blogs) {
+	public void rebuildBlogIndex(Blog... blogs) {
 		excute(new ReBlogIndexOperation(Arrays.asList(blogs)));
 	}
 
-	public void removeBlogIndex(Blog ... blogs) {
+	public void removeBlogIndex(Blog... blogs) {
 		excute(new RemoveBlogIndexOperation(Arrays.asList(blogs)), true);
 	}
 
 	private abstract class WriteToIndexOperation implements Runnable {
-		
+
 		protected List<Blog> blogs;
 
 		public WriteToIndexOperation(List<Blog> blogs) {
@@ -336,7 +341,7 @@ public class BlogIndexHandlerImpl
 		}
 
 		public void run() {
-			if(!Validators.isEmptyOrNull(blogs)){
+			if (!Validators.isEmptyOrNull(blogs)) {
 				try {
 					rwl.writeLock().lock();
 					doRun();
@@ -353,7 +358,6 @@ public class BlogIndexHandlerImpl
 
 	private class AddBlogIndexOperation extends WriteToIndexOperation {
 
-
 		public AddBlogIndexOperation(List<Blog> blogs) {
 			super(blogs);
 		}
@@ -362,7 +366,7 @@ public class BlogIndexHandlerImpl
 		void doRun() throws Exception {
 			IndexWriter writer = getWriter();
 			try {
-				for(Blog blog : blogs){
+				for (Blog blog : blogs) {
 					if (writer != null) {
 						writer.addDocument(buildDocument(blog));
 					}
@@ -375,7 +379,6 @@ public class BlogIndexHandlerImpl
 
 	private class ReBlogIndexOperation extends WriteToIndexOperation {
 
-
 		public ReBlogIndexOperation(List<Blog> blogs) {
 			super(blogs);
 		}
@@ -385,7 +388,7 @@ public class BlogIndexHandlerImpl
 			IndexWriter writer = getWriter();
 			try {
 				if (writer != null) {
-					for(Blog blog : blogs){
+					for (Blog blog : blogs) {
 						Term term = new Term(ID, blog.getId().toString());
 						writer.deleteDocuments(term);
 						writer.addDocument(buildDocument(blog));
@@ -408,7 +411,7 @@ public class BlogIndexHandlerImpl
 			IndexWriter writer = getWriter();
 			try {
 				if (writer != null) {
-					for(Blog blog : blogs){
+					for (Blog blog : blogs) {
 						Term term = new Term(ID, blog.getId().toString());
 						writer.deleteDocuments(term);
 					}
@@ -419,9 +422,8 @@ public class BlogIndexHandlerImpl
 			}
 		}
 	}
-	
-	private final class DeleteAllAndRebuildBlogsOperation extends WriteToIndexOperation{
-		
+
+	private final class DeleteAllAndRebuildBlogsOperation extends WriteToIndexOperation {
 
 		public DeleteAllAndRebuildBlogsOperation(List<Blog> blogs) {
 			super(blogs);
@@ -441,7 +443,7 @@ public class BlogIndexHandlerImpl
 				closeWriter(writer);
 			}
 		}
-		
+
 	}
 
 	protected class SortPro {
@@ -507,17 +509,17 @@ public class BlogIndexHandlerImpl
 			createIndex(getIndexDirectory());
 		}
 	}
-	
-	private boolean isRootApplicationContext(ApplicationContext ctx){
+
+	private boolean isRootApplicationContext(ApplicationContext ctx) {
 		return (ctx.getParent() == null);
 	}
 
 	@Override
 	public void onApplicationEvent(ApplicationContextEvent event) {
 		ApplicationContext ctx = event.getApplicationContext();
-		if(isRootApplicationContext(ctx)){
-			if(event instanceof ContextClosedEvent){
-				if(reader != null){
+		if (isRootApplicationContext(ctx)) {
+			if (event instanceof ContextClosedEvent) {
+				if (reader != null) {
 					try {
 						reader.close();
 					} catch (IOException e) {
@@ -532,7 +534,7 @@ public class BlogIndexHandlerImpl
 					param.setCurrentPage(1);
 					param.setPageSize(Integer.MAX_VALUE);
 					List<Blog> blogs = blogDao.selectPage(param);
-					
+
 					try {
 						excutorManager.excute(new DeleteAllAndRebuildBlogsOperation(blogs));
 					} catch (InterruptedException e) {
@@ -541,7 +543,7 @@ public class BlogIndexHandlerImpl
 			}
 		}
 	}
-	
+
 	protected Blog parseToBlog(Document doc) {
 		Blog blog = new Blog(Integer.parseInt(doc.get(ID)));
 		IndexableField[] tagFields = doc.getFields(TAGS);
@@ -558,8 +560,7 @@ public class BlogIndexHandlerImpl
 	/**
 	 * 数据量不大且当前没有为博客建立索引时候使用
 	 */
-	public void setCleanAndBuildAllBlogsWhenContextStart(
-			boolean cleanAndBuildAllBlogsWhenContextStart) {
+	public void setCleanAndBuildAllBlogsWhenContextStart(boolean cleanAndBuildAllBlogsWhenContextStart) {
 		this.cleanAndBuildAllBlogsWhenContextStart = cleanAndBuildAllBlogsWhenContextStart;
 	}
 }
