@@ -64,7 +64,7 @@ public class TagSetTypeHandler extends BaseTypeHandler<Set<Tag>> {
 	 * @return
 	 */
 	protected Set<Tag> toTags(String str) {
-		if(Validators.isEmptyOrNull(str)){
+		if(Validators.isEmptyOrNull(str,true)){
 			return Collections.emptySet();
 		}
 		String[] tagDess = str.split(",");

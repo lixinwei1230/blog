@@ -54,5 +54,10 @@ public class Tag extends Id{
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "Tag [name=" + name + "]";
+	}
 	
 }

@@ -1,6 +1,5 @@
 package me.qyh.utils;
 
-import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -72,28 +71,6 @@ public final class Validators {
 
 	public static boolean isEmptyOrNull(Map<?, ?> map) {
 		return (map == null || map.isEmpty());
-	}
-
-	public static boolean isEmptyOrNull(Object o) {
-		if (o == null) {
-			return true;
-		}
-		if (o instanceof String) {
-			return ((String) o).isEmpty();
-		} else if (o instanceof Collection) {
-			if (((Collection<?>) o).isEmpty()) {
-				return true;
-			}
-		} else if (o.getClass().isArray()) {
-			if (Array.getLength(o) == 0) {
-				return true;
-			}
-		} else if (o instanceof Map) {
-			if (((Map<?, ?>) o).isEmpty()) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public static boolean isEmptyOrNull(String str, boolean trim) {

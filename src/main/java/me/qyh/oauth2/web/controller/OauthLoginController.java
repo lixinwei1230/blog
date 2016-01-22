@@ -33,7 +33,7 @@ public class OauthLoginController extends BaseOauthController {
 	}
 	
 	private Oauth2 getOauth2(String type){
-		if(!Validators.isEmptyOrNull(type)){
+		if(!Validators.isEmptyOrNull(type,true)){
 			type = type.toUpperCase();
 			OauthType _type = null;
 			try {

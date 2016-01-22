@@ -1,6 +1,5 @@
 package me.qyh.helper.freemaker;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,7 +11,6 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import freemarker.cache.CacheStorage;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Template;
-import freemarker.template.TemplateException;
 import freemarker.template.TemplateHashModel;
 import me.qyh.exception.SystemException;
 import me.qyh.helper.refresh.Refresh;
@@ -60,7 +58,7 @@ public class WebFreemarkers implements Refresh {
 			TemplateHashModel staticModels = wrapper.getStaticModels();
 			TemplateHashModel resize = (TemplateHashModel) staticModels.get(ResizeTagHelpers.class.getName());
 			_model.put(RESIZE, resize);
-			if (!Validators.isEmptyOrNull(staticModels)) {
+			if (staticModels != null) {
 				for (Map.Entry<String, String> m : this.staticModels.entrySet()) {
 					TemplateHashModel tsh = (TemplateHashModel) staticModels.get(m.getValue());
 					_model.put(m.getKey(), tsh);
@@ -75,7 +73,7 @@ public class WebFreemarkers implements Refresh {
 			}
 			tpl = freeMarker.getConfiguration().getTemplate(temlatePath, LocaleContextHolder.getLocale());
 			text = FreeMarkerTemplateUtils.processTemplateIntoString(tpl, _model);
-		} catch (IOException | TemplateException e) {
+		} catch (Exception e) {
 			throw new SystemException(e);
 		}
 		return text;

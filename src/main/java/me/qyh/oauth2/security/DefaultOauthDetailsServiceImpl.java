@@ -34,7 +34,7 @@ public class DefaultOauthDetailsServiceImpl implements OauthDetailsService {
 	}
 
 	protected boolean validOauthPrincipal(OauthPrincipal oauth2Principal) {
-		return !(Validators.isEmptyOrNull(oauth2Principal.getOauthUserId()) || oauth2Principal.getType() == null);
+		return !(Validators.isEmptyOrNull(oauth2Principal.getOauthUserId(),true) || oauth2Principal.getType() == null);
 	}
 
 }
