@@ -10,7 +10,7 @@
 				<div class="media">
 			      <div class="media-body">
 			        <h4 class="media-heading">
-			      	  	<a href="${urlHelper.getUrlBySpace(blog.space)}/blog/${blog.id}" target="_blank">
+			      	  	<a href="${urlHelper.getUrlBySpace(blog.space)}/blog/${blog.id?c}" target="_blank">
 				        	<#if blog.title?length gt 15>
 							   <#escape x as x?html>
 								 ${blog.title?substring(0,15)}...
@@ -40,7 +40,7 @@
 				</tr>
 				<#list blogs as blog>
 				    <tr>
-				    	<td><a href="${urlHelper.getUrlBySpace(blog.space)}/blog/${blog.id}" target="_blank">
+				    	<td><a href="${urlHelper.getUrlBySpace(blog.space)}/blog/${blog.id?c}" target="_blank">
 				    	<#if blog.title?length gt 15>
 						   <#escape x as x?html>
 								 ${blog.title?substring(0,15)}...
