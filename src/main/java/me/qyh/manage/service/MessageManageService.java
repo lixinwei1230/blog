@@ -5,5 +5,7 @@ import me.qyh.entity.message.MessageSend;
 public interface MessageManageService {
 	
 	void insertGlobalMessage(MessageSend message);
+	
+	void deleteMesssageReceiveByOverdays();
 
 }

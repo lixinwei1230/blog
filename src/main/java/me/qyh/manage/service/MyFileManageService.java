@@ -13,5 +13,10 @@ public interface MyFileManageService extends MyFileService {
 	 * @throws LogicException
 	 */
 	void deleteMyFile(Integer id , TipMessage tipMessage) throws LogicException;
+	
+	/**
+	 * 删除待删除文件
+	 */
+	void clear();
 
 }
