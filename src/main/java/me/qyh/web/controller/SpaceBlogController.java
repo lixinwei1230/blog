@@ -39,6 +39,7 @@ public class SpaceBlogController extends SpaceBaseController {
 		param.setPageSize(pageSize);
 		param.setStatus(BlogStatus.NORMAL);
 		param.setSpace(getSpace(model));
+		param.setDel(false);
 		param.validate();
 
 		model.addAttribute(PAGE, blogService.findBlogs(param));

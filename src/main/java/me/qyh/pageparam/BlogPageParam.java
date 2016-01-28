@@ -32,6 +32,7 @@ public class BlogPageParam extends PageParam {
 	private BlogStatus status = BlogStatus.NORMAL;
 	private boolean ignoreLevel;// 忽略博客的排序值
 	private Boolean recommend;
+	private Boolean del;
 
 	public BlogPageParam() {
 
@@ -123,6 +124,14 @@ public class BlogPageParam extends PageParam {
 
 	public void setRecommend(Boolean recommend) {
 		this.recommend = recommend;
+	}
+
+	public Boolean getDel() {
+		return del;
+	}
+
+	public void setDel(Boolean del) {
+		this.del = del;
 	}
 
 }

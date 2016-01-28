@@ -15,7 +15,6 @@
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="page" />
 <sec:authentication property='principal.space' var="space" />
 <title><sec:authentication property='principal.nickname' /></title>
-
 <jsp:include page="/WEB-INF/head_source.jsp"></jsp:include>
 	<link
 	href="${staticSourcePrefix }/plugins/jupload/9.5.7/css/jquery.fileupload.css"
@@ -136,6 +135,26 @@
 						</div>
 					</div>
 				</div>
+				<div class="row" style="margin-bottom: 15px">
+					<div class="col-lg-12 col-sm-12 col-xs-12 col-md-12">
+						<div class="col-lg-2 col-sm-12 col-xs-12 col-md-2">
+							<label>定时发布</label>
+						</div>
+						<div class="col-lg-10 col-sm-12 col-md-10 col-xs-12">
+							<input type="checkbox" id="scheduled">
+						</div>
+					</div>
+				</div>
+				<div class="row" style="margin-bottom: 15px;display:none">
+					<div class="col-lg-12 col-sm-12 col-xs-12 col-md-12">
+						<div class="col-lg-2 col-sm-12 col-xs-12 col-md-2">
+							<label>发布日期</label>
+						</div>
+						<div class="col-lg-10 col-sm-12 col-md-10 col-xs-12">
+							<input type="text" class="form-control" id="scheduled-time" value="" />
+						</div>
+					</div>
+				</div>
 				<div class="col-lg-12 col-sm-12 col-xs-12 col-md-12"
 					style="margin-bottom: 15px">
 					<button class="btn btn-primary" style="float: right"
@@ -251,11 +270,6 @@
 	<script type="text/javascript"
 		src="${urlHelper.getStaticResourcePrefix(2) }/plugins/jupload/9.5.7/js/jquery.fileupload-ui.js"></script>
 	<script type="text/javascript">
-	var token = $("meta[name='_csrf']").attr("content");
-	var header = $("meta[name='_csrf_header']").attr("content");
-	$(document).ajaxSend(function(e, xhr, options) {
-		xhr.setRequestHeader(header, token);
-	});
 	var categoryIndex;
 	function showManageBlogCategoryModal(o){
 		var btn = o;
@@ -445,6 +459,12 @@
 				level = 0;
 			}
 			data.level = level;
+			if($("#scheduled").is(':checked')){
+				data.status = 'SCHEDULED';
+				data.writeDate = $("#scheduled-time").val();
+			}else{
+				data.status = 'NORMAL';
+			}
 			btn.button("loading");
 			var url = "${ctx}/my/blog/write";
 			temporarySaveFlag = false;
@@ -474,6 +494,19 @@
 	         },function(){
 				btn.button("reset");
 			});
+		});
+		
+		var dd = new Date();   
+		dd.setDate(dd.getDate()+1);//获取AddDayCount天后的日期   
+		var tm = dd.pattern("yyyy-MM-dd");
+		$("#scheduled-time").val(tm+" 00:00:00");
+		$("#scheduled").click(function(){
+			var me = $(this);
+			if(me.is(':checked')){
+				$("#scheduled-time").parent().parent().parent().show();
+			}else{
+				$("#scheduled-time").parent().parent().parent().hide();
+			}
 		});
 		
 	});
@@ -536,7 +569,7 @@
 			data.category={"id":categoryId};
 			var from = $("select[name='from']").val();
 			if(from == ""){
-				from = "ORIGINAL"
+				from = "ORIGINAL";
 			}
 			data.from = from;
 			var scope = $("select[name='scope']").val();
@@ -554,6 +587,12 @@
 				level = 0;
 			}
 			data.level = level;
+			if($("#scheduled").is(':checked')){
+				data.status = 'SCHEDULED';
+				data.writeDate = $("#scheduled-time").val();
+			}else{
+				data.status = 'NORMAL';
+			}
 			var url = '${ctx}/my/blog/temporary/save';
 			post(url,data,function(result){
 				if(result.success){

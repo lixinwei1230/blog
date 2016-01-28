@@ -2,12 +2,11 @@ package me.qyh.entity.blog;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
 import me.qyh.entity.Id;
 import me.qyh.entity.Space;
 import me.qyh.helper.htmlclean.JsonHtmlXssSerializer;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * 博客分类
@@ -15,7 +14,6 @@ import me.qyh.helper.htmlclean.JsonHtmlXssSerializer;
  * @author mhlx
  *
  */
-@JsonFilter("blogCategoryFilter")
 public class BlogCategory extends Id {
 
 	/**

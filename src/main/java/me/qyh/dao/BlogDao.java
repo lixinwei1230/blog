@@ -32,4 +32,6 @@ public interface BlogDao extends BaseDao<Blog, Integer> {
 	
 	Blog selectPreview(Integer id);
 	
+	void updateDel(Blog blog);
+	
 }

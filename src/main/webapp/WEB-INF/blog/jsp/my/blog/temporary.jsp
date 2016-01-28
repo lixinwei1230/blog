@@ -1,5 +1,6 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@taglib prefix="sec"
 	uri="http://www.springframework.org/security/tags"%>
@@ -177,6 +178,41 @@
 						</div>
 					</div>
 				</div>
+				<div class="row" style="margin-bottom: 15px">
+					<div class="col-lg-12 col-sm-12 col-xs-12 col-md-12">
+						<div class="col-lg-2 col-sm-12 col-xs-12 col-md-2">
+							<label>定时发布</label>
+						</div>
+						<div class="col-lg-10 col-sm-12 col-md-10 col-xs-12">
+							<c:choose>
+								<c:when test="${blog.scheduled }">
+									<input type="checkbox" id="scheduled" checked="checked">
+								</c:when>
+								<c:otherwise>
+									<input type="checkbox" id="scheduled">
+								</c:otherwise>
+							</c:choose>
+						</div>
+					</div>
+				</div>
+				<c:choose>
+					<c:when test="${blog.scheduled }">
+						<c:set value="" var="style"/>
+					</c:when>
+					<c:otherwise>
+						<c:set value="display:none" var="style"/>
+					</c:otherwise>
+				</c:choose>
+				<div class="row" style="margin-bottom: 15px;${style}">
+					<div class="col-lg-12 col-sm-12 col-xs-12 col-md-12">
+						<div class="col-lg-2 col-sm-12 col-xs-12 col-md-2">
+							<label>发布日期</label>
+						</div>
+						<div class="col-lg-10 col-sm-12 col-md-10 col-xs-12">
+							<input type="text" class="form-control" id="scheduled-time" value="<fmt:formatDate value="${blog.writeDate }" pattern="yyyy-MM-dd HH:mm:ss"/>" />
+						</div>
+					</div>
+				</div>
 
 				<div class="col-lg-12 col-sm-12 col-xs-12 col-md-12"
 					style="margin-bottom: 15px">
@@ -294,11 +330,6 @@
 	<script type="text/javascript"
 		src="${urlHelper.getStaticResourcePrefix(2) }/plugins/jupload/9.5.7/js/jquery.fileupload-ui.js"></script>
 	<script type="text/javascript">
-	var token = $("meta[name='_csrf']").attr("content");
-	var header = $("meta[name='_csrf_header']").attr("content");
-	$(document).ajaxSend(function(e, xhr, options) {
-		xhr.setRequestHeader(header, token);
-	});
 	var categoryIndex;
 	var currentCategory = '${blog.category.id}';
 	function showManageBlogCategoryModal(o){
@@ -496,6 +527,12 @@
 				level = 0;
 			}
 			data.level = level;
+			if($("#scheduled").is(':checked')){
+				data.status = 'SCHEDULED';
+				data.writeDate = $("#scheduled-time").val();
+			}else{
+				data.status = 'NORMAL';
+			}
 			btn.button("loading");
 			var url = "${ctx}/my/blog/temporary/handle";
 			temporarySaveFlag = false;
@@ -534,6 +571,15 @@
 				addTag($(this).val());
 			});
 		}
+		
+		$("#scheduled").click(function(){
+			var me = $(this);
+			if(me.is(':checked')){
+				$("#scheduled-time").parent().parent().parent().show();
+			}else{
+				$("#scheduled-time").parent().parent().parent().hide();
+			}
+		});
 	});
 	var tags = [];
 	var tagContainer = $("#tag-container");
@@ -612,6 +658,12 @@
 				level = 0;
 			}
 			data.level = level;
+			if($("#scheduled").is(':checked')){
+				data.status = 'SCHEDULED';
+				data.writeDate = $("#scheduled-time").val();
+			}else{
+				data.status = 'NORMAL';
+			}
 			var url = '${ctx}/my/blog/temporary/save';
 			post(url,data,function(result){
 				if(result.success){

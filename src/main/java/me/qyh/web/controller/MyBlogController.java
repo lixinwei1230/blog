@@ -51,16 +51,13 @@ public class MyBlogController extends BaseController {
 		Blog blog = new Blog();
 		blog.setSpace(UserContext.getSpace());
 		TemporaryBlog tBlog = blogService.getTemporaryBlog(blog);
-		return tBlog == null ? "my/blog/write" : "forward:temporary/" + tBlog.getId();
+		return tBlog == null ? "my/blog/write" : "forward:temporary/" + tBlog.getDummyId();
 	}
 
 	@RequestMapping(value = "write", method = RequestMethod.POST)
 	@ResponseBody
 	public Info write(@RequestBody @Validated Blog blog) throws LogicException {
-		blog.setStatus(BlogStatus.NORMAL);
-		blog.setWriteDate(new Date());
 		blog.setSpace(UserContext.getSpace());
-		blog.setRecommend(false);
 
 		blogService.insertBlog(blog);
 
@@ -83,6 +80,7 @@ public class MyBlogController extends BaseController {
 		param.setPageSize(pageSize);
 		param.setSpace(current);
 		param.setStatus(BlogStatus.NORMAL);
+		param.setDel(false);
 		param.validate();
 
 		model.addAttribute(PAGE, blogService.findBlogs(param));
@@ -97,10 +95,25 @@ public class MyBlogController extends BaseController {
 		param.setCurrentPage(currentPage);
 		param.setPageSize(pageSize);
 		param.setSpace(UserContext.getSpace());
-		param.setStatus(BlogStatus.RECYCLER);
+		param.setDel(true);
+		param.setStatus(null);
+		param.validate();
 
 		model.addAttribute(PAGE, blogService.findBlogs(param));
 		return "my/blog/recycler";
+	}
+	
+	@RequestMapping(value = "scheduled/list/{currentPage}", method = RequestMethod.GET)
+	public String scheduled(@PathVariable("currentPage") int currentPage, ModelMap model) {
+		BlogPageParam param = new BlogPageParam();
+		param.setCurrentPage(currentPage);
+		param.setPageSize(pageSize);
+		param.setSpace(UserContext.getSpace());
+		param.setStatus(BlogStatus.SCHEDULED);
+		param.setDel(false);
+		param.validate();
+		model.addAttribute(PAGE, blogService.findBlogs(param));
+		return "my/blog/scheduled";
 	}
 
 	@RequestMapping(value = "recover", method = RequestMethod.POST)

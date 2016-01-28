@@ -223,6 +223,27 @@
 			<value>0 0/30 * * * ?</value>
 		</property>
 	</bean>
+	
+	
+	<bean id="scheduledBlogJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+			<bean class="me.qyh.job.ScheduledBlogJob" />
+		</property>
+		<property name="targetMethod">
+			<value>doJob</value>
+		</property>
+	</bean>
+	
+	<bean id="scheduledBlogTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="scheduledBlogJob" />
+		</property>
+		<property name="cronExpression">
+			<value>0/30 * * * * ?</value>
+		</property>
+	</bean>
 
 	<bean id="startQuertz" autowire="no"
 		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
@@ -231,6 +252,7 @@
 				<ref bean="clearMessageTrigger" />
 				<ref bean="clearFileTrigger" />
 				<ref bean="signCacheStoreClearTrigger" />
+				<ref bean="scheduledBlogTrigger"/>
 			</list>
 		</property>
 	</bean>

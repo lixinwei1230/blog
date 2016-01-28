@@ -5,46 +5,83 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="me.qyh.dao.TemporaryBlogDao">
 
 	<resultMap type="TemporaryBlog" id="TemporaryBlogDetail">
-		<id column="id" property="id" />
+		<id column="id" property="dummyId"/>
 		<result column="title" property="title" />
 		<result column="content" property="content" />
-		<result column="saveDate" property="saveDate" />
-		<result column="json" property="json" />
+		<result column="save_date" property="saveDate" />
+		<result column="write_date" property="writeDate" />
+		<result column="blog" property="id" />
+		
+		<result column="comment_scope" property="commentScope"
+			typeHandler="EnumOrdinalTypeHandler" />
+		<result property="level" column="blog_level" />
+		<result property="scope" column="scope" typeHandler="EnumOrdinalTypeHandler" />
+		<result property="status" column="blog_status" typeHandler="EnumOrdinalTypeHandler" />
+		<result property="from" column="blog_from" typeHandler="EnumOrdinalTypeHandler" />
+		
+		<result property="tags" column="tagStr" typeHandler="SimpleTagSetTypeHandler"/>
+		<association property="category" javaType="BlogCategory">
+			<id column="category" property="id" />
+		</association>
+		
 		<association property="space" javaType="Space">
 			<id column="space_id" property="id" />
 		</association>
-		<association property="blog" javaType="Blog">
-			<id column="blog" property="id" />
-		</association>
 	</resultMap>
-
+	
 	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
 		INSERT
 		INTO temporary_blog
 		(
-		id,
 		title,
 		content,
-		saveDate,
+		save_date,
+		write_date,
+		comment_scope,
+		blog_level,
+		scope,
+		blog_status,
+		blog_from,
+		tagStr,
+		category,
 		space_id,
-		json,
 		blog
 		)
 		VALUES
 		(
-		#{id},
 		#{title},
 		#{content},
 		#{saveDate},
+		#{writeDate},
+		#{commentScope,javaType=Scope,typeHandler=EnumOrdinalTypeHandler},
+		#{level},
+		#{scope,javaType=Scope,typeHandler=EnumOrdinalTypeHandler},
+		#{status,javaType=BlogStatus,typeHandler=EnumOrdinalTypeHandler},
+		#{from,javaType=BlogFrom,typeHandler=EnumOrdinalTypeHandler},
+		#{tagStr},
+		#{category.id},
 		#{space.id},
-		#{json},
-		#{blog.id}
+		#{id}
 		)
 	</insert>
 
 	<select id="selectById" resultMap="TemporaryBlogDetail">
 		SELECT
-		id,title,content,saveDate,space_id,json,blog FROM temporary_blog WHERE
+		id,
+		title,
+		content,
+		save_date,
+		write_date,
+		comment_scope,
+		blog_level,
+		scope,
+		blog_status,
+		blog_from,
+		tagStr,
+		category,
+		space_id,
+		blog
+		FROM temporary_blog WHERE
 		id = #{id}
 	</select>
 
@@ -58,17 +95,57 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 				content = #{content},
 			</if>
 			<if test="saveDate != null">
-				saveDate = #{saveDate},
+				save_date = #{saveDate},
 			</if>
-			<if test="json != null and json">
-				json = #{json}
+			<if test="writeDate != null">
+				write_date = #{writeDate},
+			</if>
+			<if test="tagStr != null">
+				tagStr = #{tagStr},
+			</if>
+			<if test="from != null">
+				blog_from =
+				#{from,javaType=BlogFrom,typeHandler=EnumOrdinalTypeHandler},
+			</if>
+			<if test="status != null">
+				blog_status =
+				#{status,javaType=BlogStatus,typeHandler=EnumOrdinalTypeHandler},
+			</if>
+			<if test="scope != null">
+				scope =
+				#{scope,javaType=Scope,typeHandler=EnumOrdinalTypeHandler},
+			</if>
+			<if test="category != null">
+				category = #{category.id},
+			</if>
+			<if test="commentScope != null">
+				comment_scope =
+				#{commentScope,javaType=Scope,typeHandler=EnumOrdinalTypeHandler},
+			</if>
+			<if test="level != null">
+				blog_level = #{level}
 			</if>
 		</set>
-		WHERE id = #{id}
+		WHERE id = #{dummyId}
 	</update>
 
 	<select id="selectByBlog" resultMap="TemporaryBlogDetail">
-		SELECT id,title,saveDate,space_id FROM temporary_blog
+		SELECT
+		id,
+		title,
+		content,
+		save_date,
+		write_date,
+		comment_scope,
+		blog_level,
+		scope,
+		blog_status,
+		blog_from,
+		tagStr,
+		category,
+		space_id,
+		blog
+		FROM temporary_blog
 		WHERE space_id =
 		#{space.id}
 		<choose>

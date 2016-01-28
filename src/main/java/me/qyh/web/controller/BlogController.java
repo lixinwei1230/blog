@@ -50,6 +50,7 @@ public class BlogController extends BaseController {
 		param.setPageSize(pageSize);
 		param.setStatus(BlogStatus.NORMAL);
 		param.setIgnoreLevel(true);
+		param.setDel(false);
 		param.validate();
 
 		model.addAttribute(PAGE, blogService.findBlogs(param));

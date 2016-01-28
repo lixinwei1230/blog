@@ -176,6 +176,43 @@
 						</div>
 					</div>
 				</div>
+				
+					<div class="row" style="margin-bottom: 15px">
+					<div class="col-lg-12 col-sm-12 col-xs-12 col-md-12">
+						<div class="col-lg-2 col-sm-12 col-xs-12 col-md-2">
+							<label>定时发布</label>
+						</div>
+						<div class="col-lg-10 col-sm-12 col-md-10 col-xs-12">
+							<c:choose>
+								<c:when test="${blog.scheduled }">
+									<input type="checkbox" id="scheduled" checked="checked">
+								</c:when>
+								<c:otherwise>
+									<input type="checkbox" id="scheduled">
+								</c:otherwise>
+							</c:choose>
+						</div>
+					</div>
+				</div>
+				<c:choose>
+					<c:when test="${blog.scheduled }">
+						<c:set value="" var="style"/>
+					</c:when>
+					<c:otherwise>
+						<c:set value="display:none" var="style"/>
+					</c:otherwise>
+				</c:choose>
+				<div class="row" style="margin-bottom: 15px;${style}">
+					<div class="col-lg-12 col-sm-12 col-xs-12 col-md-12">
+						<div class="col-lg-2 col-sm-12 col-xs-12 col-md-2">
+							<label>发布日期</label>
+						</div>
+						<div class="col-lg-10 col-sm-12 col-md-10 col-xs-12">
+							<input type="text" class="form-control" id="scheduled-time" value="<fmt:formatDate value="${blog.writeDate }" pattern="yyyy-MM-dd HH:mm:ss"/>" />
+						</div>
+					</div>
+				</div>
+				
 				<div class="col-lg-12 col-sm-12 col-xs-12 col-md-12"
 					style="margin-bottom: 15px">
 					<button class="btn btn-primary" style="float: right"
@@ -219,7 +256,7 @@
 								pattern="yyyy-MM-dd HH:mm:ss" /></strong>临时保存博客，是否载入？
 					</div>
 					<div class="modal-footer">
-						<a href="${ctx }/my/blog/temporary/${tBlog.id}"
+						<a href="${ctx }/my/blog/temporary/${tBlog.dummyId}"
 							class="btn btn-primary ">确定</a>
 						<button type="button" class="btn btn-default" data-dismiss="modal">
 							<spring:message code="page.item.close" />
@@ -511,6 +548,12 @@
 				level = 0;
 			}
 			data.level = level;
+			if($("#scheduled").is(':checked')){
+				data.status = 'SCHEDULED';
+				data.writeDate = $("#scheduled-time").val();
+			}else{
+				data.status = 'NORMAL';
+			}
 			btn.button("loading");
 			var url = "${ctx}/my/blog/update";
 			temporarySaveFlag = false;
@@ -547,6 +590,16 @@
 				addTag($(this).val());
 			});
 		}
+		
+		$("#scheduled").click(function(){
+			var me = $(this);
+			if(me.is(':checked')){
+				$("#scheduled-time").parent().parent().parent().show();
+			}else{
+				$("#scheduled-time").parent().parent().parent().hide();
+			}
+		});
+		
 		$("#temporaryBlogModal").on("hidden.bs.modal",function(){
 			temporarySaveFlag = true;
 		});
@@ -634,6 +687,12 @@
 				level = 0;
 			}
 			data.level = level;
+			if($("#scheduled").is(':checked')){
+				data.status = 'SCHEDULED';
+				data.writeDate = $("#scheduled-time").val();
+			}else{
+				data.status = 'NORMAL';
+			}
 			var url = '${ctx}/my/blog/temporary/save';
 			post(url,data,function(result){
 				if(result.success){

@@ -27,6 +27,8 @@ public class IndexController extends BaseController {
 		param.setStatus(BlogStatus.NORMAL);
 		param.setRecommend(true);
 		param.setIgnoreLevel(true);
+		param.setDel(false);
+		param.validate();
 		
 		model.addAttribute(PAGE, blogService.findBlogs(param));
 		return "index";

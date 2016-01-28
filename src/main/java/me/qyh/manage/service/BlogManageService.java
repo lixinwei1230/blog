@@ -9,5 +9,7 @@ public interface BlogManageService extends BlogService {
 	void deleteBlog(int id, TipMessage message) throws LogicException;
 
 	void toggleBlogRecommand(int id, TipMessage message) throws LogicException;
+	
+	void pubScheduled() ;
 
 }

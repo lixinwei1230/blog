@@ -88,7 +88,7 @@ public class BlogIndexHandlerImpl
 	/**
 	 * 数据量不大且当前没有为博客建立索引时候使用
 	 */
-	private boolean cleanAndBuildAllBlogsWhenContextStart = false;
+	private boolean cleanAndBuildAllBlogsWhenContextStart = true;
 
 	protected static final String ID = "id";
 	protected static final String SPACE = "space";
@@ -103,6 +103,7 @@ public class BlogIndexHandlerImpl
 	protected static final String HITS = "hits";
 	protected static final String WRITE_DATE = "writeDate";
 	protected static final String TAGS = "tags";
+	protected static final String DEL = "del";
 
 	private final SortPro[] pros = new SortPro[] { new SortPro(HITS, Type.INT) };
 
@@ -142,23 +143,24 @@ public class BlogIndexHandlerImpl
 	protected Document buildDocument(Blog blog) {
 		Document doc = new Document();
 		doc.add(new StringField(ID, blog.getId().toString(), Field.Store.YES));
-		doc.add(new StringField(SPACE, blog.getSpace().getId(), Field.Store.YES));
-		doc.add(new StringField(TITLE, blog.getTitle(), Field.Store.YES));
+		doc.add(new StringField(SPACE, blog.getSpace().getId(), Field.Store.NO));
+		doc.add(new StringField(TITLE, blog.getTitle(), Field.Store.NO));
 		doc.add(new SortedDocValuesField(CATEGORY_NAME, new BytesRef(blog.getCategory().getName())));
 		doc.add(new StoredField(CATEGORY_NAME, blog.getCategory().getName()));
-		doc.add(new StringField(CATEGORY_ID, blog.getCategory().getId().toString(), Field.Store.YES));
-		doc.add(new StringField(SCOPE, blog.getScope().name().toLowerCase(), Field.Store.YES));
+		doc.add(new StringField(CATEGORY_ID, blog.getCategory().getId().toString(), Field.Store.NO));
+		doc.add(new StringField(SCOPE, blog.getScope().name().toLowerCase(), Field.Store.NO));
 		Integer level = blog.getLevel();
-		doc.add(new StringField(RECOMMEND, blog.isRecommend() + "", Field.Store.YES));
+		doc.add(new StringField(RECOMMEND, blog.isRecommend() + "", Field.Store.NO));
 		doc.add(new StringField(STATUS, blog.getStatus().name().toLowerCase(), Field.Store.NO));
-		doc.add(new StringField(FROM, blog.getFrom().name().toLowerCase(), Field.Store.YES));
+		doc.add(new StringField(FROM, blog.getFrom().name().toLowerCase(), Field.Store.NO));
 		doc.add(new NumericDocValuesField(LEVEL, (level == null ? -1 : level)));
 		doc.add(new StoredField(LEVEL, blog.getLevel()));
 		doc.add(new NumericDocValuesField(HITS, blog.getHits()));
 		doc.add(new StoredField(HITS, blog.getHits()));
 		long writeTime = blog.getWriteDate().getTime();
 		doc.add(new NumericDocValuesField(WRITE_DATE, writeTime));
-		doc.add(new LongField(WRITE_DATE, writeTime, Field.Store.YES));
+		doc.add(new LongField(WRITE_DATE, writeTime, Field.Store.NO));
+		doc.add(new StringField(DEL, blog.getDel().toString(), Field.Store.NO));
 		Set<Tag> tags = blog.getTags();
 		if (!Validators.isEmptyOrNull(tags)) {
 			for (Tag tag : tags) {
@@ -231,8 +233,14 @@ public class BlogIndexHandlerImpl
 		}
 		Date begin = param.getBegin();
 		Date end = param.getEnd();
-		if (begin != null && end != null) {
-			Query query = NumericRangeQuery.newLongRange(WRITE_DATE, begin.getTime(), end.getTime(), true, true);
+		boolean dateRangeQuery = (begin != null && end != null);
+		if(dateRangeQuery){
+			Query query = NumericRangeQuery.newLongRange(WRITE_DATE, begin.getTime() , end.getTime(), true, true);
+			builder.add(query, Occur.MUST);
+		}
+		Boolean del = param.getDel();
+		if(del != null){
+			Query query = new TermQuery(new Term(DEL, del.toString()));
 			builder.add(query, Occur.MUST);
 		}
 		BlogCategory cate = param.getCategory();
@@ -300,10 +308,6 @@ public class BlogIndexHandlerImpl
 		excute(op, false);
 	}
 
-	public void addBlogIndex(Blog... blogs) {
-		excute(new AddBlogIndexOperation(Arrays.asList(blogs)));
-	}
-
 	public void rebuildBlogIndex(Blog... blogs) {
 		excute(new ReBlogIndexOperation(Arrays.asList(blogs)));
 	}
@@ -354,27 +358,6 @@ public class BlogIndexHandlerImpl
 		}
 
 		abstract void doRun() throws Exception;
-	}
-
-	private class AddBlogIndexOperation extends WriteToIndexOperation {
-
-		public AddBlogIndexOperation(List<Blog> blogs) {
-			super(blogs);
-		}
-
-		@Override
-		void doRun() throws Exception {
-			IndexWriter writer = getWriter();
-			try {
-				for (Blog blog : blogs) {
-					if (writer != null) {
-						writer.addDocument(buildDocument(blog));
-					}
-				}
-			} finally {
-				closeWriter(writer);
-			}
-		}
 	}
 
 	private class ReBlogIndexOperation extends WriteToIndexOperation {
@@ -533,8 +516,8 @@ public class BlogIndexHandlerImpl
 					BlogPageParam param = new BlogPageParam();
 					param.setCurrentPage(1);
 					param.setPageSize(Integer.MAX_VALUE);
+					param.setStatus(null);
 					List<Blog> blogs = blogDao.selectPage(param);
-
 					try {
 						excutorManager.excute(new DeleteAllAndRebuildBlogsOperation(blogs));
 					} catch (InterruptedException e) {

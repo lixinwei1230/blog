@@ -21,6 +21,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="status" column="blog_status" typeHandler="EnumOrdinalTypeHandler" />
 		<result property="from" column="blog_from" typeHandler="EnumOrdinalTypeHandler" />
 		<result property="tags" column="tagList" typeHandler="TagSetTypeHandler"/>
+		<result property="del" column="del"/>
 		<association property="category" javaType="BlogCategory">
 			<id column="category" property="id" />
 			<result property="name" column="category_name" />
@@ -30,12 +31,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<association property="user" javaType="User">
 				<id column="user_id" property="id"/>
 				<result column="nickname" property="nickname" />
-				<association property="avatar" javaType="MyFile">
-					<id column="file_id" property="id"/>
-					<result column="file_name" property="name" />
-					<result column="file_store" property="store" typeHandler="FileStorageTypeHandler" />
-					<result column="relativePath" property="relativePath" />
-				</association>
+				<result column="avatar" property="avatar"/>
 			</association>
 		</association>
 	</resultMap>
@@ -65,7 +61,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		space_id,
 		comment_scope,
 		blog_level,
-		recommend,
 		comments
 		)
 		VALUES
@@ -82,14 +77,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		#{space.id},
 		#{commentScope,javaType=Scope,typeHandler=EnumOrdinalTypeHandler},
 		#{level},
-		#{recommend},
 		0
 		)
 	</insert>
 
 	<select id="selectById" resultMap="BlogDetail">
 		SELECT
-		b.id,b.summary,b.blog_level,b.write_date,b.title,b.hits,b.blog_from,b.category,b.space_id,bc.category_name,b.scope,comment_scope,blog_status,b.content,b.recommend,GROUP_CONCAT(CONCAT(t.tag_name,'_',convert(t.id,char))) AS tagList,comments
+		b.id,b.summary,b.del,b.blog_level,b.write_date,b.title,b.hits,b.blog_from,b.category,b.space_id,bc.category_name,b.scope,comment_scope,blog_status,b.content,b.recommend,GROUP_CONCAT(CONCAT(t.tag_name,'_',convert(t.id,char))) AS tagList,comments
 		FROM blog b
 		LEFT OUTER JOIN blog_category bc ON b.category = bc.id
 		LEFT OUTER JOIN blog_tag bt ON bt.blog = b.id
@@ -100,12 +94,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<select id="selectPreview" resultMap="BlogDetail">
 		SELECT
-		b.id,b.summary,blog_status,b.write_date,b.title,b.hits,b.blog_from,b.blog_level,
-		b.category,b.space_id,bc.category_name,scope,b.comment_scope,b.recommend,bs.id AS user_id,file_name,file_store,relativePath,nickname,comments,bf.id AS file_id
+		b.id,b.summary,b.del,blog_status,b.write_date,b.title,b.hits,b.blog_from,b.blog_level,
+		b.category,b.space_id,bc.category_name,scope,b.comment_scope,b.recommend,bs.id AS user_id,nickname,comments,bs.avatar
 		FROM blog b
 		LEFT OUTER JOIN user_space us ON b.space_id = us.id
 		LEFT OUTER JOIN blog_user bs ON us.user_id = bs.id
-		LEFT OUTER JOIN blog_file bf ON bs.avatar = bf.id
 		LEFT OUTER JOIN blog_category bc ON b.category = bc.id
 		WHERE b.id = #{id}
 	</select>
@@ -113,18 +106,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<select id="selectPage" resultMap="BlogDetail">
 		SELECT
-		b.id,b.summary,blog_status,b.write_date,b.title,b.hits,b.blog_from,b.blog_level,
-		b.category,b.space_id,bc.category_name,scope,b.comment_scope,b.recommend,bs.id AS user_id,file_name,file_store,relativePath,nickname,GROUP_CONCAT(CONCAT(tag_name,'_',CONVERT(t.id,CHAR))) AS tagList,comments,bf.id AS file_id
+		b.id,b.summary,b.del,blog_status,b.write_date,b.title,b.hits,b.blog_from,b.blog_level,
+		b.category,b.space_id,bc.category_name,scope,b.comment_scope,b.recommend,bs.id AS user_id,nickname,comments
 		FROM blog b
 		LEFT OUTER JOIN user_space us ON b.space_id = us.id
 		LEFT OUTER JOIN blog_user bs ON us.user_id = bs.id
-		LEFT OUTER JOIN blog_file bf ON bs.avatar = bf.id
 		LEFT OUTER JOIN blog_category bc ON b.category = bc.id
 		LEFT OUTER JOIN blog_tag bt ON bt.blog = b.id
-		LEFT OUTER JOIN tag t ON bt.tag_id = t.id
 		<where>
+			<if test="del != null">
+				del = #{del}
+			</if>
 			<if test="recommend != null">
-				recommend = #{recommend}
+				AND recommend = #{recommend}
 			</if>
 			<if test="space != null">
 				AND b.space_id = #{space.id}
@@ -136,6 +130,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="status != null">
 				AND blog_status =
 				#{status,javaType=BlogStatus,typeHandler=EnumOrdinalTypeHandler}
+			</if>
+			<if test="tags != null and !tags.isEmpty()">
+				AND bt.tag_id IN (SELECT t.id FROM tag t  WHERE (
+				 <foreach collection="tags" item="t" open=""
+				    separator="or" close="">
+				    t.tag_name LIKE CONCAT('%', #{t},'%')
+				  </foreach>
+				))
 			</if>
 			<if test="title != null and title != ''">
 				AND title LIKE CONCAT('%', #{title},'%')
@@ -155,14 +157,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			</if>
 			<if test="begin != null and end != null">
 				AND write_date BETWEEN #{begin} AND #{end}
-			</if>
-			<if test="tags != null and !tags.isEmpty()">
-				AND(
-				 <foreach collection="tags" item="t" open=""
-				    separator="or" close="">
-				    t.tag_name LIKE CONCAT('%', #{t},'%')
-				  </foreach>
-				)
 			</if>
 		</where>
 		GROUP BY b.id
@@ -182,11 +176,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		FROM blog b
 		<if test="tags != null and !tags.isEmpty()">
 			LEFT OUTER JOIN blog_tag bt ON bt.blog = b.id
-			LEFT OUTER JOIN tag t ON bt.tag_id = t.id
 		</if>
 		<where>
+			<if test="del != null">
+				del = #{del}
+			</if>
 			<if test="recommend != null">
-				recommend = #{recommend}
+				AND recommend = #{recommend}
 			</if>
 			<if test="space != null">
 				AND b.space_id = #{space.id}
@@ -219,12 +215,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 				AND write_date BETWEEN #{begin} AND #{end}
 			</if>
 			<if test="tags != null and !tags.isEmpty()">
-				AND(
+				AND bt.tag_id IN (SELECT t.id FROM tag t  WHERE (
 				 <foreach collection="tags" item="t" open=""
 				    separator="or" close="">
 				    t.tag_name LIKE CONCAT('%', #{t},'%')
 				  </foreach>
-				)
+				))
 			</if>
 		</where>
 	</select>
@@ -249,6 +245,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 				blog_status =
 				#{status,javaType=BlogStatus,typeHandler=EnumOrdinalTypeHandler},
 			</if>
+			<if test="writeDate != null">
+				write_date = #{writeDate},
+			</if>
 			<if test="lastModifyDate != null">
 				lastModifyDate = #{lastModifyDate},
 			</if>
@@ -270,6 +269,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		WHERE id = #{id}
 	</update>
 	
+	<update id="updateDel">
+		UPDATE blog SET del = #{del} WHERE id = #{id}
+	</update>
+	
 	<update id="updateRecommend">
 		UPDATE blog
 		SET recommend = #{recommend}
@@ -286,7 +289,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		SELECT write_date AS date,COUNT(id) AS count FROM blog
 		WHERE space_id =
 		#{space.id}
-		AND blog_status = 1
+		AND del = false
 		<if test="scopes != null and !scopes.isEmpty()">
 			AND
 			(
@@ -311,7 +314,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		LEFT OUTER JOIN blog_category bc ON b.`category` = bc.id
 		WHERE
 		b.space_id = #{space.id}
-		AND blog_status = 1
+		AND del = false
 		<if test="scopes != null and !scopes.isEmpty()">
 			AND
 			(

@@ -7,20 +7,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.FilterProvider;
-import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
-import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-
 import me.qyh.entity.Id;
 import me.qyh.entity.Scope;
 import me.qyh.entity.Space;
 import me.qyh.entity.tag.Tag;
 import me.qyh.helper.htmlclean.JsonHtmlXssSerializer;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * 博客
@@ -28,7 +25,6 @@ import me.qyh.helper.htmlclean.JsonHtmlXssSerializer;
  * @author mhlx
  *
  */
-@JsonFilter("blogFilter")
 @JsonIgnoreProperties(value = { "temporaryBlog" })
 public class Blog extends Id {
 
@@ -40,6 +36,8 @@ public class Blog extends Id {
 	@JsonSerialize(using = JsonHtmlXssSerializer.class)
 	private String title;// 博客标题
 	private String content;// 博客内容
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss" ,timezone="GMT+8")
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date writeDate;// 撰写日期
 	private BlogCategory category;// 博客分类
 	private Scope scope;// 博客可见度
@@ -54,34 +52,10 @@ public class Blog extends Id {
 	private Scope commentScope;// 博客评论范围
 	private Integer level;// 博客级别，级别越高将越靠前显示
 	private boolean recommend;// 推荐才能上首页
+	private Boolean del;//是否删除(回收站)
 
 	public Blog() {
 
-	}
-
-	/**
-	 * 将博客转化为临时博客
-	 * 
-	 * @param writer
-	 *            {@code ObjectWriter}
-	 * @return {@code TemporaryBlog}
-	 * @throws JsonProcessingException
-	 */
-	public TemporaryBlog getTemporaryBlog(ObjectWriter writer) throws JsonProcessingException {
-		TemporaryBlog tBlog = new TemporaryBlog();
-		tBlog.setContent(content);
-		tBlog.setTitle(title);
-		tBlog.setSpace(space);
-		tBlog.setSaveDate(new Date());
-		// 将博客其他属性转化成json字符串
-		FilterProvider filters = new SimpleFilterProvider()
-				.addFilter("blogFilter",
-						SimpleBeanPropertyFilter.filterOutAllExcept("category", "scope", "tags", "from", "commentScope",
-								"level"))
-				.addFilter("blogCategoryFilter", SimpleBeanPropertyFilter.filterOutAllExcept("id"))
-				.addFilter("tagFilter", SimpleBeanPropertyFilter.filterOutAllExcept("name"));
-		tBlog.setJson(writer.with(filters).writeValueAsString(this));
-		return tBlog;
 	}
 
 	/**
@@ -109,13 +83,12 @@ public class Blog extends Id {
 		}
 	}
 
-	/**
-	 * 博客是否被删除
-	 * 
-	 * @return
-	 */
-	public boolean isDeleted() {
-		return BlogStatus.RECYCLER.equals(status);
+	public Boolean getDel() {
+		return del;
+	}
+
+	public void setDel(Boolean del) {
+		this.del = del;
 	}
 
 	/**
@@ -125,6 +98,10 @@ public class Blog extends Id {
 	 */
 	public boolean getIsPrivate() {
 		return (Scope.PRIVATE.equals(this.scope));
+	}
+	
+	public boolean isScheduled(){
+		return BlogStatus.SCHEDULED.equals(status);
 	}
 
 	public String getTitle() {

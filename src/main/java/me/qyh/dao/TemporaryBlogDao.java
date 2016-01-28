@@ -5,7 +5,7 @@ import java.util.List;
 import me.qyh.entity.blog.Blog;
 import me.qyh.entity.blog.TemporaryBlog;
 
-public interface TemporaryBlogDao extends BaseDao<TemporaryBlog, Integer> {
+public interface TemporaryBlogDao extends BaseDao<Blog, Integer> {
 
 	List<TemporaryBlog> selectByBlog(Blog blog);
 
