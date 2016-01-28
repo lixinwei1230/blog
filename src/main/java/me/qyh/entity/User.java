@@ -5,16 +5,16 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import me.qyh.helper.htmlclean.JsonHtmlXssSerializer;
+import me.qyh.security.RoleGrantedAuthority;
+import me.qyh.utils.Validators;
+
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import me.qyh.helper.htmlclean.JsonHtmlXssSerializer;
-import me.qyh.security.RoleGrantedAuthority;
-import me.qyh.utils.Validators;
 
 /**
  * 系统注册用户
@@ -43,7 +43,7 @@ public class User extends Id implements UserDetails, CredentialsContainer, Clone
 	private Boolean credentialsNonExpired;
 	private Boolean accountNonLocked;
 	private List<Role> roles = new ArrayList<Role>();
-	private MyFile avatar;
+	private String avatar;
 	private Space space;
 	private String nickname;
 
@@ -142,11 +142,11 @@ public class User extends Id implements UserDetails, CredentialsContainer, Clone
 		this.roles.add(role);
 	}
 
-	public MyFile getAvatar() {
+	public String getAvatar() {
 		return avatar;
 	}
 
-	public void setAvatar(MyFile avatar) {
+	public void setAvatar(String avatar) {
 		this.avatar = avatar;
 	}
 

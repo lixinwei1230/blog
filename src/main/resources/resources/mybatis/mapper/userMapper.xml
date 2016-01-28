@@ -17,14 +17,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result column="accountNonExpired" property="accountNonExpired" />
 		<result column="accountNonLocked" property="accountNonLocked" />
 		<result column="credentialsNonExpired" property="credentialsNonExpired" />
-		<association property="avatar" javaType="MyFile">
-			<id column="avatar" property="id" />
-			<result column="file_name" property="name" />
-			<result column="extension" property="extension" />
-			<result column="uploadDate" property="uploadDate" />
-			<result column="file_store" property="store" typeHandler="FileStorageTypeHandler" />
-			<result column="relativePath" property="relativePath" />
-		</association>
+		<result column="avatar" property="avatar"/>
 		<association property="space" javaType="Space">
 			<id column="space_id" property="id" />
 			<result property="status" column="space_status" typeHandler="EnumOrdinalTypeHandler" />
@@ -38,18 +31,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="selectByName" resultMap="UserDetail">
 		SELECT u.id AS
 		user_id,user_name,user_email,registerDate,activateDate,user_enable,accountNonExpired,
-		accountNonLocked,credentialsNonExpired,activate,user_password,avatar,nickname,file_name,extension,uploadDate,file_store,relativePath
+		accountNonLocked,credentialsNonExpired,activate,user_password,avatar,nickname
 		FROM blog_user u
-		LEFT OUTER JOIN blog_file bf ON u.avatar = bf.id
 		WHERE u.user_name = #{name}
 	</select>
 
 	<select id="selectByEmail" resultMap="UserDetail">
 		SELECT u.id AS
 		user_id,user_name,user_email,registerDate,activateDate,user_enable,accountNonExpired,
-		accountNonLocked,credentialsNonExpired,activate,user_password,avatar,nickname,file_name,extension,uploadDate,file_store,relativePath
+		accountNonLocked,credentialsNonExpired,activate,user_password,avatar,nickname
 		FROM blog_user u
-		LEFT OUTER JOIN blog_file bf ON u.avatar = bf.id
 		WHERE u.user_email = #{email}
 	</select>
 
@@ -57,9 +48,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		SELECT u.id AS
 		user_id,user_name,user_email,registerDate,activateDate,user_enable,accountNonExpired,sp.id
 		AS space_id,
-		accountNonLocked,credentialsNonExpired,activate,user_password,avatar,nickname,file_name,extension,uploadDate,file_store,relativePath
+		accountNonLocked,credentialsNonExpired,activate,user_password,avatar,nickname
 		FROM blog_user u
-		LEFT OUTER JOIN blog_file bf ON bf.id = u.avatar
 		LEFT
 		OUTER JOIN user_space sp ON sp.user_id = u.id
 		WHERE u.id = #{id}
@@ -78,7 +68,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="password != null and password != ''">user_password = #{password},</if>
 			<if test="activateDate != null">activateDate = #{activateDate},</if>
 			<if test="activate != null">activate = #{activate},</if>
-			<if test="avatar != null">avatar = #{avatar.id},</if>
+			<if test="avatar != null">avatar = #{avatar},</if>
 			<if test="nickname != null">nickname = #{nickname}</if>
 		</set>
 		WHERE id = #{id}
@@ -101,9 +91,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		SELECT u.id AS
 		user_id,user_name,user_email,registerDate,activateDate,user_enable,accountNonExpired,sp.id
 		AS space_id,
-		accountNonLocked,credentialsNonExpired,activate,user_password,avatar,nickname,file_name,extension,uploadDate,file_store,relativePath
+		accountNonLocked,credentialsNonExpired,activate,user_password,avatar,nickname
 		FROM blog_user u
-		LEFT OUTER JOIN blog_file bf ON bf.id = u.avatar
 		INNER JOIN user_space sp ON sp.user_id = u.id
 		WHERE
 		sp.id = #{id}
@@ -123,10 +112,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="selectPage" resultMap="UserDetail">
 		SELECT u.id AS user_id,user_name,user_email,registerDate,activateDate,
 		user_enable,accountNonExpired,accountNonLocked,credentialsNonExpired,
-		activate,user_password,nickname,us.space_status,us.id AS space_id,file_name,extension,uploadDate,file_store,relativePath
+		activate,user_password,nickname,us.space_status,us.id AS space_id
 		FROM
 		blog_user u
-		LEFT OUTER JOIN blog_file bf ON u.avatar = bf.id
 		LEFT OUTER JOIN user_space us ON u.id = us.user_id
 		WHERE
 		u.`activate` = TRUE

@@ -286,7 +286,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 		avatar.setStore(avatarStore);
 		fileDao.insert(avatar);
 
-		user.setAvatar(avatar);
+		user.setAvatar(avatar.getUrl());
 		userDao.update(user);
 	}
 

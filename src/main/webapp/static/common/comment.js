@@ -196,7 +196,7 @@ function getCommentHtml(comment){
 	}else{
 		var avatar = "";
 		if(comment.user.avatar){
-			avatar = '<img class="media-object" src="'+getResizeUrl(comment.user.avatar.url,64)+'" onerror="javascript:this.src=\''+staticSourcePrefix+'/imgs/guest_64.png\'" style="width:64px;height:64px"/>';
+			avatar = '<img class="media-object" src="'+getResizeUrl(comment.user.avatar,64)+'" onerror="javascript:this.src=\''+staticSourcePrefix+'/imgs/guest_64.png\'" style="width:64px;height:64px"/>';
 		}else{
 			avatar = '<img class="media-object" src="'+staticSourcePrefix+'/imgs/guest_64.png" style="width:64px;height:64px"/>';
 		}
@@ -242,7 +242,7 @@ function getReplyHtml(reply){
 	}else{
 		var avatar = "";
 		if(reply.user.avatar){
-			avatar = '<img class="media-object" src="'+getResizeUrl(reply.user.avatar.url,64)+'" onerror="javascript:this.src=\''+staticSourcePrefix+'/imgs/guest_64.png\'" style="width:64px;height:64px"/>';
+			avatar = '<img class="media-object" src="'+getResizeUrl(reply.user.avatar,64)+'" onerror="javascript:this.src=\''+staticSourcePrefix+'/imgs/guest_64.png\'" style="width:64px;height:64px"/>';
 		}else{
 			avatar = '<img class="media-object" src="'+staticSourcePrefix+'/imgs/guest_64.png" style="width:64px;height:64px"/>';
 		}
