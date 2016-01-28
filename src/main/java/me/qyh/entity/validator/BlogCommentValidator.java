@@ -26,7 +26,7 @@ public class BlogCommentValidator implements Validator {
 	public void validate(Object o, Errors e) {
 		BlogComment comment = (BlogComment) o;
 		Blog blog = comment.getBlog();
-		if (blog == null) {
+		if (blog == null || !blog.hasId()) {
 			e.rejectValue("scope", "validation.comment.blog.empty");
 			return;
 		}

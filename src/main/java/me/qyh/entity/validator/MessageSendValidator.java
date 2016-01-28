@@ -26,7 +26,7 @@ public class MessageSendValidator implements Validator {
 	public void validate(Object o, Errors e) {
 		MessageSend send = (MessageSend) o;
 		MessageDetail detail = send.getDetail();
-		if (detail == null) {
+		if (detail == null || detail.hasId()) {
 			e.rejectValue("detail", "validation.messageSendDetail.detail.empty");
 			return;
 		}

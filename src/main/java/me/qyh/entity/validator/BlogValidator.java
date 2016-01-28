@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import me.qyh.entity.blog.Blog;
+import me.qyh.entity.blog.BlogCategory;
 import me.qyh.entity.blog.BlogStatus;
 import me.qyh.entity.tag.Tag;
 import me.qyh.utils.Validators;
@@ -80,7 +81,8 @@ public class BlogValidator implements Validator {
 			e.rejectValue("content", "validation.blog.content.blank");
 			return;
 		}
-		if (blog.getCategory() == null) {
+		BlogCategory bc = blog.getCategory();
+		if (bc == null || !bc.hasId()) {
 			e.rejectValue("category", "validation.blog.category.blank");
 			return;
 		}

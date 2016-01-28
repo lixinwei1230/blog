@@ -32,13 +32,13 @@ public class LocationWidgetValidator implements Validator {
 	public void validate(Object target, Errors e) {
 		LocationWidget lw = (LocationWidget) target;
 		Page page = lw.getPage();
-		if (page == null) {
+		if (page == null || !page.hasId()) {
 			e.rejectValue("page", "validation.widget.page.blank");
 			return;
 		}
 
 		Widget widget = lw.getWidget();
-		if (widget == null) {
+		if (widget == null || !widget.hasId()) {
 			e.rejectValue("widget", "validation.widget.blank");
 			return;
 		}
