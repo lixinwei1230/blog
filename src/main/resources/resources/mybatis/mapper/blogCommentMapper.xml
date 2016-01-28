@@ -13,7 +13,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<association property="user" javaType="User">
 			<id column="user_id" property="id" />
 			<id column="user_nickname" property="nickname" />
-			<result column="avatar" property="avatar"/>
+			<result column="user_avatar" property="avatar"/>
 		</association>
 		<association property="parent" javaType="BlogComment">
 			<id column="parent_id" property="id" />
@@ -21,6 +21,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<association property="replyTo" javaType="User">
 			<id column="reply_to" property="id" />
 			<id column="reply_nickname" property="nickname" />
+			<result column="reply_avatar" property="avatar"/>
 		</association>
 		<association property="reply" javaType="BlogComment">
 			<id column="reply_id" property="id" />
@@ -40,7 +41,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="selectById" resultMap="CommentDetail">
 		SELECT c.id,comment_title,parent_id,c.user_id,blog_id,comment_date,reply_id,
 		anonymous,content,reply_to,bu.nickname AS user_nickname,bu2.nickname
-		AS reply_nickname,bu.avatar
+		AS reply_nickname,bu.avatar AS user_avatar,bu2.avatar AS reply_avatar
 		FROM blog_comment c
 		LEFT OUTER JOIN blog_user bu ON c.user_id = bu.id
 		LEFT OUTER JOIN blog_user bu2 ON c.reply_to = bu2.id
@@ -51,7 +52,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		SELECT
 		c.id,comment_title,parent_id,c.user_id,blog_id,comment_date,reply_id,
 		anonymous,content,reply_to,bu.nickname AS user_nickname,bu2.nickname
-		AS reply_nickname
+		AS reply_nickname,bu.avatar AS user_avatar,bu2.avatar AS reply_avatar
 		FROM blog_comment c
 		LEFT OUTER JOIN blog_user bu ON c.user_id = bu.id
 		LEFT OUTER JOIN blog_user bu2 ON c.reply_to = bu2.id
