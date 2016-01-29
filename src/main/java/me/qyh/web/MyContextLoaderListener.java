@@ -59,6 +59,10 @@ public class MyContextLoaderListener extends ContextLoaderListener {
 			}
 			SessionCookieConfig config = sc.getSessionCookieConfig();
 			config.setDomain(domain);
+			String _ctx = helper.getContextPath();
+			if(!Validators.isEmptyOrNull(_ctx,true)){
+				config.setPath(_ctx);
+			}
 		}
 	}
 }
