@@ -14,13 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
-import com.fasterxml.jackson.databind.ObjectWriter;
-
 //注销登录成功处理器
 public class MyLogoutSuccessHandler implements LogoutSuccessHandler {
 
-	@Autowired
-	private ObjectWriter objectWriter;
 	@Autowired
 	private UrlHelper urlHelper;
 	private String logoutPath;
@@ -34,7 +30,7 @@ public class MyLogoutSuccessHandler implements LogoutSuccessHandler {
 			throws IOException, ServletException {
 
 		if (Webs.isAjaxRequest(request)) {
-			Webs.writeInfo(response, objectWriter, new Info(true));
+			Webs.writeInfo(response, new Info(true));
 		} else {
 			response.sendRedirect(urlHelper.getUrl() + logoutPath);
 		}

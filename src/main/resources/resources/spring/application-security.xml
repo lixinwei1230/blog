@@ -75,7 +75,7 @@
 	<b:bean id="loginFailureHandler" class="me.qyh.security.LoginFailureHandler"/>
 
 	<b:bean id="loginFilter"
-		class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
+		class="me.qyh.security.ValidateCodeUsernamePasswordAuthencationFilter">
 		<b:property name="requiresAuthenticationRequestMatcher">
 			<b:bean class="me.qyh.security.DomainMatchRequestMatcher">
 				<b:constructor-arg index="0" value="/login-check" />
@@ -95,9 +95,6 @@
 			<b:list>
 				<!-- Servlet > 3.1中 org.springframework.security.web.authentication.session.ChangeSessionIdAuthenticationStrategy 
 					是更好的选择 -->
-				<b:bean
-					class="org.springframework.security.web.authentication.session.ChangeSessionIdAuthenticationStrategy">
-				</b:bean>
 				<b:bean class="org.springframework.security.web.csrf.CsrfAuthenticationStrategy">
 					<b:constructor-arg index="0" ref="csrfTokenRepository"/>
 				</b:bean>

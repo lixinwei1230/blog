@@ -42,7 +42,7 @@
 		<mvc:message-converters register-defaults="true">
 			<bean
 				class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
-				<property name="objectMapper" ref="objectMapper" />
+				<property name="objectMapper" value="#{T(me.qyh.web.Webs).getMapper()}"/>
 			</bean>
 			<bean class="org.springframework.http.converter.ResourceHttpMessageConverter"/>
 		</mvc:message-converters>

@@ -12,7 +12,7 @@ public abstract class DefaultLoginFailureHandler implements AuthenticationFailur
 	@Autowired
 	protected UrlHelper urlHelper;
 	
-	public DefaultLoginFailureHandler() {
+	protected DefaultLoginFailureHandler() {
 	}
 
 	public void setDefaultFailureUrl(String defaultFailureUrl) {

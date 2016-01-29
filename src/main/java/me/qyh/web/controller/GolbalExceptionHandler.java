@@ -34,15 +34,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.fasterxml.jackson.databind.ObjectWriter;
-
 @ControllerAdvice
 public class GolbalExceptionHandler extends BaseController {
 
 	private Logger logger = LoggerFactory.getLogger(GolbalExceptionHandler.class);
 
-	@Autowired
-	private ObjectWriter objectWriter;
 	@Autowired
 	private MessageSource messageSource;
 	
@@ -59,7 +55,7 @@ public class GolbalExceptionHandler extends BaseController {
 		I18NMessage _message = e.getI18nMessage();
 		if (Webs.isAjaxRequest(request)) {
 			String message = messageSource.getMessage(_message.getCode(), _message.getParams(), request.getLocale());
-			Webs.writeInfo(response, objectWriter, new Info(false, message));
+			Webs.writeInfo(response, new Info(false, message));
 			return null;
 		}
 
@@ -96,7 +92,7 @@ public class GolbalExceptionHandler extends BaseController {
 
 		if (Webs.isAjaxRequest(request)) {
 			String message = messageSource.getMessage(_message.getCode(), _message.getParams(), request.getLocale());
-			Webs.writeInfo(response, objectWriter, new Info(false, message));
+			Webs.writeInfo(response, new Info(false, message));
 			return null;
 		}
 
@@ -115,7 +111,7 @@ public class GolbalExceptionHandler extends BaseController {
 		logger.error(se.getMessage(), se);
 		if (Webs.isAjaxRequest(request)) {
 			String message = messageSource.getMessage("error.systemError",new Object [] {}, request.getLocale());
-			Webs.writeInfo(response, objectWriter, new Info(false, message));
+			Webs.writeInfo(response, new Info(false, message));
 			return null;
 		}
 		return new ModelAndView("/error/500");

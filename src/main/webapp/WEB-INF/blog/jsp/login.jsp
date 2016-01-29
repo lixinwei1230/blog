@@ -7,7 +7,8 @@
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>登录</title>
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="page" />
 <jsp:include page="/WEB-INF/head_source.jsp"></jsp:include>
@@ -26,8 +27,8 @@
 						class="alert alert-danger" role="alert">
 						<span class="glyphicon glyphicon-exclamation-sign"
 							aria-hidden="true"></span> <span class="sr-only"><spring:message
-								code="global.error" /></span>
-						${sessionScope['SPRING_SECURITY_LAST_EXCEPTION'] }
+								code="global.error" />
+						</span> ${sessionScope['SPRING_SECURITY_LAST_EXCEPTION'] }
 					</div>
 				</c:if>
 				<c:remove var="SPRING_SECURITY_LAST_EXCEPTION" scope="session" />
@@ -40,7 +41,8 @@
 						<spring:message code="${error.code }" arguments="${error.params }" />
 					</div>
 				</c:if>
-				<form class="form-signin" action="${ctx }/login-check" method="POST">
+				<form class="form-signin" action="${ctx }/login-check" method="POST"
+					id="login-form">
 					<div class="form-group">
 						<label>姓名|邮箱</label> <input type="text" class="form-control"
 							name="j_username" placeholder="" id="inputName">
@@ -50,28 +52,35 @@
 							name="j_password" placeholder="" id="inputPassword">
 					</div>
 					<div class="form-group">
+						<input type="checkbox" value="on"
+							name="_spring_security_remember_me"> 记住我
+					</div>
+					<div class="form-group">
+						<label for="inputValidateCode"><spring:message
+								code="page.item.validateCode" /> </label> <input type="text"
+							class="form-control" id="inputValidateCode"
+							placeholder="<spring:message code="global.pleaseInput"/><spring:message code="page.item.validateCode"/>"
+							name="validateCode"> <img src="${ctx }/captcha/"
+							class="img-responsive" style="margin-top: 10px"
+							onclick="this.src='${ctx}/captcha/'+new Date().getTime()" />
+					</div>
+					<div class="form-group">
 						<label>第三方登录</label>
 						<div>
 							<table class="table">
 								<tr>
 									<td><a href="<u:url/>/oauth2/qq/login"><img
-											src="${staticSourcePrefix}/imgs/oauth_qq.png" />QQ登录</a>
-									</td>
+											src="${staticSourcePrefix}/imgs/oauth_qq.png" />QQ登录</a></td>
 									<td><a href="<u:url/>/oauth2/sina/login"><img
-											src="${staticSourcePrefix}/imgs/oauth_sina.png" />新浪微博登录</a>
-									</td>
+											src="${staticSourcePrefix}/imgs/oauth_sina.png" />新浪微博登录</a></td>
 								</tr>
 							</table>
 						</div>
 					</div>
-					<div class="form-group">
-						<input type="checkbox" value="on"
-							name="_spring_security_remember_me"> 记住我
-					</div>
 					<input type="hidden" name="${_csrf.parameterName}"
 						value="${_csrf.token}" />
 					<button class="btn btn-lg btn-primary btn-block" id="submit-login"
-						type="button">登录</button>
+						type="submit">登录</button>
 				</form>
 			</fieldset>
 			<div style="text-align: right; margin-top: 10px">
@@ -82,19 +91,18 @@
 	<jsp:include page="/WEB-INF/foot.jsp"></jsp:include>
 	<jsp:include page="/WEB-INF/scripts.jsp"></jsp:include>
 	<script type="text/javascript">
-		$("#submit-login").click(function() {
+		$("#login-form").submit(function() {
 			$(".errorField").remove();
 			var name = $("#inputName").val();
 			if ($.trim(name).length == 0) {
 				writeErrorField("表单错误", "用户名或者邮箱不能为空");
-				return;
+				return false;
 			}
 			var password = $("#inputPassword").val();
 			if ($.trim(password).length == 0) {
 				writeErrorField("表单错误", "密码不能为空");
-				return;
+				return false;
 			}
-			$(".form-signin").submit();
 		});
 
 		function writeErrorField(title, content) {

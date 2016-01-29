@@ -17,8 +17,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectWriter;
-
 /**
  * 登录成功处理器
  * 
@@ -30,8 +28,6 @@ public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
 	
 	@Autowired
 	private LoginInfoDao loginInfoDao;
-	@Autowired
-	private ObjectWriter objectWriter;
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -46,7 +42,7 @@ public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
 		loginInfoDao.insert(info);
 		
 		if(Webs.isAjaxRequest(request)){
-			Webs.writeInfo(response, objectWriter, new Info(true));
+			Webs.writeInfo(response, new Info(true));
 		} else {
 			super.onAuthenticationSuccess(request, response, authentication);
 		}

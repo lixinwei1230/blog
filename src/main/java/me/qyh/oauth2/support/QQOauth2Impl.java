@@ -16,20 +16,15 @@ import me.qyh.oauth2.exception.Oauth2Exception;
 import me.qyh.oauth2.exception.Oauth2InvalidPrincipalException;
 import me.qyh.oauth2.security.OauthPrincipal;
 import me.qyh.utils.Validators;
+import me.qyh.web.Webs;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectReader;
 
 public class QQOauth2Impl implements Oauth2, InitializingBean {
-
-	@Autowired
-	private ObjectReader reader;
 
 	private String openIdUrl;
 	private String appId;
@@ -194,10 +189,8 @@ public class QQOauth2Impl implements Oauth2, InitializingBean {
 		 *             如果转化出现异常
 		 */
 		private <T> T parseJsonObj(Class<T> t) {
-			JsonParser parser;
 			try {
-				parser = reader.getFactory().createParser(json);
-				return reader.readValue(parser, t);
+				return Webs.readValue(t, json);
 			} catch (IOException e) {
 				throw new Oauth2Exception(OauthType.QQ, e.getMessage(), e);
 			}
@@ -215,8 +208,7 @@ public class QQOauth2Impl implements Oauth2, InitializingBean {
 				.concat(principal.getOauthUserId());
 		String response = _sendHttpsGet(url);
 		try {
-			JsonParser parser = reader.getFactory().createParser(response);
-			QQUser quser = reader.readValue(parser, QQUser.class);
+			QQUser quser = Webs.readValue(QQUser.class, response);
 			if (!"0".equals(quser.getRet())) {
 				throw new Oauth2Exception(OauthType.QQ, String.format("获取用户信息时发生了一个错误，错误码为%s", quser.getRet()));
 			}

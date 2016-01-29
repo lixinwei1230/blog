@@ -5,7 +5,7 @@
 <%@taglib prefix="sec"
 	uri="http://www.springframework.org/security/tags"%>
 <%@taglib prefix="u" uri="/url"%>
-<%@taglib prefix="r" uri="/resize" %>
+<%@taglib prefix="r" uri="/resize"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -34,7 +34,7 @@
 				<c:choose>
 					<c:when test="${not empty blogs }">
 						<c:forEach var="blog" items="${blogs}">
-							<c:set value="${blog.space.user }" var="user"/>
+							<c:set value="${blog.space.user }" var="user" />
 							<div class="well" id="blog-${blog.id }">
 								<h4>
 									<c:if test="${blog.isPrivate }">
@@ -85,10 +85,16 @@
 								<div style="float: right">
 									<c:choose>
 										<c:when test="${user.avatar!=null}">
-											<a href="<u:url space="${blog.space }"/>/index"><img src="<r:resize url="${user.avatar }" size="64"/>" class="img-circle"/></a>
+											<a href="<u:url space="${blog.space }"/>/index"><img
+												src="<r:resize url="${user.avatar }" size="64"/>"
+												class="img-circle" />
+											</a>
 										</c:when>
 										<c:otherwise>
-											<a href="<u:url space="${blog.space }"/>/index"><img src="${staticSourcePrefix}/imgs/guest_64.png" class="img-circle"/></a>
+											<a href="<u:url space="${blog.space }"/>/index"><img
+												src="${staticSourcePrefix}/imgs/guest_64.png"
+												class="img-circle" />
+											</a>
 										</c:otherwise>
 									</c:choose>
 								</div>
@@ -109,53 +115,10 @@
 				</c:if>
 			</div>
 			<div class="col-lg-4 col-md-4 col-sm-4 text">
-				<sec:authorize ifAnyGranted="ROLE_USER,ROLE_OAUTH" var="isLogin" />
-				<c:if test="${!isLogin }">
-					<div style="margin-bottom: 20px">
-						<fieldset>
-							<legend>快速登录</legend>
-							<form class="form-signin" action="${ctx }/login-check"
-								method="POST">
-								<div class="form-group">
-									<label>姓名|邮箱</label> <input type="text" class="form-control"
-										name="j_username" placeholder="">
-								</div>
-								<div class="form-group">
-									<label>密码</label> <input type="password" class="form-control"
-										name="j_password" placeholder="">
-								</div>
-								<div class="form-group">
-									<label>第三方登录</label>
-									<div>
-										<table class="table">
-											<tr>
-												<td><a href="<u:url/>/oauth2/qq/login"><img
-														src="${staticSourcePrefix}/imgs/oauth_qq.png" />QQ登录</a>
-												</td>
-												<td><a href="<u:url/>/oauth2/sina/login"><img
-														src="${staticSourcePrefix}/imgs/oauth_sina.png" />新浪微博登录</a>
-												</td>
-											</tr>
-										</table>
-									</div>
-								</div>
-								<div class="form-group">
-									<input type="checkbox" value="on"
-										name="_spring_security_remember_me"> 记住我
-								</div>
-								<input type="hidden" name="${_csrf.parameterName}"
-									value="${_csrf.token}" />
-								<button class="btn btn-lg btn-primary btn-block" type="submit">登录</button>
-							</form>
-						</fieldset>
-					</div>
-				</c:if>
 				<div class="alert alert-danger">
-					2016年学习android，2017年转向android开发
-				</div>
+					2016年学习android，2017年转向android开发</div>
 				<div class="alert alert-warning">
-					只在新版的chrome浏览器开发测试，别的浏览器不会做测试和支持<br /> 
-					2016年了，你还在用IE吗？：）
+					只在新版的chrome浏览器开发测试，别的浏览器不会做测试和支持<br /> 2016年了，你还在用IE吗？：）
 				</div>
 			</div>
 		</div>

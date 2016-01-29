@@ -1,13 +1,17 @@
 package me.qyh.page.widget.config;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import me.qyh.utils.Validators;
+import me.qyh.web.InvalidParamException;
+import me.qyh.web.Webs;
+
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
@@ -20,17 +24,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectReader;
-
-import me.qyh.utils.Validators;
-import me.qyh.web.InvalidParamException;
-import me.qyh.web.Webs;
-
 public class WidgetConfigResolver implements HandlerMethodArgumentResolver {
 
-	@Autowired
-	private ObjectReader reader;
 	private List<WidgetConfigReader> readers = new ArrayList<WidgetConfigReader>();
 
 	@Override
@@ -58,9 +53,9 @@ public class WidgetConfigResolver implements HandlerMethodArgumentResolver {
 		// 如果是json请求并且需要通过ObjectReader来读取封装对象
 		if (isAjax && att.requestBody()) {
 			try {
-				JsonParser jp = this.reader.getFactory()
-						.createParser(webRequest.getNativeRequest(HttpServletRequest.class).getInputStream());
-				config = this.reader.readValue(jp, clazz);
+				//need close?
+				InputStream is = webRequest.getNativeRequest(HttpServletRequest.class).getInputStream();
+				config = Webs.readValue(clazz, is);
 				binder = binderFactory.createBinder(webRequest, config, name);
 			} catch (IOException e) {
 				throw new HttpMessageNotReadableException(e.getMessage(), e);

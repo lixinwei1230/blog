@@ -17,10 +17,10 @@ import me.qyh.oauth2.exception.Oauth2Exception;
 import me.qyh.oauth2.exception.Oauth2InvalidPrincipalException;
 import me.qyh.oauth2.security.OauthPrincipal;
 import me.qyh.utils.Validators;
+import me.qyh.web.Webs;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -30,9 +30,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 public class SinaOauth2Impl implements Oauth2, InitializingBean {
-
-	@Autowired
-	private ObjectReader reader;
 
 	private String appkey;
 	private String appsecret;
@@ -46,6 +43,7 @@ public class SinaOauth2Impl implements Oauth2, InitializingBean {
 	public OauthUser queryUserInfo(OauthPrincipal principal) {
 		UidToken token = (UidToken) principal.getToken();
 		String url = String.format(userInfoUrl, token.getToken(), token.getUid());
+		ObjectReader reader = Webs.reader();
 		JsonNode node = null;
 		try {
 			JsonParser parser = reader.getFactory().createParser(new URL(url));
@@ -91,6 +89,7 @@ public class SinaOauth2Impl implements Oauth2, InitializingBean {
 		String url = authorizationUrl.concat("&code=").concat(code);
 		String result = sendPost(url);
 		JsonNode node = null;
+		ObjectReader reader = Webs.reader();
 		try {
 			JsonParser parser = reader.getFactory().createParser(result);
 			node = reader.readTree(parser);

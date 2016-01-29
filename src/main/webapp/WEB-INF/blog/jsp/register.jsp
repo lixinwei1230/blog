@@ -8,7 +8,8 @@
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>注册</title>
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="page" />
 <jsp:include page="/WEB-INF/head_source.jsp"></jsp:include>
@@ -31,40 +32,43 @@
 					</c:if>
 					<div class="form-group">
 						<label for="inputnickname"><spring:message
-								code="page.item.username" /></label> <input type="text"
-							class="form-control" id="inputnickname" name="username"
-							value="<c:out value="${user.nickname }"/>"
+								code="page.item.username" />
+						</label> <input type="text" class="form-control" id="inputnickname"
+							name="username" value="<c:out value="${user.nickname }"/>"
 							placeholder="<spring:message code="global.pleaseInput"/><spring:message code="page.item.username"/>">
 						<span class="help-block"><spring:message
 								code="page.register.username.length" arguments="2,8"
-								argumentSeparator="," /></span>
+								argumentSeparator="," />
+						</span>
 					</div>
 					<div class="form-group">
 						<label for="inputEmail"><spring:message
-								code="page.item.email" /></label> <input type="text"
-							class="form-control" id="inputEmail" name="email"
-							value="<c:out value="${user.email }"/>"
+								code="page.item.email" />
+						</label> <input type="text" class="form-control" id="inputEmail"
+							name="email" value="<c:out value="${user.email }"/>"
 							placeholder="<spring:message code="global.pleaseInput"/><spring:message code="page.item.email"/>">
 					</div>
 					<div class="form-group">
 						<label for="inputPassword"><spring:message
-								code="page.item.password" /></label> <input type="password"
-							class="form-control" id="inputPassword" name="password"
+								code="page.item.password" />
+						</label> <input type="password" class="form-control" id="inputPassword"
+							name="password"
 							placeholder="<spring:message code="global.pleaseInput"/><spring:message code="page.item.password"/>">
 						<span class="help-block"><spring:message
 								code="page.register.password.length" arguments="6,16"
-								argumentSeparator="," /></span>
+								argumentSeparator="," />
+						</span>
 					</div>
 					<div class="form-group">
 						<label for="reInputPassword"><spring:message
-								code="page.register.reInputPassword" /></label> <input type="password"
-							class="form-control" id="reInputPassword"
+								code="page.register.reInputPassword" />
+						</label> <input type="password" class="form-control" id="reInputPassword"
 							placeholder="<spring:message code="page.register.reInputPassword"/>">
 					</div>
 					<div class="form-group">
 						<label for="inputValidateCode"><spring:message
-								code="page.item.validateCode" /></label> <input type="text"
-							class="form-control" id="inputValidateCode"
+								code="page.item.validateCode" />
+						</label> <input type="text" class="form-control" id="inputValidateCode"
 							placeholder="<spring:message code="global.pleaseInput"/><spring:message code="page.item.validateCode"/>"
 							name="validateCode"> <img src="${ctx }/captcha/"
 							class="img-responsive"
@@ -78,36 +82,9 @@
 						<spring:message code="page.register" />
 					</button>
 				</form>
-			</div>
-			<div class="col-lg-4 col-md-4 col-sm-4">
-				<fieldset>
-					<legend>已有账号？</legend>
-					<form class="form-signin" action="${ctx }/login-check"
-						method="POST">
-						<div class="form-group">
-							<label>姓名|邮箱</label> <input type="text" class="form-control"
-								name="j_username" placeholder="">
-						</div>
-						<div class="form-group">
-							<label>密码</label> <input type="password" class="form-control"
-								name="j_password" placeholder="">
-						</div>
-						<div class="form-group">
-							<label>第三方登录</label>
-							<div>
-								<a href="<u:url/>/oauth2/qq/login"><img
-									src="${staticSourcePrefix }/imgs/oauth_qq.png" />QQ登录</a>
-							</div>
-						</div>
-						<div class="form-group">
-							<input type="checkbox" value="on"
-								name="_spring_security_remember_me"> 记住我
-						</div>
-						<input type="hidden" name="${_csrf.parameterName}"
-							value="${_csrf.token}" />
-						<button class="btn btn-lg btn-primary btn-block" type="submit">登录</button>
-					</form>
-				</fieldset>
+				<div style="text-align: right; margin-top: 10px">
+					已有帐号？<a href="<u:url/>/login">点我登录</a>
+				</div>
 			</div>
 		</div>
 	</div>

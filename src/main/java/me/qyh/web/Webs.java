@@ -1,6 +1,8 @@
 package me.qyh.web;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.net.URLConnection;
 
 import javax.servlet.ServletContext;
@@ -8,26 +10,59 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import me.qyh.bean.Info;
+import me.qyh.utils.Validators;
+import me.qyh.web.tag.url.UrlHelper;
+
 import org.springframework.http.MediaType;
 import org.springframework.security.web.util.UrlUtils;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.SerializationUtils;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import com.fasterxml.jackson.core.JsonEncoding;
-import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.google.code.kaptcha.Constants;
-
-import me.qyh.bean.Info;
-import me.qyh.utils.Validators;
-import me.qyh.web.tag.url.UrlHelper;
 
 public final class Webs {
 
 	public static final String rootPath = System.getProperty("webapp.root");
 	private static final String URL_HELPER = "urlHelper";
 	private static final String REFERER = "Referer";
+	private static final ObjectMapper mapper = new ObjectMapper();
+	
+	static {
+		mapper.setFilters(new SimpleFilterProvider().setFailOnUnknownId(false));
+		mapper.setSerializationInclusion(Include.NON_NULL);
+	}
+	
+	public static ObjectMapper getMapper(){
+		return mapper;
+	}
+	
+	public  static <T> T readValue(Class<T> t , String json) throws JsonProcessingException, IOException{
+		ObjectReader reader = mapper.reader(t);
+		return reader.readValue(json);
+	}
+	
+	public  static <T> T readValue(Class<T> t , InputStream is) throws JsonProcessingException, IOException{
+		ObjectReader reader = mapper.reader(t);
+		return reader.readValue(is);
+	}
+	
+	public static <T> T readValue(Class<T> t ,URL url) throws JsonProcessingException, IOException{
+		ObjectReader reader = mapper.reader(t);
+		return reader.readValue(url);
+	}
+	
+	public static ObjectReader reader(){
+		return mapper.reader();
+	}
+	
 
 	public static boolean isAjaxRequest(HttpServletRequest request) {
 		return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
@@ -50,6 +85,9 @@ public final class Webs {
 	}
 
 	public static boolean matchValidateCode(HttpSession session, String code) {
+		if(session == null){
+			return false;
+		}
 		String _validateCode = (String) session.getAttribute(Constants.KAPTCHA_SESSION_KEY);
 		if (Validators.isEmptyOrNull(_validateCode, true) || Validators.isEmptyOrNull(code, true)
 				|| !_validateCode.equalsIgnoreCase(code)) {
@@ -62,12 +100,13 @@ public final class Webs {
 		return UrlUtils.buildFullRequestUrl(request);
 	}
 
-	public static void writeInfo(HttpServletResponse response, ObjectWriter objectWriter, Info info)
+	public static void writeInfo(HttpServletResponse response,  Info info)
 			throws IOException {
 		response.setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-		JsonGenerator jsonGenerator = objectWriter.getFactory().createGenerator(response.getOutputStream(),
-				JsonEncoding.UTF8);
-		objectWriter.writeValue(jsonGenerator, info);
+//		JsonGenerator jsonGenerator = objectWriter.getFactory().createGenerator(response.getOutputStream(),
+//				JsonEncoding.UTF8);
+		ObjectWriter writer = mapper.writer();
+		writer.writeValue(response.getOutputStream(), info);
 	}
 
 	public static UrlHelper getUrlHelper(ServletContext sc) {
