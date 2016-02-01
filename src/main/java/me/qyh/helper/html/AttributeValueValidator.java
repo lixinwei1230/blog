@@ -1,4 +1,4 @@
-package me.qyh.helper.htmlclean;
+package me.qyh.helper.html;
 
 /**
  * 判断某个属性是否允许

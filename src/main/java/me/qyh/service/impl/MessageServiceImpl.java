@@ -26,7 +26,7 @@ import me.qyh.entity.message.MessageStatus;
 import me.qyh.entity.message.MessageType;
 import me.qyh.exception.LogicException;
 import me.qyh.helper.cache.NamedCache;
-import me.qyh.helper.htmlclean.HtmlContentHandler;
+import me.qyh.helper.html.HtmlContentHandler;
 import me.qyh.pageparam.MessageReceivePageParam;
 import me.qyh.pageparam.MessageSendPageParam;
 import me.qyh.pageparam.Page;

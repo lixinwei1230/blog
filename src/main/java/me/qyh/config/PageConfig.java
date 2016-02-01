@@ -3,7 +3,7 @@ package me.qyh.config;
 import java.util.HashMap;
 import java.util.Map;
 
-import me.qyh.helper.htmlclean.HtmlContentHandler;
+import me.qyh.helper.html.HtmlContentHandler;
 import me.qyh.page.PageType;
 
 public class PageConfig {

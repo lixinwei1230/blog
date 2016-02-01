@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import me.qyh.helper.htmlclean.JsonHtmlXssSerializer;
+import me.qyh.helper.html.JsonHtmlXssSerializer;
 import me.qyh.security.RoleGrantedAuthority;
 import me.qyh.utils.Validators;
 

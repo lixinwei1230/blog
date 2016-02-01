@@ -3,7 +3,7 @@ package me.qyh.entity.message;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import me.qyh.entity.Id;
-import me.qyh.helper.htmlclean.JsonHtmlXssSerializer;
+import me.qyh.helper.html.JsonHtmlXssSerializer;
 
 /**
  * 信息明细

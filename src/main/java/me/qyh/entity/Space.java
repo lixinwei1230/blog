@@ -5,7 +5,7 @@ import java.util.Date;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import me.qyh.helper.htmlclean.JsonHtmlXssSerializer;
+import me.qyh.helper.html.JsonHtmlXssSerializer;
 
 /**
  * 空间

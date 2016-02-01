@@ -38,7 +38,7 @@ import me.qyh.exception.SystemException;
 import me.qyh.helper.cache.SignCache;
 import me.qyh.helper.cache.SignCacheEvict;
 import me.qyh.helper.freemaker.WebFreemarkers;
-import me.qyh.helper.htmlclean.HtmlContentHandler;
+import me.qyh.helper.html.HtmlContentHandler;
 import me.qyh.helper.lucene.BlogIndexHandler;
 import me.qyh.pageparam.BlogPageParam;
 import me.qyh.pageparam.CommentPageParam;

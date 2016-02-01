@@ -1,4 +1,4 @@
-package me.qyh.helper.htmlclean;
+package me.qyh.helper.html;
 
 public interface HtmlContentHandler {
 

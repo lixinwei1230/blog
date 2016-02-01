@@ -1,6 +1,6 @@
 package me.qyh.config;
 
-import me.qyh.helper.htmlclean.HtmlContentHandler;
+import me.qyh.helper.html.HtmlContentHandler;
 
 public class BlogConfig {
 

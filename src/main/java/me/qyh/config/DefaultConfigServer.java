@@ -16,7 +16,7 @@ import me.qyh.config.FileUploadConfig._ImageConfig;
 import me.qyh.entity.RoleEnum;
 import me.qyh.entity.User;
 import me.qyh.entity.blog.Blog;
-import me.qyh.helper.htmlclean.HtmlContentHandler;
+import me.qyh.helper.html.HtmlContentHandler;
 import me.qyh.page.PageType;
 import me.qyh.upload.server.FileStorage;
 import me.qyh.upload.server.inner.LocalFileStorage;

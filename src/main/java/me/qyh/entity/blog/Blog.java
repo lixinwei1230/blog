@@ -11,7 +11,7 @@ import me.qyh.entity.Id;
 import me.qyh.entity.Scope;
 import me.qyh.entity.Space;
 import me.qyh.entity.tag.Tag;
-import me.qyh.helper.htmlclean.JsonHtmlXssSerializer;
+import me.qyh.helper.html.JsonHtmlXssSerializer;
 
 import org.springframework.format.annotation.DateTimeFormat;
 

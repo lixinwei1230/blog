@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import me.qyh.entity.Id;
 import me.qyh.entity.User;
-import me.qyh.helper.htmlclean.JsonHtmlXssSerializer;
+import me.qyh.helper.html.JsonHtmlXssSerializer;
 import me.qyh.pageparam.Page;
 
 /**

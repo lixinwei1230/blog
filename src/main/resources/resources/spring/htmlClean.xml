@@ -21,7 +21,7 @@
 						     http://www.springframework.org/schema/task 
 						     http://www.springframework.org/schema/task/spring-task-4.0.xsd">
 
-	<bean id="messageHtmlHandler" class="me.qyh.helper.htmlclean.CompositeHtmlContentHandler">
+	<bean id="messageHtmlHandler" class="me.qyh.helper.html.CompositeHtmlContentHandler">
 		<property name="handlers">
 			<list>
 				<ref bean="messageHtmlClean" />
@@ -30,7 +30,7 @@
 		</property>
 	</bean>
 
-	<bean id="messageHtmlClean" class="me.qyh.helper.htmlclean.HtmlClean">
+	<bean id="messageHtmlClean" class="me.qyh.helper.html.HtmlClean">
 		<property name="html">
 			<value>
 				<![CDATA[
@@ -41,21 +41,21 @@
 		</property>
 		<property name="specifiedValidators">
 			<list>
-				<bean class="me.qyh.helper.htmlclean.SpecifiedValidator">
+				<bean class="me.qyh.helper.html.SpecifiedValidator">
 					<constructor-arg index="0">
 						<set>
 							<value>href</value>
 						</set>
 					</constructor-arg>
 					<property name="validator">
-						<bean class="me.qyh.helper.htmlclean.SrcValidator" />
+						<bean class="me.qyh.helper.html.SrcValidator" />
 					</property>
 				</bean>
 			</list>
 		</property>
 	</bean>
 
-	<bean id="commentHtmlHandler" class="me.qyh.helper.htmlclean.CompositeHtmlContentHandler">
+	<bean id="commentHtmlHandler" class="me.qyh.helper.html.CompositeHtmlContentHandler">
 		<property name="handlers">
 			<list>
 				<ref bean="commentHtmlClean" />
@@ -64,7 +64,7 @@
 		</property>
 	</bean>
 
-	<bean id="commentHtmlClean" class="me.qyh.helper.htmlclean.HtmlClean">
+	<bean id="commentHtmlClean" class="me.qyh.helper.html.HtmlClean">
 		<property name="html">
 			<value>
 				<![CDATA[
@@ -77,7 +77,7 @@
 		</property>
 		<property name="specifiedValidators">
 			<list>
-				<bean class="me.qyh.helper.htmlclean.SpecifiedValidator">
+				<bean class="me.qyh.helper.html.SpecifiedValidator">
 					<constructor-arg index="0">
 						<set>
 							<value>href</value>
@@ -85,19 +85,19 @@
 						</set>
 					</constructor-arg>
 					<property name="validator">
-						<bean class="me.qyh.helper.htmlclean.SrcValidator" />
+						<bean class="me.qyh.helper.html.SrcValidator" />
 					</property>
 				</bean>
 			</list>
 		</property>
 	</bean>
 
-	<bean id="blogHtmlClean" class="me.qyh.helper.htmlclean.HtmlClean">
+	<bean id="blogHtmlClean" class="me.qyh.helper.html.HtmlClean">
 		<property name="location"
 			value="classpath:resources/htmlclean/blogHtmlClean.txt" />
 		<property name="specifiedValidators">
 			<list>
-				<bean class="me.qyh.helper.htmlclean.SpecifiedValidator">
+				<bean class="me.qyh.helper.html.SpecifiedValidator">
 					<constructor-arg index="0">
 						<set>
 							<value>src</value>
@@ -107,14 +107,14 @@
 						</set>
 					</constructor-arg>
 					<property name="validator">
-						<bean class="me.qyh.helper.htmlclean.SrcValidator" />
+						<bean class="me.qyh.helper.html.SrcValidator" />
 					</property>
 				</bean>
 			</list>
 		</property>
 	</bean>
 
-	<bean id="blogHtmlHandler" class="me.qyh.helper.htmlclean.CompositeHtmlContentHandler">
+	<bean id="blogHtmlHandler" class="me.qyh.helper.html.CompositeHtmlContentHandler">
 		<property name="handlers">
 			<list>
 				<ref bean="blogHtmlClean" />
@@ -123,7 +123,7 @@
 		</property>
 	</bean>
 
-	<bean id="fullBlogHtmlHandler" class="me.qyh.helper.htmlclean.CompositeHtmlContentHandler">
+	<bean id="fullBlogHtmlHandler" class="me.qyh.helper.html.CompositeHtmlContentHandler">
 		<property name="handlers">
 			<list>
 				<ref bean="fullBlogHtmlClean" />
@@ -133,12 +133,12 @@
 	</bean>
 
 
-	<bean id="fullBlogHtmlClean" class="me.qyh.helper.htmlclean.HtmlClean">
+	<bean id="fullBlogHtmlClean" class="me.qyh.helper.html.HtmlClean">
 		<property name="location"
 			value="classpath:resources/htmlclean/fullBlogHtmlClean.txt" />
 		<property name="specifiedValidators">
 			<list>
-				<bean class="me.qyh.helper.htmlclean.SpecifiedValidator">
+				<bean class="me.qyh.helper.html.SpecifiedValidator">
 					<constructor-arg index="0">
 						<set>
 							<value>src</value>
@@ -148,7 +148,7 @@
 						</set>
 					</constructor-arg>
 					<property name="validator">
-						<bean class="me.qyh.helper.htmlclean.SrcValidator" />
+						<bean class="me.qyh.helper.html.SrcValidator" />
 					</property>
 				</bean>
 			</list>
@@ -156,7 +156,7 @@
 	</bean>
 
 
-	<bean id="fullWidgetHtmlHandler" class="me.qyh.helper.htmlclean.CompositeHtmlContentHandler">
+	<bean id="fullWidgetHtmlHandler" class="me.qyh.helper.html.CompositeHtmlContentHandler">
 		<property name="handlers">
 			<list>
 				<ref bean="fullWidgetHtmlClean" />
@@ -165,12 +165,12 @@
 		</property>
 	</bean>
 
-	<bean id="fullWidgetHtmlClean" class="me.qyh.helper.htmlclean.HtmlClean">
+	<bean id="fullWidgetHtmlClean" class="me.qyh.helper.html.HtmlClean">
 		<property name="location"
 			value="classpath:resources/htmlclean/fullWidgetHtmlClean.txt" />
 		<property name="specifiedValidators">
 			<list>
-				<bean class="me.qyh.helper.htmlclean.SpecifiedValidator">
+				<bean class="me.qyh.helper.html.SpecifiedValidator">
 					<constructor-arg index="0">
 						<set>
 							<value>src</value>
@@ -180,14 +180,14 @@
 						</set>
 					</constructor-arg>
 					<property name="validator">
-						<bean class="me.qyh.helper.htmlclean.SrcValidator" />
+						<bean class="me.qyh.helper.html.SrcValidator" />
 					</property>
 				</bean>
 			</list>
 		</property>
 	</bean>
 
-	<bean id="widgetHtmlHandler" class="me.qyh.helper.htmlclean.CompositeHtmlContentHandler">
+	<bean id="widgetHtmlHandler" class="me.qyh.helper.html.CompositeHtmlContentHandler">
 		<property name="handlers">
 			<list>
 				<ref bean="widgetHtmlClean" />
@@ -196,12 +196,12 @@
 		</property>
 	</bean>
 
-	<bean id="widgetHtmlClean" class="me.qyh.helper.htmlclean.HtmlClean">
+	<bean id="widgetHtmlClean" class="me.qyh.helper.html.HtmlClean">
 		<property name="location"
 			value="classpath:resources/htmlclean/widgetHtmlClean.txt" />
 		<property name="specifiedValidators">
 			<list>
-				<bean class="me.qyh.helper.htmlclean.SpecifiedValidator">
+				<bean class="me.qyh.helper.html.SpecifiedValidator">
 					<constructor-arg index="0">
 						<set>
 							<value>src</value>
@@ -211,7 +211,7 @@
 						</set>
 					</constructor-arg>
 					<property name="validator">
-						<bean class="me.qyh.helper.htmlclean.SrcValidator" />
+						<bean class="me.qyh.helper.html.SrcValidator" />
 					</property>
 				</bean>
 			</list>

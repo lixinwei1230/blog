@@ -4,7 +4,7 @@ import java.util.Date;
 
 import me.qyh.entity.Id;
 import me.qyh.entity.Space;
-import me.qyh.helper.htmlclean.JsonHtmlXssSerializer;
+import me.qyh.helper.html.JsonHtmlXssSerializer;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 

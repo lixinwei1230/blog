@@ -1,4 +1,4 @@
-package me.qyh.helper.htmlclean;
+package me.qyh.helper.html;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import me.qyh.web.tag.url.UrlHelper;
 
 @Component
-public class NofollowHtmlContentHandler implements HtmlContentHandler, InitializingBean {
+public class NofollowHtmlContentHandler implements BodyFragmentHandler, HtmlContentHandler, InitializingBean {
 
 	private static final String NOFOLLOW = "external nofollow";
 
@@ -30,11 +30,27 @@ public class NofollowHtmlContentHandler implements HtmlContentHandler, Initializ
 		for (Element ele : eles) {
 			String href = ele.attr("href");
 			// only abs url need to do
-			if (UrlUtils.isAbsoluteUrl(href) && href.indexOf(siteDomain) == -1) {
+			if (needNofollow(href)) {
 				ele.attr("rel", NOFOLLOW);
 			}
 		}
 		return body.html();
+	}
+
+	@Override
+	public void handle(Document body) {
+		Elements eles = body.select("a[href]");
+		for (Element ele : eles) {
+			String href = ele.attr("href");
+			// only abs url need to do
+			if (needNofollow(href)) {
+				ele.attr("rel", NOFOLLOW);
+			}
+		}
+	}
+
+	protected boolean needNofollow(String href) {
+		return (UrlUtils.isAbsoluteUrl(href) && href.indexOf(siteDomain) == -1);
 	}
 
 	@Override
@@ -48,5 +64,4 @@ public class NofollowHtmlContentHandler implements HtmlContentHandler, Initializ
 			siteDomain = domain;
 		}
 	}
-
 }

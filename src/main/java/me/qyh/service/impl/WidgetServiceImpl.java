@@ -14,7 +14,7 @@ import me.qyh.entity.User;
 import me.qyh.exception.BusinessAccessDeinedException;
 import me.qyh.exception.LogicException;
 import me.qyh.exception.SystemException;
-import me.qyh.helper.htmlclean.HtmlContentHandler;
+import me.qyh.helper.html.HtmlContentHandler;
 import me.qyh.page.LocationWidget;
 import me.qyh.page.Page;
 import me.qyh.page.PageType;
