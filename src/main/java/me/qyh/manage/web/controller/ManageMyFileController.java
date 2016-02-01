@@ -23,7 +23,7 @@ import me.qyh.server.TipMessage;
 @RequestMapping("manage/file")
 public class ManageMyFileController extends ManageBaseController {
 
-	@Value("${config.pagesize.file}")
+	@Value("${config.pageSize.myfile}")
 	private int pageSize;
 	@Autowired
 	private MyFileManageService service;
