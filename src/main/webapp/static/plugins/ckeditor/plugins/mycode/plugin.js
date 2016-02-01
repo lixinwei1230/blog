@@ -65,12 +65,16 @@ CKEDITOR.plugins.add('mycode', {
 								$.messager.popup("请输入内容");
 								return ;
 							}
+							var ct = $("#ckeditor-code-escape");
+							var content = "";
+							if(ct.length==0){
+								content = $("<div id='ckeditor-code-escape' style='display:none'></div>").appendTo("body").text(code).html();
+							}else{
+								content = ct.text(code).html();
+							}
 							var lan = $("#ckeditor-code-lan").val();
-							editor.insertHtml("<pre class='pre-scrollable'>");
-							editor.insertHtml("<code class='"+lan+"'>");
-							editor.insertText(""+code+"");
-							editor.insertHtml("</code>");
-							editor.insertHtml("</pre>")
+							editor.insertHtml("<pre class='pre-scrollable'><code class='"+lan+"'>"+content+"</code></pre>");
+							
 						}
 						$("#ckeditor-codeModal").modal("hide");
 					});
