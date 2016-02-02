@@ -1,13 +1,13 @@
 package me.qyh.entity.validator;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
 
 import me.qyh.entity.blog.Blog;
 import me.qyh.entity.blog.BlogCategory;
 import me.qyh.entity.blog.BlogStatus;
 import me.qyh.entity.tag.Tag;
+import me.qyh.utils.Strings;
 import me.qyh.utils.Validators;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -108,7 +108,7 @@ public class BlogValidator implements Validator {
 					"博客内容不能超过" + contentMaxLength + "个字符");
 			return;
 		}
-		Set<Tag> tags = new HashSet<Tag>();
+		Set<Tag> tags = blog.getTags();
 		if (!tags.isEmpty()) {
 			if (tags.size() > tagsMaxSize) {
 				e.rejectValue("tags", "validation.blog.tags.oversize", new Object[] { tagsMaxSize },
@@ -121,11 +121,17 @@ public class BlogValidator implements Validator {
 					e.rejectValue("tags", "validation.blog.tags.name.blank");
 					return;
 				}
+				name = Strings.replaceOtherSymbols(name);
+				if(name.trim().isEmpty()){
+					e.rejectValue("tags", "validation.blog.tags.name.blank");
+					return;
+				}
 				if (name.length() > tagNameMaxLength) {
 					e.rejectValue("tags", "validation.blog.tags.name.toolong", new Object[] { tagNameMaxLength },
 							"博客单个标签长度不能超过" + tagNameMaxLength + "个字符");
 					return;
 				}
+				tag.setName(name);
 			}
 		}
 		Integer level = blog.getLevel();

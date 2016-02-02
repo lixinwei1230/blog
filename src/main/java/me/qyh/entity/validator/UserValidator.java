@@ -8,6 +8,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import me.qyh.entity.User;
+import me.qyh.utils.Strings;
 import me.qyh.utils.Validators;
 
 @Component(value = "userValidator")
@@ -35,12 +36,18 @@ public class UserValidator implements Validator {
 			e.rejectValue("username", "validation.username.blank");
 			return;
 		}
+		name = Strings.replaceOtherSymbols(name).trim();
+		if(name.isEmpty()){
+			e.rejectValue("username", "validation.username.blank");
+			return;
+		}
 		if (name.length() < nameMinLength || name.length() > nameMaxLength) {
 			e.rejectValue("username", "validation.username.length.invalid",
 					new Object[] { nameMinLength, nameMaxLength },
 					"用户名长度在" + nameMinLength + "和" + nameMaxLength + "之间");
 			return;
 		}
+		user.setUsername(name);
 		String password = user.getPassword();
 		if (Validators.isEmptyOrNull(password, true)) {
 			e.rejectValue("password", "validation.password.blank");

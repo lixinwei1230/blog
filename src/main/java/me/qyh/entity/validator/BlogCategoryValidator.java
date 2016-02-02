@@ -6,6 +6,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import me.qyh.entity.blog.BlogCategory;
+import me.qyh.utils.Strings;
 import me.qyh.utils.Validators;
 
 @Component("blogCategoryValidator")
@@ -31,11 +32,17 @@ public class BlogCategoryValidator implements Validator {
 			e.rejectValue("name", "validation.blog.category.name.blank");
 			return;
 		}
+		name = Strings.replaceOtherSymbols(name);
+		if(name.trim().isEmpty()){
+			e.rejectValue("name", "validation.blog.category.name.blank");
+			return;
+		}
 		if (name.length() > nameMaxLength) {
 			e.rejectValue("name", "validation.blog.category.name.toolong", new Object[] { nameMaxLength },
 					"博客分类不能超过" + nameMaxLength + "个字符");
 			return;
 		}
+		category.setName(name);
 		int order = category.getOrder();
 		if (order < orderMin || order > orderMax) {
 			e.rejectValue("order", "validation.blog.category.order.invalid", new Object[] { orderMin, orderMax },

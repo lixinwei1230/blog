@@ -56,4 +56,8 @@ public final class Strings extends StringUtils {
 	public static String uuid() {
 		return UUID.randomUUID().toString().replace("-", "");
 	}
+	
+	public static String replaceOtherSymbols(String str){
+		return str.replaceAll("\\p{So}+", "");
+	}
 }
