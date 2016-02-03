@@ -69,6 +69,7 @@ public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 		BlogPageParam param = new BlogPageParam();
 		param.setCurrentPage(1);
 		param.setPageSize(pageSize);
+		param.setDel(false);
 
 		Space configSpace = config.getSpace();
 		param.setSpace(configSpace);
