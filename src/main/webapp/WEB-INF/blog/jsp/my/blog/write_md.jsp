@@ -578,6 +578,7 @@
 			}else{
 				data.status = 'NORMAL';
 			}
+			data.display=marked(data.content);
 			data.editor='MD';
 			var url = '${ctx}/my/blog/temporary/save';
 			post(url,data,function(result){

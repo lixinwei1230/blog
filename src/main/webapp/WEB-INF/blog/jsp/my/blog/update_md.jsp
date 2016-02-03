@@ -51,8 +51,7 @@
 							<label><spring:message code="page.blog.content" /></label>
 						</div>
 						<div class="col-lg-10 col-sm-12 col-md-10 col-xs-12">
-							<textarea class="form-control" style="height: 600px" id="editor"><c:out
-									value="${blog.content }" /></textarea>
+							<pre><textarea class="form-control" style="height: 600px" id="editor"><c:out value="${blog.content }" /></textarea></pre>
 						</div>
 					</div>
 				</div>
@@ -682,6 +681,8 @@
 			}else{
 				data.status = 'NORMAL';
 			}
+			data.display=marked(data.content);
+			data.editor='MD';
 			var url = '${ctx}/my/blog/temporary/save';
 			post(url,data,function(result){
 				if(result.success){
