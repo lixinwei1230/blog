@@ -112,4 +112,5 @@ public class Page<T> {
 	public static Integer countCurrentPage(Integer offset, Integer pageSize) {
 		return offset / pageSize + 1;
 	}
+	
 }

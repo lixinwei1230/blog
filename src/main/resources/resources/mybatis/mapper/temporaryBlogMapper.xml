@@ -18,7 +18,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="scope" column="scope" typeHandler="EnumOrdinalTypeHandler" />
 		<result property="status" column="blog_status" typeHandler="EnumOrdinalTypeHandler" />
 		<result property="from" column="blog_from" typeHandler="EnumOrdinalTypeHandler" />
-		
+		<result property="editor" column="editor" typeHandler="EnumOrdinalTypeHandler"/>
 		<result property="tags" column="tagStr" typeHandler="SimpleTagSetTypeHandler"/>
 		<association property="category" javaType="BlogCategory">
 			<id column="category" property="id" />
@@ -45,7 +45,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		tagStr,
 		category,
 		space_id,
-		blog
+		blog,
+		editor
 		)
 		VALUES
 		(
@@ -61,7 +62,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		#{tagStr},
 		#{category.id},
 		#{space.id},
-		#{id}
+		#{id},
+		#{editor,javaType=Editor,typeHandler=EnumOrdinalTypeHandler}
 		)
 	</insert>
 
@@ -80,7 +82,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		tagStr,
 		category,
 		space_id,
-		blog
+		blog,editor
 		FROM temporary_blog WHERE
 		id = #{id}
 	</select>
@@ -144,7 +146,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		tagStr,
 		category,
 		space_id,
-		blog
+		blog,
+		editor
 		FROM temporary_blog
 		WHERE space_id =
 		#{space.id}

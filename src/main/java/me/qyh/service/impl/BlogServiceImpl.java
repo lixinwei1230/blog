@@ -9,6 +9,16 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import me.qyh.bean.Scopes;
 import me.qyh.config.BlogCommentConfig;
 import me.qyh.config.BlogConfig;
@@ -21,6 +31,7 @@ import me.qyh.dao.BlogTagDao;
 import me.qyh.dao.TagDao;
 import me.qyh.dao.TemporaryBlogDao;
 import me.qyh.dao.UserTagDao;
+import me.qyh.entity.Editor;
 import me.qyh.entity.RoleEnum;
 import me.qyh.entity.Scope;
 import me.qyh.entity.Space;
@@ -52,21 +63,11 @@ import me.qyh.service.BlogService;
 import me.qyh.utils.Strings;
 import me.qyh.utils.Validators;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 @Service("blogService")
-public class BlogServiceImpl extends BaseServiceImpl implements BlogService{
+public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 
 	private static final String COMMENT_TIP_TEMPLATE = "tip/comment_blog.ftl";
-	
+
 	@Autowired
 	private BlogCategoryDao blogCategoryDao;
 	@Autowired
@@ -105,6 +106,9 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService{
 	private WebFreemarkers freeMarkers;
 	@Autowired
 	protected BlogIndexHandler blogIndexHandler;
+	@Value("${config.validation.blog.contentMaxLength}")
+	private int contentMaxLength;
+	private HtmlContentHandler afterHandler;// 当从数据库中取出博客内容的处理器
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
@@ -115,29 +119,43 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService{
 		BlogConfig config = configServer.getBlogConfig(UserContext.getUser());
 		checkInsertFrequency(config.getLimit(), blog.getSpace());
 
-		setBlogSummray(blog, summaryLength);
 		temporaryBlogDao.deleteByBlog(blog);
-		
-		if(!blog.isScheduled()){
+
+		if (!blog.isScheduled()) {
 			blog.setWriteDate(new Date());
 		}
-		
+		handleBlogDisplayAndSummary(blog, config);
 		blog.setDel(false);
 		blogDao.insert(blog);
 		insertBlogTag(blog);
-		
 		blog.setCategory(category);
-		
 		blogIndexHandler.rebuildBlogIndex(blog);
+	}
+
+	private void handleBlogDisplayAndSummary(Blog blog, BlogConfig config) throws LogicException {
+		Editor editor = blog.getEditor();
+		HtmlContentHandler clean = config.getClean();
+		if (Editor.HTML.equals(editor)) {
+			blog.setDisplay(clean.handle(blog.getContent()));
+		} else {
+			// MD模式中display由页面解析后传过来，这里需要再次过滤
+			blog.setDisplay(clean.handle(blog.getDisplay()));
+		}
+		// 再次检查display长度
+		String display = blog.getDisplay();
+		if (display.length() > contentMaxLength) {
+			throw new LogicException("validation.blog.content.toolong");
+		}
+		setBlogSummray(blog, summaryLength);
 	}
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-	public void deleteBlog(Integer id ) throws LogicException {
+	public void deleteBlog(Integer id) throws LogicException {
 		Blog blog = loadBlog(id);
 		super.doAuthencation(UserContext.getSpace(), blog.getSpace());
 
-		if(!blog.isScheduled() && !isBlogDeleted(blog)){
+		if (!blog.isScheduled() && !isBlogDeleted(blog)) {
 			throw new LogicException("error.blog.undeleted");
 		}
 
@@ -150,7 +168,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService{
 		commentDao.deleteByBlog(blog);
 
 		blogDao.deleteById(blog.getId());
-		
+
 		blogIndexHandler.removeBlogIndex(blog);
 	}
 
@@ -162,14 +180,13 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService{
 		if (isBlogDeleted(blog)) {
 			throw new LogicException("error.blog.notexists");
 		}
-		if(blog.isScheduled() && !blog.getSpace().equals(UserContext.getSpace())){
+		if (blog.isScheduled() && !blog.getSpace().equals(UserContext.getSpace())) {
 			throw new LogicException("error.blog.notexists");
 		}
-
 		super.doAuthencation(spaceServer.getScopes(UserContext.getUser(), blog.getSpace()), blog.getScope());
-		User user = userServer.getUserBySpace(blog.getSpace());
-		BlogConfig config = configServer.getBlogConfig(user);
-		blog.setContent(config.getClean().handle(blog.getContent()));
+		if (afterHandler != null) {
+			blog.setDisplay(afterHandler.handle(blog.getDisplay()));
+		}
 		return blog;
 	}
 
@@ -208,13 +225,13 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService{
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-	public void updateHits(Integer blog, int hits) throws LogicException{
+	public void updateHits(Integer blog, int hits) throws LogicException {
 		Blog db = loadBlog(blog);
 		if (isBlogDeleted(db) || db.isScheduled()) {
 			throw new LogicException("error.blog.notexists");
 		}
 		blogDao.updateHits(blog, hits);
-		
+
 		db.setHits(db.getHits() + hits);
 		blogIndexHandler.rebuildBlogIndex(db);
 	}
@@ -226,10 +243,10 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService{
 		Page<Blog> page = blogIndexHandler.search(param);
 		List<Blog> blogs = page.getDatas();
 		List<Blog> results = new ArrayList<Blog>();
-		if(!blogs.isEmpty()){
-			for(Blog blog : blogs){
+		if (!blogs.isEmpty()) {
+			for (Blog blog : blogs) {
 				Blog preview = blogDao.selectPreview(blog.getId());
-				if(preview != null){
+				if (preview != null) {
 					preview.setTags(blog.getTags());
 					results.add(preview);
 				}
@@ -253,7 +270,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService{
 
 		blog.setDel(true);
 		blogDao.updateDel(blog);
-		
+
 		blogIndexHandler.rebuildBlogIndex(blog);
 	}
 
@@ -273,11 +290,10 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService{
 		BlogCategory category = loadBlogCategory(toUpdate.getCategory().getId());
 		super.doAuthencation(current, category.getSpace());
 
-		setBlogSummray(toUpdate, summaryLength);
-		
-		if(db.isScheduled() && !toUpdate.isScheduled()){
+		if (db.isScheduled() && !toUpdate.isScheduled()) {
 			toUpdate.setWriteDate(new Date());
 		}
+		handleBlogDisplayAndSummary(toUpdate, configServer.getBlogConfig(UserContext.getUser()));
 		blogDao.update(toUpdate);
 
 		Set<Tag> oldTags = db.getTags();
@@ -287,7 +303,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService{
 		insertBlogTag(toUpdate);
 
 		temporaryBlogDao.deleteByBlog(db);
-		
+
 		blogIndexHandler.rebuildBlogIndex(loadBlog(db.getId()));
 	}
 
@@ -308,7 +324,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService{
 
 		Date now = new Date();
 		if (insert) {
-			if(!blog.isScheduled()){
+			if (!blog.isScheduled()) {
 				blog.setWriteDate(now);
 			}
 			insertBlog(blog);
@@ -330,7 +346,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService{
 
 		blog.setDel(false);
 		blogDao.updateDel(blog);
-		
+
 		blogIndexHandler.rebuildBlogIndex(blog);
 	}
 
@@ -363,13 +379,15 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService{
 
 		List<TemporaryBlog> tBlogs = temporaryBlogDao.selectByBlog(blog);
 		if (tBlogs.isEmpty()) {
+			TemporaryBlog tb = new TemporaryBlog(blog);
 			if (blog.hasId()) {
 				Blog _blog = blogDao.selectById(blog.getId());
 				if (_blog != null) {
 					super.doAuthencation(UserContext.getSpace(), _blog.getSpace());
 				}
+				tb.setEditor(_blog.getEditor());
 			}
-			temporaryBlogDao.insert(new TemporaryBlog(blog));
+			temporaryBlogDao.insert(tb);
 		} else {
 			TemporaryBlog db = tBlogs.get(0);
 			super.doAuthencation(UserContext.getSpace(), db.getSpace());
@@ -404,7 +422,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService{
 	@Transactional(readOnly = true)
 	public Page<BlogComment> findComments(CommentPageParam param) throws LogicException {
 		Blog query = param.getBlog();
-		if(query != null){
+		if (query != null) {
 			Blog blog = loadBlog(param.getBlog().getId());
 			if (blog.getDel()) {
 				throw new LogicException("error.blog.notexists");
@@ -440,7 +458,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService{
 		if (Scope.PRIVATE.equals(blog.getCommentScope()) && !blog.getSpace().equals(UserContext.getSpace())) {
 			throw new LogicException("error.blog.notAllowComment");
 		}
-		
+
 		BlogCommentConfig config = configServer.getBlogCommentConfig(blog, comment.getUser());
 		checkCommentFrequencyLimit(config.getLimit(), comment.getUser());
 
@@ -460,11 +478,11 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService{
 			comment.setReply(reply);
 			comment.setReplyTo(reply.getIsAnonymous() ? null : reply.getUser());
 		}
-		
-		if(parent == null){
+
+		if (parent == null) {
 			blogDao.updateComments(blog.getId(), 1);
-			
-			blog.setComments(blog.getComments()+1);
+
+			blog.setComments(blog.getComments() + 1);
 			blogIndexHandler.rebuildBlogIndex(blog);
 		}
 
@@ -508,7 +526,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService{
 		if (!hasParent) {
 			blogDao.updateComments(blog.getId(), -1);
 			commentDao.deleteByParent(comment);
-			
+
 			blog.setComments(blog.getComments() - 1);
 			blogIndexHandler.rebuildBlogIndex(blog);
 		}
@@ -607,8 +625,8 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService{
 	 * @param length
 	 *            博客摘要最大长度
 	 */
-	public void setBlogSummray(Blog blog, int length) {
-		Document doc = Jsoup.parseBodyFragment(blog.getContent());
+	protected void setBlogSummray(Blog blog, int length) {
+		Document doc = Jsoup.parseBodyFragment(blog.getDisplay());
 		String summary = doc.text();
 		if (summary.length() > length) {
 			summary = summary.substring(0, length);
@@ -716,5 +734,9 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService{
 
 		tipServer.sendTip(message);
 	}
-	
+
+	public void setAfterHandler(HtmlContentHandler afterHandler) {
+		this.afterHandler = afterHandler;
+	}
+
 }

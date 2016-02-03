@@ -8,6 +8,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<id column="id" property="id" />
 		<result column="title" property="title" />
 		<result column="content" property="content" />
+		<result column="display" property="display"/>
 		<result column="write_date" property="writeDate" />
 		<result column="hits" property="hits" />
 		<result column="summary" property="summary" />
@@ -21,6 +22,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="status" column="blog_status" typeHandler="EnumOrdinalTypeHandler" />
 		<result property="from" column="blog_from" typeHandler="EnumOrdinalTypeHandler" />
 		<result property="tags" column="tagList" typeHandler="TagSetTypeHandler"/>
+		<result property="editor" column="editor" typeHandler="EnumOrdinalTypeHandler"/>
 		<result property="del" column="del"/>
 		<association property="category" javaType="BlogCategory">
 			<id column="category" property="id" />
@@ -61,7 +63,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		space_id,
 		comment_scope,
 		blog_level,
-		comments
+		comments,
+		editor,
+		display
 		)
 		VALUES
 		(
@@ -77,14 +81,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		#{space.id},
 		#{commentScope,javaType=Scope,typeHandler=EnumOrdinalTypeHandler},
 		#{level},
-		0
+		0,
+		#{editor,javaType=Editor,typeHandler=EnumOrdinalTypeHandler},
+		#{display}
 		)
 	</insert>
 
 	<select id="selectById" resultMap="BlogDetail">
 		SELECT
 		b.id,b.summary,b.del,b.blog_level,b.write_date,b.title,b.hits,b.blog_from,b.category,b.space_id,bc.category_name,b.scope,comment_scope,blog_status,b.content,b.recommend,GROUP_CONCAT(CONCAT(t.tag_name,'_',convert(t.id,char))) AS tagList,comments
-		FROM blog b
+		,editor,display FROM blog b
 		LEFT OUTER JOIN blog_category bc ON b.category = bc.id
 		LEFT OUTER JOIN blog_tag bt ON bt.blog = b.id
 		LEFT OUTER JOIN tag t ON bt.tag_id = t.id
@@ -233,6 +239,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			</if>
 			<if test="content != null">
 				content = #{content},
+			</if>
+			<if test="content != null">
+				display = #{display},
 			</if>
 			<if test="summary != null">
 				summary = #{summary},

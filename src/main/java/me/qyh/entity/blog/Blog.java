@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import me.qyh.entity.Editor;
 import me.qyh.entity.Id;
 import me.qyh.entity.Scope;
 import me.qyh.entity.Space;
@@ -35,8 +36,8 @@ public class Blog extends Id {
 
 	@JsonSerialize(using = JsonHtmlXssSerializer.class)
 	private String title;// 博客标题
-	private String content;// 博客内容
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss" ,timezone="GMT+8")
+	private String content;// 博客内容(用户原始内容)
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date writeDate;// 撰写日期
 	private BlogCategory category;// 博客分类
@@ -52,10 +53,16 @@ public class Blog extends Id {
 	private Scope commentScope;// 博客评论范围
 	private Integer level;// 博客级别，级别越高将越靠前显示
 	private boolean recommend;// 推荐才能上首页
-	private Boolean del;//是否删除(回收站)
+	private Boolean del;// 是否删除(回收站)
+	private Editor editor = Editor.HTML;//编辑方式
+	private String display;//博客展现内容
 
 	public Blog() {
 
+	}
+
+	public Blog(Integer id) {
+		super(id);
 	}
 
 	/**
@@ -99,8 +106,8 @@ public class Blog extends Id {
 	public boolean getIsPrivate() {
 		return (Scope.PRIVATE.equals(this.scope));
 	}
-	
-	public boolean isScheduled(){
+
+	public boolean isScheduled() {
 		return BlogStatus.SCHEDULED.equals(status);
 	}
 
@@ -232,8 +239,20 @@ public class Blog extends Id {
 		this.recommend = recommend;
 	}
 
-	public Blog(Integer id) {
-		super(id);
+	public Editor getEditor() {
+		return editor;
+	}
+
+	public void setEditor(Editor editor) {
+		this.editor = editor;
+	}
+
+	public String getDisplay() {
+		return display;
+	}
+
+	public void setDisplay(String display) {
+		this.display = display;
 	}
 
 	@Override

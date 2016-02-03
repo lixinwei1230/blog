@@ -28,7 +28,7 @@ jdk7+&mysql 5+&tomcat7+<br/>
 ps:在windows系统下，需要配置config.properties文件中的config.magick.path，该值必须指向GraphicsMagick的安装目录，unix下可以为空<br/>
 
 html过滤:<br/>
-在resouces/spring/htmlClean.xml文件中可以配置或者新增htmlClean过滤(注意xss)，通过实现me.qyh.helper.htmlclean.HtmlContentHandler可以实现更多的效果。<br/>
+在resouces/spring/htmlClean.xml文件中可以配置或者新增htmlClean过滤(注意xss)，通过实现me.qyh.helper.html.HtmlContentHandler可以实现更多的效果。<br/>
 
 其他：<br/>
 resources/config.properties 可以配置一些分页每页记录数、字段验证已经一些服务的配置。

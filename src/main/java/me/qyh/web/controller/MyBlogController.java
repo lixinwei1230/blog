@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import me.qyh.bean.Info;
+import me.qyh.entity.Editor;
 import me.qyh.entity.Space;
 import me.qyh.entity.blog.Blog;
 import me.qyh.entity.blog.BlogStatus;
@@ -47,11 +48,14 @@ public class MyBlogController extends BaseController {
 	}
 
 	@RequestMapping(value = "write", method = RequestMethod.GET)
-	public String write(ModelMap model) {
+	public String write(ModelMap model,
+			@RequestParam(value = "editor", required = false, defaultValue = "HTML") Editor editor) {
 		Blog blog = new Blog();
 		blog.setSpace(UserContext.getSpace());
 		TemporaryBlog tBlog = blogService.getTemporaryBlog(blog);
-		return tBlog == null ? "my/blog/write" : "forward:temporary/" + tBlog.getDummyId();
+		String _editor = editor.name().toLowerCase();
+		return tBlog == null ? "my/blog/write_" + _editor
+				: "forward:temporary/" + tBlog.getDummyId() + "?editor=" + tBlog.getEditor().name();
 	}
 
 	@RequestMapping(value = "write", method = RequestMethod.POST)
@@ -102,7 +106,7 @@ public class MyBlogController extends BaseController {
 		model.addAttribute(PAGE, blogService.findBlogs(param));
 		return "my/blog/recycler";
 	}
-	
+
 	@RequestMapping(value = "scheduled/list/{currentPage}", method = RequestMethod.GET)
 	public String scheduled(@PathVariable("currentPage") int currentPage, ModelMap model) {
 		BlogPageParam param = new BlogPageParam();
@@ -138,7 +142,7 @@ public class MyBlogController extends BaseController {
 		if (tBlog != null) {
 			model.addAttribute("tBlog", tBlog);
 		}
-		return "my/blog/update";
+		return "my/blog/update_"+blog.getEditor().name().toLowerCase();
 	}
 
 	@RequestMapping(value = "update", method = RequestMethod.POST)

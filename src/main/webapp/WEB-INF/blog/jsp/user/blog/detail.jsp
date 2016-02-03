@@ -16,7 +16,7 @@
 <meta name="_csrf_header" content="${_csrf.headerName}" />
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="page" />
 <jsp:include page="/WEB-INF/head_source.jsp"></jsp:include>
-<link href="${staticSourcePrefix }/plugins/prettify/prettify.min.css"
+<link href="${staticSourcePrefix }/plugins/highlight/styles/github.min.css"
 	rel="stylesheet">
 <title><c:out value="${blog.title }" /></title>
 </head>
@@ -45,8 +45,7 @@
 						</c:forEach>
 					</div>
 				</c:if>
-				<div id="blog-content" style="margin-bottom: 20px">
-					${blog.content }</div>
+				<div id="blog-content" style="margin-bottom: 20px">${blog.display }</div>
 				<div class="clearfix">&nbsp;</div>
 				<div id="around"></div>
 				<div id="attContainer"></div>
@@ -64,7 +63,8 @@
 <jsp:include page="/WEB-INF/foot.jsp"></jsp:include>
 <jsp:include page="/WEB-INF/scripts.jsp"></jsp:include>
 <script type="text/javascript"
-	src="${staticSourcePrefix }/plugins/prettify/prettify.min.js"></script>
+	src="${staticSourcePrefix }/plugins/highlight/highlight.pack.js"></script>
+
 <script type="text/javascript"
 	src="${staticSourcePrefix }/plugins/ckeditor/ckeditor.js"></script>
 <script type="text/javascript" src="${staticSourcePrefix }/common/comment.js"></script>
@@ -72,8 +72,9 @@
 var hit = true;
 $(document).ready(function(){
 	var ids = [];
-	$("pre").addClass("prettyprint");
- 	prettyPrint();
+	$('pre code').each(function(i, block) {
+		hljs.highlightBlock(block);
+	  });
 	$("#comment-container").comment({
 		scopeId:function(){
 			return '${blog.id}';
@@ -100,9 +101,6 @@ $(document).ready(function(){
 		}
 	});
 });
-$(window).load(function(){
-	$("#blog-content").show();
-})
 </script>
 <sec:authorize ifAnyGranted="ROLE_SPACE">
 	<sec:authentication property='principal.space.id' var="spaceId" />

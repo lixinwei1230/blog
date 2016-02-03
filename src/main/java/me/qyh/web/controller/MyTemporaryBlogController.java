@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import me.qyh.bean.Info;
+import me.qyh.entity.Editor;
 import me.qyh.entity.blog.Blog;
 import me.qyh.exception.LogicException;
 import me.qyh.security.UserContext;
@@ -36,9 +38,11 @@ public class MyTemporaryBlogController {
 	}
 
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
-	public String loadTemporaryBlog(@PathVariable("id") int id, ModelMap model) throws LogicException {
+	public String loadTemporaryBlog(@PathVariable("id") int id, ModelMap model,
+			@RequestParam(value = "editor", required = false, defaultValue = "HTML") Editor editor)
+					throws LogicException {
 		model.addAttribute(BLOG, blogService.getTemporaryBlog(id));
-		return "my/blog/temporary";
+		return "my/blog/temporary_"+editor.name().toLowerCase();
 	}
 
 	@RequestMapping(value = "save", method = RequestMethod.POST)

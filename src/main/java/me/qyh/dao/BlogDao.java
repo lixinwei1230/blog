@@ -30,8 +30,8 @@ public interface BlogDao extends BaseDao<Blog, Integer> {
 
 	int updateComments(@Param("id") Integer blog, @Param("comments") int comments);
 	
-	Blog selectPreview(Integer id);
-	
 	void updateDel(Blog blog);
+	
+	Blog selectPreview(Integer id);
 	
 }
