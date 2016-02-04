@@ -71,7 +71,6 @@
 <script>
 var hit = true;
 $(document).ready(function(){
-	var ids = [];
 	$('pre code').each(function(i, block) {
 		hljs.highlightBlock(block);
 	  });
