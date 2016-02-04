@@ -217,4 +217,6 @@
 			</list>
 		</property>
 	</bean>
+	
+	<bean id="bootstrapHtmlHandler" class="me.qyh.helper.html.BootstrapHtmlHandler"/>
 </beans>      
