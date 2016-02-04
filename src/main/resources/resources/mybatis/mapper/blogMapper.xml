@@ -352,7 +352,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			LEFT OUTER JOIN blog_tag bt ON bt.blog = b.id
 			LEFT OUTER JOIN tag t ON bt.tag_id = t.id
 		</if>
-		WHERE b.id  <![CDATA[ < ]]> #{id}
+		WHERE 
+		del = false
+		AND b.id  <![CDATA[ < ]]> #{id}
 		<if test="param.recommend != null">
 			AND recommend = #{param.recommend}
 		</if>
@@ -401,7 +403,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			LEFT OUTER JOIN blog_tag bt ON bt.blog = b.id
 			LEFT OUTER JOIN tag t ON bt.tag_id = t.id
 		</if>
-		WHERE b.id  > #{id}
+		WHERE 
+		del = false
+		AND b.id  > #{id}
 		<if test="param.recommend != null">
 			AND recommend = #{param.recommend}
 		</if>
