@@ -35,6 +35,7 @@ public class ManageBlogController extends ManageBaseController {
 		param.setPageSize(pageSize);
 		param.setStatus(BlogStatus.NORMAL);
 		param.setIgnoreLevel(true);
+		param.setDel(false);
 
 		model.addAttribute(PAGE, blogService.findBlogs(param));
 
