@@ -228,6 +228,12 @@
 				</div>
 				<div id="temporarySave-tip"></div>
 			</div>
+			<div class="col-lg-2 col-md-2  col-xs-12">
+				<button id="file-manager-btn" class="btn btn-lg btn-primary btn-block">文件管理</button>
+			</div>
+			<div class="col-lg-2 col-md-2  col-xs-12" style="margin-top:10px">
+				<button id="preview-btn" class="btn btn-lg btn-primary btn-block">预览</button>
+			</div>
 			<div class="hide">
 				<div id="categoryWrap">
 					<div class="alert alert-info">
@@ -244,6 +250,84 @@
 		</div>
 	</div>
 	<u:url space="${space }" var="spaceLinkPrefix" />
+	<div class="modal fade" id="ckeditor_myFileModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+			<div class="modal-dialog  modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">
+							<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+						</button>
+						<h4 class="modal-title" id="myModalLabel">文件管理</h4>
+					</div>
+					<div class="modal-body">
+						<ul class="nav nav-tabs" role="tablist">
+							<li role="presentation" class="active"><a href="#home"
+								aria-controls="home" role="tab" data-toggle="tab">文件</a></li>
+							<li role="presentation"><a href="#upload"
+								aria-controls="upload" role="tab" data-toggle="tab">文件上传</a></li>
+		                  <li><a href="javascript:void(0)" id="ckeditor_file_manager_refresh" >刷新</a></li>
+						</ul>
+						<div class="tab-content" style="margin-top: 20px">
+						<div role="tabpanel" class="tab-pane active" id="home"></div>
+							<div role="tabpanel" class="tab-pane" id="upload">
+								<form id="ckeditor_fileupload" class="bs-example form-horizontal"
+								autocomplete="off"  method="POST" action="${ctx }/upload"
+									enctype="multipart/form-data">
+									<div class="row fileupload-buttonbar">
+										<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+											<span class="btn btn-success fileinput-button"> <i
+												class="glyphicon glyphicon-plus"></i> <span>增加文件 </span> <input
+												type="file" name="files" multiple="">
+											</span>
+											<button type="submit" class="btn btn-primary start">
+												<i class="glyphicon glyphicon-upload"></i> <span>开始上传 </span>
+											</button>
+											<button type="reset" class="btn btn-warning cancel">
+											<i class="glyphicon glyphicon-ban-circle"></i> <span>取消</span>
+											</button>
+											<!-- The global file processing state -->
+											<span class="fileupload-process"></span>
+										</div>
+									</div>
+									<input type="hidden" name="album" />
+									<div class="row" style="margin-top: 10px">
+										<div
+											class="fileupload-progress fade col-lg-12 col-sm-12 col-md-12 col-xs-12">
+											<!-- The global progress bar -->
+											<div class="progress progress-striped active"
+												role="progressbar" aria-valuemin="0" aria-valuemax="100">
+												<div class="progress-bar progress-bar-success"
+													style="width: 0%;"></div>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
+											<div class="table-responsive">
+												<table role="presentation" class="table table-striped"
+													style="text-align: center">
+													<tbody class="files"></tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">
+							关闭
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<form style="display: none" action='${ctx }/my/blog/preview' method="post" id="preview-form" target="_blank">
+			<input type="hidden" value="" id="preview-content" name="content"/>
+			<input type="hidden" name="${_csrf.parameterName}"
+						value="${_csrf.token}" />
+		</form>
 	<jsp:include page="/WEB-INF/foot.jsp"></jsp:include>
 	<jsp:include page="/WEB-INF/scripts.jsp"></jsp:include>
 	<script id="template-upload" type="text/x-tmpl">
@@ -478,6 +562,27 @@
 	}
 	var editor ;
 	$(document).ready(function(){
+		$("#preview-btn").click(function(){
+			$("#preview-content").val(marked(getContent()));
+			$("#preview-form").submit();
+		});
+		$('#ckeditor_fileupload').fileupload({
+			dataType : 'json',
+			maxFileSize : 2048576,
+			autoUpload : false,
+			maxNumberOfFiles : 5,
+			singleFileUploads : false,
+			limitMultiFileUploads : 5,
+			limitConcurrentUploads : 1,
+			acceptFileTypes : /(\.|\/)(jpg|jpeg|png|zip|rar|gif|doc|docx|java|htm|html|js|xml|xls)$/i
+		});
+		$("#ckeditor_file_manager_refresh").click(function(){
+			writePage(1);
+		});
+		$("#file-manager-btn").click(function(){
+			writePage(1);
+			$("#ckeditor_myFileModal").modal("show");
+		});
 		writeCategorys();
 		$("#tag-input").keydown(function(e){
 			if(e.keyCode==13){
@@ -670,6 +775,101 @@
 	}
 	
 	setInterval("temporarySave()",15000);
+	
+	
+	var files = [];
+	
+	function writePage(page){
+		$.get(contextPath + "/my/file/list/"+page,{},function callBack(data){
+			if(data.success){
+				var page = data.result;
+				var html = "";
+				var datas = page.datas;
+				if(datas.length == 0){
+					html = '<div class="alert alert-info">当前没有任何文件</div>';
+				}else{
+					html += '<div class="table-responsive">';
+					html += '<table class="table">';
+					html += '<thead><tr><th>文件名</th><th>上传日期</th><th>操作</th></tr></thead>';
+					html += '<tbody>';
+					for(var i=0;i<datas.length;i++){
+						var file = datas[i];
+						files.push(file);
+						html += '<tr>';
+						if(file.image){
+							if(file.cover && file.cover != null){
+								 html += '<td><div class="videos">';
+								 html += '<a class="video" data-play="'+file.url+'"> <span>&nbsp;</span> <img class="img-responsive" src="'+file.cover.url+'"> </a> ';
+							     html += '<div class="clearfix">&nbsp;</div>'
+								 html += '</div></td>'; 
+							}else{
+								html += '<td><img src="'+getResizeUrl(file.url,200)+'"/></td>';
+							}
+						}else{
+							var name = file.originalFilenameWithoutExtension;
+							if(name.length > 10){
+								name = name.substring(0,10)+"...";
+							}
+							html += '<td>'+name+'.'+file.extension+'</td>';
+						}
+						html += '<td>'+new Date(file.uploadDate).pattern("yyyy-MM-dd HH:mm")+'</td>';
+						html += '<td><a href="javascript:void(0)" class="insert-'+file.id+'">插入</a>';
+						if(file.image){
+							html += '&nbsp;&nbsp;<a href="'+file.url+'" target="_blank">原图</a>';
+						}
+						html += '</td></tr>';
+					}
+					html += '</tbody>';
+					html += '</table>';
+					html += '</div>';
+				}
+				if(page.totalPage > 1){
+	    			html += '<div class="row"  id="ckeditor_file_manager_paging">';
+	    			html += '<div class="col-md-12">';
+	    			html += '<ul class="pagination">';
+	    			for(var i=page.listbegin;i<=page.listend-1;i++){
+	    				html += '<li><a href="javascript:void(0)" class="page-'+i+'">'+i+'</a></li>';
+	    			}
+	    			html += '</ul>';
+	    			html += '</div>';
+	    			html += '</div>';
+	    		}
+				$("#home").html(html);
+				if(page.totalPage > 1){
+					$("#ckeditor_file_manager_paging a[class^='page-']").on('click',function(){
+						var _me = $(this);
+						var clazz = _me.attr("class");
+						var page = clazz.split("-")[1];
+						writePage(page);
+					});
+				}
+				$("#home a[class^='insert-']").on('click',function(){
+					var _me = $(this);
+					var clazz = _me.attr("class");
+					var id = clazz.split("-")[1];
+					for(var i=0;i< files.length;i++){
+						var file = files[i];
+						if(file.id == id){
+							if(file.image){
+								if(file.cover && file.cover != null){
+									 $("#editor").insertAtCaret(' [!['+file.originalFilename+']('+file.cover.url+')]('+file.url+')');
+								}else{
+									 $("#editor").insertAtCaret('!['+file.originalFilename+']('+getResizeUrl(file.url,600)+')');
+									//me.editor.insertHtml('<img class="img-responsive" src="'+getResizeUrl(file.url,600)+'"/>');
+								}
+							}else{
+								$("#editor").insertAtCaret('['+file.originalFilename+']('+file.url+')');
+							}
+							
+							return ;
+						}
+					}
+				});
+			}else{
+				$.messager.popup(data.result);
+			}
+		});
+	}
 
 	</script>
 </body>
