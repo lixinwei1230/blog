@@ -51,4 +51,6 @@ public interface BlogService {
 	BlogComment insertComment(BlogComment comment) throws LogicException;
 
 	void deleteComment(Integer id) throws LogicException;
+	
+	String preview(String content);
 }

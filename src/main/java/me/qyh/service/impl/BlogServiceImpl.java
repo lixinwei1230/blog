@@ -9,16 +9,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import me.qyh.bean.Scopes;
 import me.qyh.config.BlogCommentConfig;
 import me.qyh.config.BlogConfig;
@@ -62,6 +52,16 @@ import me.qyh.server.UserServer;
 import me.qyh.service.BlogService;
 import me.qyh.utils.Strings;
 import me.qyh.utils.Validators;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service("blogService")
 public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
@@ -108,7 +108,6 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	protected BlogIndexHandler blogIndexHandler;
 	@Value("${config.validation.blog.contentMaxLength}")
 	private int contentMaxLength;
-	private HtmlContentHandler afterHandler;// 当从数据库中取出博客内容的处理器
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
@@ -134,7 +133,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 
 	private void handleBlogDisplayAndSummary(Blog blog, BlogConfig config) throws LogicException {
 		Editor editor = blog.getEditor();
-		HtmlContentHandler clean = config.getClean();
+		HtmlContentHandler clean = config.getBeforeHandler();
 		if (Editor.HTML.equals(editor)) {
 			blog.setDisplay(clean.handle(blog.getContent()));
 		} else {
@@ -184,6 +183,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 			throw new LogicException("error.blog.notexists");
 		}
 		super.doAuthencation(spaceServer.getScopes(UserContext.getUser(), blog.getSpace()), blog.getScope());
+		HtmlContentHandler afterHandler = configServer.getBlogConfig(userServer.getUserBySpace(blog.getSpace())).getAfterHandler();
 		if (afterHandler != null) {
 			blog.setDisplay(afterHandler.handle(blog.getDisplay()));
 		}
@@ -533,6 +533,19 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		commentDao.deleteById(id);
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public String preview(String content) {
+		User user = UserContext.getUser();
+		BlogConfig config = configServer.getBlogConfig(user);
+		String result = config.getBeforeHandler().handle(content);
+		HtmlContentHandler afterHandler = config.getAfterHandler();
+		if(afterHandler != null){
+			result = afterHandler.handle(result);
+		}
+		return result;
+	}
+
 	private void insertBlogTag(Blog blog) {
 		Set<Tag> tags = blog.getTags();
 		if (!Validators.isEmptyOrNull(tags)) {
@@ -734,9 +747,4 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 
 		tipServer.sendTip(message);
 	}
-
-	public void setAfterHandler(HtmlContentHandler afterHandler) {
-		this.afterHandler = afterHandler;
-	}
-
 }
