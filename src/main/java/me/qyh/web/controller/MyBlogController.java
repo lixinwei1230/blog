@@ -27,6 +27,9 @@ import me.qyh.exception.LogicException;
 import me.qyh.pageparam.BlogPageParam;
 import me.qyh.security.UserContext;
 import me.qyh.service.BlogService;
+import me.qyh.utils.Strings;
+import me.qyh.utils.Validators;
+import me.qyh.web.InvalidParamException;
 
 @Controller
 @RequestMapping("my/blog")
@@ -34,6 +37,7 @@ public class MyBlogController extends BaseController {
 
 	private static final String CATEGORYS = "categorys";
 	private static final String BLOG = "blog";
+	private static final String PREVIEW = "preview";
 
 	@Autowired
 	private BlogService blogService;
@@ -153,6 +157,15 @@ public class MyBlogController extends BaseController {
 		blogService.updateBlog(blog);
 
 		return new Info(true);
+	}
+	
+	@RequestMapping(value = "preview", method = RequestMethod.POST)
+	public String preview(@RequestParam("content") String content , ModelMap model){
+		if( Validators.isEmptyOrNull(content, true) || !Strings.hasText(content)){
+			throw new InvalidParamException();
+		}
+		model.put(PREVIEW, blogService.preview(content));
+		return "my/blog/preview";
 	}
 
 }
