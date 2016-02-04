@@ -87,6 +87,8 @@ public class DefaultConfigServer implements ConfigServer {
 	private HtmlContentHandler widgetHtmlHandler;
 	@Autowired
 	private LocalFileStorage avatarStore;
+	@Autowired
+	private HtmlContentHandler bootstrapHtmlHandler;
 
 	@Override
 	public PageConfig getPageConfig(User user) {
@@ -120,10 +122,11 @@ public class DefaultConfigServer implements ConfigServer {
 		config.setLimit(new FrequencyLimit(small, now, blog_count));
 
 		if (user.hasRole(RoleEnum.ROLE_SUPERVISOR)) {
-			config.setClean(fullBlogHtmlHandler);
+			config.setBeforeHandler(fullBlogHtmlHandler);
 		} else {
-			config.setClean(blogHtmlHandler);
+			config.setBeforeHandler(blogHtmlHandler);
 		}
+		config.setAfterHandler(bootstrapHtmlHandler);
 
 		return config;
 	}

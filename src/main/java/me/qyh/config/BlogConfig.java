@@ -5,7 +5,8 @@ import me.qyh.helper.html.HtmlContentHandler;
 public class BlogConfig {
 
 	private FrequencyLimit limit;
-	private HtmlContentHandler clean;
+	private HtmlContentHandler beforeHandler;
+	private HtmlContentHandler afterHandler;
 
 	public FrequencyLimit getLimit() {
 		return limit;
@@ -15,11 +16,20 @@ public class BlogConfig {
 		this.limit = limit;
 	}
 
-	public HtmlContentHandler getClean() {
-		return clean;
+	public HtmlContentHandler getBeforeHandler() {
+		return beforeHandler;
 	}
 
-	public void setClean(HtmlContentHandler clean) {
-		this.clean = clean;
+	public void setBeforeHandler(HtmlContentHandler beforeHandler) {
+		this.beforeHandler = beforeHandler;
 	}
+
+	public HtmlContentHandler getAfterHandler() {
+		return afterHandler;
+	}
+
+	public void setAfterHandler(HtmlContentHandler afterHandler) {
+		this.afterHandler = afterHandler;
+	}
+
 }
