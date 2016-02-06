@@ -14,6 +14,8 @@
 <script type="text/javascript"
 	src="${staticSourcePrefix }/plugins/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <script type="text/javascript"
+	src="${staticSourcePrefix }/common/common.js"></script>
+<script type="text/javascript"
 	src="${staticSourcePrefix }/plugins/highlight/highlight.pack.js"></script>
 <title>预览</title>
 </head>
@@ -22,6 +24,7 @@
 		<div class="row">
 			<div class="col-lg-8 col-md-8 col-sm-8 text">
 				<div id="blog-content" style="margin-bottom: 20px">${preview }</div>
+				<div class="clearfix">&nbsp;</div>
 				<button class="btn btn-primary" onclick="window.close()" style="margin-top:10px">关闭</button>
 			</div>
 		</div>
