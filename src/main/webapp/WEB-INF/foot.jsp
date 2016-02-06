@@ -2,8 +2,7 @@
 <div class="container">
 	<hr>
 	<footer>
-		<p>
-			<span class="glyphicon glyphicon-copyright-mark"></span>&nbsp;2016&nbsp;qyh.me&nbsp;&nbsp;All rights Reserved
-		</p>
+			<p><a href="https://github.com/mhlx/blog">Github</a></p>
+			<p><span class="glyphicon glyphicon-copyright-mark"></span>&nbsp;2016&nbsp;qyh.me&nbsp;&nbsp;All rights Reserved</p>
 	</footer>
 </div>

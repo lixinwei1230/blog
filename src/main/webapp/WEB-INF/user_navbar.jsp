@@ -41,9 +41,6 @@
 					<ul class="nav navbar-nav navbar-right">
 							<li><a href="<u:url/>">主页</a></li>
 						</ul>
-				<ul class="nav navbar-nav navbar-right">
-					<li><a href="https://github.com/mhlx/blog" target="_blank">GitHub</a></li>
-				</ul>
 			</div>
 			<!--/.nav-collapse -->
 		</div>
