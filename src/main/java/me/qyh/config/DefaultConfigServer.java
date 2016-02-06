@@ -3,24 +3,23 @@ package me.qyh.config;
 import java.io.File;
 import java.util.Date;
 
+import me.qyh.config.FileUploadConfig.SizeLimit;
+import me.qyh.config.FileUploadConfig._Config;
+import me.qyh.config.FileUploadConfig._ImageConfig;
+import me.qyh.entity.RoleEnum;
+import me.qyh.entity.User;
+import me.qyh.helper.html.HtmlContentHandler;
+import me.qyh.page.PageType;
+import me.qyh.upload.server.FileStorage;
+import me.qyh.upload.server.inner.LocalFileStorage;
+import me.qyh.utils.Files;
+
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-
-import me.qyh.config.FileUploadConfig.SizeLimit;
-import me.qyh.config.FileUploadConfig._Config;
-import me.qyh.config.FileUploadConfig._ImageConfig;
-import me.qyh.entity.RoleEnum;
-import me.qyh.entity.User;
-import me.qyh.entity.blog.Blog;
-import me.qyh.helper.html.HtmlContentHandler;
-import me.qyh.page.PageType;
-import me.qyh.upload.server.FileStorage;
-import me.qyh.upload.server.inner.LocalFileStorage;
-import me.qyh.utils.Files;
 
 /**
  * 默认配置源
@@ -89,6 +88,8 @@ public class DefaultConfigServer implements ConfigServer {
 	private LocalFileStorage avatarStore;
 	@Autowired
 	private HtmlContentHandler bootstrapHtmlHandler;
+	@Autowired
+	private HtmlContentHandler commentHtmlHandler;
 
 	@Override
 	public PageConfig getPageConfig(User user) {
@@ -195,11 +196,14 @@ public class DefaultConfigServer implements ConfigServer {
 	}
 
 	@Override
-	public BlogCommentConfig getBlogCommentConfig(Blog blog, User user) {
+	public BlogCommentConfig getBlogCommentConfig() {
 		BlogCommentConfig config = new BlogCommentConfig();
 		Date now = new Date();
 		Date small = DateUtils.addMinutes(now, -comment_minute);
 		config.setLimit(new FrequencyLimit(small, now, comment_count));
+		
+		config.setBeforeHandler(commentHtmlHandler);
+		config.setAfterHandler(bootstrapHtmlHandler);
 		return config;
 	}
 }

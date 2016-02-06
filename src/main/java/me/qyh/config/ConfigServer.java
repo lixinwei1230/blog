@@ -2,7 +2,6 @@ package me.qyh.config;
 
 import me.qyh.config.FileUploadConfig._ImageConfig;
 import me.qyh.entity.User;
-import me.qyh.entity.blog.Blog;
 import me.qyh.upload.server.FileStorage;
 
 /**
@@ -42,6 +41,6 @@ public interface ConfigServer {
 
 	FileWriteConfig getFileWriteConfig(FileStorage store);
 	
-	BlogCommentConfig getBlogCommentConfig(Blog blog , User user);
+	BlogCommentConfig getBlogCommentConfig();
 
 }
