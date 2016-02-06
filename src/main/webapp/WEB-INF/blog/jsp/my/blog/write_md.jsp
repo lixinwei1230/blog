@@ -31,7 +31,7 @@
 							<label><spring:message code="page.blog.title" /></label>
 						</div>
 						<div class="col-lg-10 col-sm-12 col-md-10 col-xs-12">
-							<input type="text" class="form-control" name="title" value="123"/>
+							<input type="text" class="form-control" name="title" />
 						</div>
 					</div>
 				</div>
