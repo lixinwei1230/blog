@@ -53,7 +53,7 @@ public class MyBlogController extends BaseController {
 
 	@RequestMapping(value = "write", method = RequestMethod.GET)
 	public String write(ModelMap model,
-			@RequestParam(value = "editor", required = false, defaultValue = "HTML") Editor editor) {
+			@RequestParam(value = "editor", required = false, defaultValue = "MD") Editor editor) {
 		Blog blog = new Blog();
 		blog.setSpace(UserContext.getSpace());
 		TemporaryBlog tBlog = blogService.getTemporaryBlog(blog);
