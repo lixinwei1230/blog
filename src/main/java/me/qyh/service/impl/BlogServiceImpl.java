@@ -97,8 +97,6 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	@Value("${config.blog.temporarySaveFrequency}")
 	private long temporarySaveFrequency;
 	@Autowired
-	private HtmlContentHandler commentHtmlHandler;
-	@Autowired
 	private TipServer tipServer;
 	@Autowired
 	private MessageSource messageSource;
@@ -289,6 +287,10 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 
 		BlogCategory category = loadBlogCategory(toUpdate.getCategory().getId());
 		super.doAuthencation(current, category.getSpace());
+		
+		if(!db.isScheduled() && toUpdate.isScheduled()){
+			throw new LogicException("error.blog.pubToScheduled");
+		}
 
 		if (db.isScheduled() && !toUpdate.isScheduled()) {
 			toUpdate.setWriteDate(new Date());
@@ -459,7 +461,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 			throw new LogicException("error.blog.notAllowComment");
 		}
 
-		BlogCommentConfig config = configServer.getBlogCommentConfig(blog, comment.getUser());
+		BlogCommentConfig config = configServer.getBlogCommentConfig();
 		checkCommentFrequencyLimit(config.getLimit(), comment.getUser());
 
 		BlogComment parent = comment.getParent();
@@ -485,12 +487,13 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 			blog.setComments(blog.getComments() + 1);
 			blogIndexHandler.rebuildBlogIndex(blog);
 		}
-
+		//评论不支持修改，这里直接覆盖
+		comment.setContent(config.getBeforeHandler().handle(comment.getContent()));
 		commentDao.insert(comment);
 
 		sendCommentTip(comment, blog);
 
-		BlogComment inserted = cleanComment(commentDao.selectById(comment.getId()));
+		BlogComment inserted = handleComment(commentDao.selectById(comment.getId()));
 		return inserted;
 	}
 
@@ -677,15 +680,19 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		List<BlogComment> datas = commentDao.selectPage(param);
 		if (!datas.isEmpty()) {
 			for (BlogComment comment : datas) {
-				cleanComment(comment);
+				handleComment(comment);
 			}
 		}
 		return new Page<BlogComment>(param, total, datas);
 	}
 
-	private BlogComment cleanComment(BlogComment comment) {
+	private BlogComment handleComment(BlogComment comment) {
 		String content = comment.getContent();
-		comment.setContent(commentHtmlHandler.handle(content));
+		BlogCommentConfig config = configServer.getBlogCommentConfig();
+		HtmlContentHandler afterHandler = config.getAfterHandler();
+		if(afterHandler != null){
+			comment.setContent(afterHandler.handle(content));
+		}
 		return comment;
 	}
 
