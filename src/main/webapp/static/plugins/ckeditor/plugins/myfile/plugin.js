@@ -192,7 +192,7 @@ CKEDITOR.plugins.add('myfile', {
 									 var html = "";
 									 html += '<div class="videos">';
 									 html += '<a class="video" data-play="'+file.url+'"> <span>&nbsp;</span> <img class="img-responsive" src="'+file.cover.url+'"> </a> ';
-									 html += '</div>'; 
+									 html += '</div><div class="clearfix">&nbsp;</div>'; 
 									me.editor.insertHtml(html);
 								}else{
 									me.editor.insertHtml('<img class="img-responsive" src="'+getResizeUrl(file.url,600)+'"/>');
