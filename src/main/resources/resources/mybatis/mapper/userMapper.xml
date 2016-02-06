@@ -18,14 +18,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result column="accountNonLocked" property="accountNonLocked" />
 		<result column="credentialsNonExpired" property="credentialsNonExpired" />
 		<result column="avatar" property="avatar"/>
+		<result column="user_roles" property="roles" typeHandler="RolesTypeHandler"/>
 		<association property="space" javaType="Space">
 			<id column="space_id" property="id" />
 			<result property="status" column="space_status" typeHandler="EnumOrdinalTypeHandler" />
 		</association>
-		<collection property="roles" ofType="Role">
-			<id column="role_id" property="id" />
-			<result column="role_name" property="role" typeHandler="EnumTypeHandler" />
-		</collection>
 	</resultMap>
 
 	<select id="selectByName" resultMap="UserDetail">
@@ -110,26 +107,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 
 	<select id="selectPage" resultMap="UserDetail">
+	
 		SELECT u.id AS user_id,user_name,user_email,registerDate,activateDate,
 		user_enable,accountNonExpired,accountNonLocked,credentialsNonExpired,
-		activate,user_password,nickname,us.space_status,us.id AS space_id
+		activate,user_password,nickname,us.space_status,us.id AS space_id,avatar
 		FROM
 		blog_user u
 		LEFT OUTER JOIN user_space us ON u.id = us.user_id
 		WHERE
-		u.`activate` = TRUE
-		AND NOT EXISTS (
-		SELECT ur.user_id FROM user_role ur
-		LEFT OUTER JOIN role r ON ur.role_id = r.id
-		WHERE u.id = ur.`user_id`
-		AND r.role_name IN (
-		<foreach collection="ignoreRoles" item="role" open=""
-			separator="," close="">
+		u.activate = TRUE
+		<if test="ignoreRoles != null and !ignoreRoles.isEmpty()">
+			AND NOT EXISTS (SELECT * FROM user_role ur  LEFT OUTER JOIN role r ON ur.`role_id` = r.id WHERE u.`id` = ur.`user_id` AND r.`role_name` IN 
+			<foreach collection="ignoreRoles" item="role" open="("
+				separator="," close=")">
 			#{role,javaType=RoleEnum,typeHandler=EnumTypeHandler}
-		</foreach>
-		)
-		GROUP BY ur.user_id
-		)
+			</foreach>
+			)
+		</if>
 		<if test="name != null">
 			AND user_name LIKE CONCAT('%', #{name},'%')
 		</if>
@@ -147,9 +141,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 
 	<select id="selectCount" resultType="int">
-		SELECT COUNT(id)
-		FROM blog_user
-		WHERE activate = true
+		SELECT COUNT(u.id)
+		FROM blog_user u
+		WHERE
+		u.activate = TRUE
+		<if test="ignoreRoles != null and !ignoreRoles.isEmpty()">
+			AND NOT EXISTS (SELECT * FROM user_role ur  LEFT OUTER JOIN role r ON ur.`role_id` = r.id WHERE u.`id` = ur.`user_id` AND r.`role_name` IN 
+			<foreach collection="ignoreRoles" item="role" open="("
+				separator="," close=")">
+			#{role,javaType=RoleEnum,typeHandler=EnumTypeHandler}
+			</foreach>
+			)
+		</if>
 		<if test="name != null">
 			AND user_name LIKE CONCAT('%', #{name},'%')
 		</if>
