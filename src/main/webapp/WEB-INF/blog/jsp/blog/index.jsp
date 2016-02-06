@@ -85,7 +85,6 @@
 									<c:out value="${blog.summary }..." />
 								</div>
 								<div style="float: right">
-									${user.avatar }
 									<c:choose>
 										<c:when test="${user.avatar!=null}">
 											<a href="<u:url space="${blog.space }"/>/index"><img src="<r:resize url="${user.avatar }" size="64"/>" class="img-circle"/></a>
