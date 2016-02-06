@@ -1,6 +1,5 @@
 package me.qyh.mybatis.handler;
 
-import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,12 +7,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.ibatis.type.BaseTypeHandler;
-import org.apache.ibatis.type.JdbcType;
-
 import me.qyh.entity.tag.Tag;
 import me.qyh.exception.SystemException;
 import me.qyh.utils.Validators;
+
+import org.apache.ibatis.type.JdbcType;
 
 /**
  * tag_name+"_"+tag_id
@@ -21,33 +19,16 @@ import me.qyh.utils.Validators;
  * @author mhlx
  *
  */
-public class TagSetTypeHandler extends BaseTypeHandler<Set<Tag>> {
+public class TagSetTypeHandler extends DirectResultTypeHandler<Set<Tag>> {
 
 	@Override
 	public Set<Tag> getNullableResult(ResultSet rs, String str) throws SQLException {
-		if (rs.wasNull()) {
-			return Collections.emptySet();
-		}
-		String tagList = rs.getString(str);
-		return toTags(tagList);
+		return toTags(rs.getString(str));
 	}
 
 	@Override
 	public Set<Tag> getNullableResult(ResultSet rs, int pos) throws SQLException {
-		if (rs.wasNull()) {
-			return Collections.emptySet();
-		}
-		String tagList = rs.getString(pos);
-		return toTags(tagList);
-	}
-
-	@Override
-	public Set<Tag> getNullableResult(CallableStatement cs, int pos) throws SQLException {
-		if (cs.wasNull()) {
-			return Collections.emptySet();
-		}
-		String tagList = cs.getString(pos);
-		return toTags(tagList);
+		return toTags(rs.getString(pos));
 	}
 
 	@Override
