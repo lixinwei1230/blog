@@ -504,13 +504,13 @@
 		CKEDITOR.config.enterMode=CKEDITOR.ENTER_BR;
 		CKEDITOR.config.height=600;
 		CKEDITOR.config.allowedContent=true;
-		CKEDITOR.config.extraPlugins = 'codemirror,mytable,mycode,mydiv,myfile,mylink';
+		CKEDITOR.config.extraPlugins = 'codemirror,mytable,mycode,mydiv,myfile,mylink,mypreview';
 		CKEDITOR.config.shiftEnterMode=CKEDITOR.ENTER_P;
 		CKEDITOR.config.uploadUrl = contextPath+'/upload';
 		CKEDITOR.config.toolbar = [
 		    [ 'Source'],
 		    [ 'Undo', 'Redo','Bold' ],
-		    ['Mytable','Mycode','Mydiv','Myfile','Mylink']
+		    ['Mytable','Mycode','Mydiv','Myfile','Mylink','Mypreview']
 		];
 		$(this).hide();
 		$("#tag-input").keydown(function(e){
