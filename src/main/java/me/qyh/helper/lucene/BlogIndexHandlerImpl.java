@@ -488,9 +488,7 @@ public class BlogIndexHandlerImpl
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if (!cleanAndBuildAllBlogsWhenContextStart) {
-			createIndex(getIndexDirectory());
-		}
+		createIndex(getIndexDirectory());
 	}
 
 	private boolean isRootApplicationContext(ApplicationContext ctx) {
