@@ -267,4 +267,16 @@ public class User extends Id implements UserDetails, CredentialsContainer, Clone
 	protected Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
+	
+	public String printRoles(){
+		if(Validators.isEmptyOrNull(roles)){
+			return "";
+		}
+		StringBuilder sb = new StringBuilder();
+		for(Role role : roles){
+			sb.append(role.getRole()).append(",");
+		}
+		sb.deleteCharAt(sb.length()-1);
+		return sb.toString();
+	}
 }
