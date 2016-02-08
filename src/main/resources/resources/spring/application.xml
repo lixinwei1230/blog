@@ -307,5 +307,4 @@
 	</bean>
 	
 	<bean class="me.qyh.web.SpringContextHolder" />
-	
 </beans>      

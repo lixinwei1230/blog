@@ -11,7 +11,7 @@
 
 	<appender name="errorDailyRollingFileAppender"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<File>c:/logs/blog/error.log</File>
+		<File>d:/tst/logs/blog/error.log</File>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<FileNamePattern>c:/logs/blog/error.%d{yyyy-MM-dd}.log</FileNamePattern>
 			<maxHistory>30</maxHistory>
@@ -30,7 +30,7 @@
 	
 	<appender name="warnDailyRollingFileAppender"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<File>c:/logs/blog/warn.log</File>
+		<File>d:/tst/logs/blog/warn.log</File>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<FileNamePattern>c:/logs/blog/warn.%d{yyyy-MM-dd}.log</FileNamePattern>
 			<maxHistory>30</maxHistory>
@@ -49,7 +49,7 @@
 
 	<appender name="mlogDailyRollingFileAppender"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<File>c:/logs/blog/mlog.log</File>
+		<File>d:/tst/logs/blog/mlog.log</File>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- daily rollover -->
 			<FileNamePattern>c:/logs/blog/mlog.%d{yyyy-MM-dd}.log</FileNamePattern>

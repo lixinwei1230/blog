@@ -28,7 +28,7 @@ public class SpaceServiceImpl extends BaseServiceImpl implements SpaceService {
 	private SpaceOpenSuccessHandler spaceOpenSuccessHandler;
 	@Autowired
 	private UserServer userServer;
-	private SpaceNameChecker spaceNameChecker = new SafeSpaceNameChecker();
+	private SpaceNameChecker spaceNameChecker = new NoChecker();
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
@@ -53,5 +53,13 @@ public class SpaceServiceImpl extends BaseServiceImpl implements SpaceService {
 
 	public void setSpaceNameChecker(SpaceNameChecker spaceNameChecker) {
 		this.spaceNameChecker = spaceNameChecker;
+	}
+	
+	private final class NoChecker implements SpaceNameChecker{
+
+		@Override
+		public void check(String spaceName) throws LogicException {
+			
+		}
 	}
 }
