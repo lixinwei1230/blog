@@ -234,12 +234,12 @@ public class BlogIndexHandlerImpl
 		Date begin = param.getBegin();
 		Date end = param.getEnd();
 		boolean dateRangeQuery = (begin != null && end != null);
-		if(dateRangeQuery){
-			Query query = NumericRangeQuery.newLongRange(WRITE_DATE, begin.getTime() , end.getTime(), true, true);
+		if (dateRangeQuery) {
+			Query query = NumericRangeQuery.newLongRange(WRITE_DATE, begin.getTime(), end.getTime(), true, true);
 			builder.add(query, Occur.MUST);
 		}
 		Boolean del = param.getDel();
-		if(del != null){
+		if (del != null) {
 			Query query = new TermQuery(new Term(DEL, del.toString()));
 			builder.add(query, Occur.MUST);
 		}
