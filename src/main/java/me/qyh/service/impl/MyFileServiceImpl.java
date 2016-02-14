@@ -3,6 +3,11 @@ package me.qyh.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import me.qyh.bean.DateFileIndex;
 import me.qyh.bean.DateFileIndexs;
 import me.qyh.bean.Info;
@@ -10,20 +15,12 @@ import me.qyh.dao.FileDao;
 import me.qyh.entity.FileStatus;
 import me.qyh.entity.MyFile;
 import me.qyh.exception.LogicException;
-import me.qyh.exception.SystemException;
 import me.qyh.pageparam.MyFilePageParam;
 import me.qyh.pageparam.Page;
 import me.qyh.security.UserContext;
 import me.qyh.service.MyFileService;
 import me.qyh.upload.server.FileStorage;
-import me.qyh.utils.Https;
 import me.qyh.utils.Times;
-import me.qyh.web.Webs;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service("myFileService")
 public class MyFileServiceImpl extends BaseServiceImpl implements MyFileService {
@@ -76,14 +73,7 @@ public class MyFileServiceImpl extends BaseServiceImpl implements MyFileService 
 
 	protected void deleteFile(MyFile db) {
 		FileStorage storage = db.getStore();
-		String url = storage.delUrl(db);
-		Info info = new Info(false);
-		try {
-			String result = Https.sendPost(url);
-			info = Webs.readValue(Info.class, result);
-		} catch (Exception e) {
-			throw new SystemException(e.getMessage(), e);
-		}
+		Info info = storage.del(db);
 		if (info.getSuccess()) {
 			fileDao.deleteById(db.getId());
 		} else {

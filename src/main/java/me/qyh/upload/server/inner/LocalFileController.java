@@ -24,11 +24,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.util.WebUtils;
 
-import me.qyh.bean.Info;
 import me.qyh.config.ConfigServer;
 import me.qyh.config.FileWriteConfig;
 import me.qyh.config.ImageZoomMatcher;
@@ -167,29 +165,6 @@ public class LocalFileController extends BaseController  {
 			FileUtils.copyFile(file, out);
 		} catch (IOException e) {
 		}
-	}
-
-	@RequestMapping(value = "{storeId}/{y}/{m}/{d}/{name}/{ext}/{key}/delete", method = RequestMethod.POST)
-	@ResponseBody
-	public Info delete(@PathVariable("storeId") int storeId, @PathVariable("y") String y, @PathVariable("m") String m,
-			@PathVariable("d") String d, @PathVariable("name") String name, @PathVariable("ext") String ext,
-			@PathVariable("key") String key, ServletWebRequest request, HttpServletResponse response) {
-		try {
-			String path = File.separator + y + File.separator + m + File.separator + d + File.separator + name + "."
-					+ ext;
-			LocalFileStorage storage = seek(storeId);
-			if (!storage.getKey().equals(key)) {
-				return new Info(false);
-			}
-			try {
-				File file = storage.seek(path);
-				return new Info(FileUtils.deleteQuietly(file));
-			} catch (MyFileNotFoundException e) {
-				return new Info(true);
-			}
-		} catch (InvalidParamException e) {
-		}
-		return new Info(true);
 	}
 
 	private boolean needZoom(File file, Resize resize) {

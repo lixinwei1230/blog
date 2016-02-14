@@ -6,7 +6,14 @@ import java.util.Collection;
 
 import javax.servlet.http.HttpServletResponse;
 
-import me.qyh.bean.Info;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.context.request.ServletWebRequest;
+
 import me.qyh.config.ConfigServer;
 import me.qyh.config.FileWriteConfig;
 import me.qyh.config.ImageZoomMatcher;
@@ -21,16 +28,6 @@ import me.qyh.utils.Validators;
 import me.qyh.web.InvalidParamException;
 import me.qyh.web.SpringContextHolder;
 import me.qyh.web.Webs;
-
-import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.request.ServletWebRequest;
 
 @Controller
 public class FileWriteController {
@@ -94,29 +91,6 @@ public class FileWriteController {
 		} catch (IOException e) {
 			throw new SystemException(e.getMessage(), e);
 		}
-	}
-	
-	@RequestMapping(value = "file/{storeId}/{y}/{m}/{d}/{name}/{ext}/{key}/delete", method = RequestMethod.POST)
-	@ResponseBody
-	public Info delete(@PathVariable("storeId") int storeId, @PathVariable("y") String y, @PathVariable("m") String m,
-			@PathVariable("d") String d, @PathVariable("name") String name, @PathVariable("ext") String ext,
-			@PathVariable("key") String key, ServletWebRequest request, HttpServletResponse response) {
-		try {
-			String path = File.separator + y + File.separator + m + File.separator + d + File.separator + name + "."
-					+ ext;
-			LocalFileStorage storage = seek(storeId);
-			if (!storage.getKey().equals(key)) {
-				return new Info(false);
-			}
-			try {
-				File file = storage.seek(path);
-				return new Info(FileUtils.deleteQuietly(file));
-			} catch (MyFileNotFoundException e) {
-				return new Info(true);
-			}
-		} catch (InvalidParamException e) {
-		}
-		return new Info(true);
 	}
 
 	private Integer parseSize(String toParse) {

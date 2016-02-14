@@ -3,9 +3,9 @@ package me.qyh.upload.server.inner;
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import me.qyh.bean.Info;
 import me.qyh.entity.MyFile;
 import me.qyh.exception.MyFileNotFoundException;
 import me.qyh.exception.SystemException;
@@ -16,13 +16,11 @@ import me.qyh.utils.Strings;
 import me.qyh.web.Webs;
 import me.qyh.web.tag.url.UrlHelper;
 
-public class LocalFileStorage implements FileStorage, InitializingBean {
+public class LocalFileStorage implements FileStorage {
 
 	private String absPath;
 	private int id;
 	private FileMapping mapping = new DefaultMapping();
-	private DelMapping delMapping = new DefaultDelMapping();
-	private String key;
 	private StoreType type = StoreType.ALL;
 
 	@Autowired
@@ -42,11 +40,6 @@ public class LocalFileStorage implements FileStorage, InitializingBean {
 	}
 
 	@Override
-	public String delUrl(MyFile file) {
-		return delMapping.mapping(file, this, key);
-	}
-
-	@Override
 	public String fileUrl(MyFile file) {
 		return mapping.mapping(file, this);
 	}
@@ -63,7 +56,8 @@ public class LocalFileStorage implements FileStorage, InitializingBean {
 			return Webs.isWebImage(file.getName());
 		case ALL:
 			return true;
-		default : return false;
+		default:
+			return false;
 		}
 	}
 
@@ -89,23 +83,6 @@ public class LocalFileStorage implements FileStorage, InitializingBean {
 			return sb.toString();
 		}
 	}
-	
-	private final class DefaultDelMapping implements DelMapping{
-
-		@Override
-		public String mapping(MyFile file, FileStorage storage, String key) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(urlHelper.getUrl());
-			sb.append("/file/");
-			sb.append(id);
-			sb.append(Strings.cleanPath(file.getRelativePath()));
-			sb.append(Files.getFilename(file.getName())).append("/");
-			sb.append(Files.getFileExtension(file.getName())).append("/");
-			sb.append(key).append("/delete");
-			return sb.toString();
-		}
-		
-	}
 
 	public void setAbsPath(String absPath) {
 		this.absPath = absPath;
@@ -123,25 +100,28 @@ public class LocalFileStorage implements FileStorage, InitializingBean {
 		this.mapping = mapping;
 	}
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		this.key = Strings.getMd5(Strings.getMd5(this.getClass().getName() + "-" + id ));
-	}
-	
 	public void setType(StoreType type) {
 		this.type = type;
 	}
 
-	public String getKey() {
-		return key;
+	public enum StoreType {
+		IMAGE_ONLY, ALL
 	}
 
-	public enum StoreType{
-		IMAGE_ONLY,ALL
+	@Override
+	public Info del(MyFile file) {
+		File f = new File(absPath, file.getRelativePath() + File.separator + file.getName());
+		boolean flag = false;
+		if (!f.exists()) {
+			flag = true;
+		} else {
+			try {
+				flag = f.delete();
+			} catch (Exception e) {
+				flag = false;
+			}
+		}
+		return new Info(flag);
 	}
 
-	public void setDelMapping(DelMapping delMapping) {
-		this.delMapping = delMapping;
-	}
-	
 }
