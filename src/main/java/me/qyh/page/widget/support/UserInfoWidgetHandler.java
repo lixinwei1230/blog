@@ -8,6 +8,7 @@ import me.qyh.dao.BlogDao;
 import me.qyh.entity.RoleEnum;
 import me.qyh.entity.Space;
 import me.qyh.entity.User;
+import me.qyh.entity.blog.BlogStatus;
 import me.qyh.page.widget.config.WidgetConfig;
 import me.qyh.pageparam.BlogPageParam;
 
@@ -44,6 +45,8 @@ public class UserInfoWidgetHandler extends AbstractSimpleSystemWidgetHandler {
 			BlogPageParam bParam = new BlogPageParam();
 			bParam.setSpace(space);
 			bParam.setScopes(scopes);
+			bParam.setStatus(BlogStatus.NORMAL);
+			bParam.setDel(false);
 			variables.put("blog", blogDao.selectCount(bParam));
 		}
 
