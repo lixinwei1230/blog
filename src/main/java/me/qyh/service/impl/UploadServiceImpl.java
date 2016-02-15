@@ -5,6 +5,14 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import me.qyh.bean.I18NMessage;
 import me.qyh.config.ConfigServer;
 import me.qyh.config.FileUploadConfig;
@@ -12,6 +20,7 @@ import me.qyh.config.FileUploadConfig.SizeLimit;
 import me.qyh.config.FileUploadConfig.SizeLimit.Result;
 import me.qyh.config.FileUploadConfig._ImageConfig;
 import me.qyh.dao.FileDao;
+import me.qyh.entity.MyFile;
 import me.qyh.entity.User;
 import me.qyh.exception.LogicException;
 import me.qyh.exception.SystemException;
@@ -20,22 +29,12 @@ import me.qyh.helper.file.ImageInfo;
 import me.qyh.helper.file.ImageProcessing;
 import me.qyh.security.UserContext;
 import me.qyh.service.UploadService;
-import me.qyh.upload.server.FileMapper;
 import me.qyh.upload.server.FileServer;
 import me.qyh.upload.server.FileStorage;
 import me.qyh.upload.server.UploadedFile;
 import me.qyh.upload.server.UploadedResult;
 import me.qyh.utils.Files;
 import me.qyh.utils.Strings;
-
-import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class UploadServiceImpl implements UploadService {
@@ -58,7 +57,6 @@ public class UploadServiceImpl implements UploadService {
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-	@PreAuthorize("hasRole('ROLE_SPACE')")
 	public UploadedResult upload(List<MultipartFile> files) {
 		User user = UserContext.getUser();
 		UploadedResult info = new UploadedResult(true);
@@ -94,7 +92,8 @@ public class UploadServiceImpl implements UploadService {
 			String extension = Files.getFileExtension(file.getOriginalFilename());
 
 			if (!image && !Strings.inArray(extension, _config.getAllowFileTypes(), true)) {
-				info.addFile(new UploadedFile(originalFilename, new I18NMessage("error.upload.invalidExtension", extension)));
+				info.addFile(new UploadedFile(originalFilename,
+						new I18NMessage("error.upload.invalidExtension", extension)));
 				continue;
 			}
 
@@ -113,7 +112,8 @@ public class UploadServiceImpl implements UploadService {
 				try {
 					ImageInfo ii = im4javas.read(_file);
 					if (!Strings.inArray(ii.getType(), _config.getAllowFileTypes(), true)) {
-						info.addFile(new UploadedFile(originalFilename, new I18NMessage("error.upload.invalidExtension", ii.getType())));
+						info.addFile(new UploadedFile(originalFilename,
+								new I18NMessage("error.upload.invalidExtension", ii.getType())));
 						continue;
 					}
 					FileUploadConfig._ImageConfig imConfig = (FileUploadConfig._ImageConfig) _config;
@@ -136,7 +136,7 @@ public class UploadServiceImpl implements UploadService {
 					_file = rename;
 					if (!GIF.equalsIgnoreCase(ii.getType())) {
 						try {
-							im4javas.compress(_file,_file);
+							im4javas.compress(_file, _file);
 						} catch (Exception e) {
 							throw new SystemException(e.getMessage(), e);
 						}
@@ -148,7 +148,7 @@ public class UploadServiceImpl implements UploadService {
 							// 只有1帧
 							if (numImages == 1) {
 								try {
-									im4javas.format(_file, _file,PNG);
+									im4javas.format(_file, _file, PNG);
 								} catch (Exception e) {
 									throw new SystemException(e.getMessage(), e);
 								}
@@ -167,16 +167,14 @@ public class UploadServiceImpl implements UploadService {
 			File _cover = createCover(temp, _file, contentType);
 			boolean hasCover = (_cover != null);
 			Date now = new Date();
-			FileMapper mf = new FileMapper(user, _file.length(), _file.getName(), now, 
-					file.getOriginalFilename(), _file);
+			MyFile mf = new MyFile(user, _file.length(), _file.getName(), now, file.getOriginalFilename());
 			FileStorage storage = fileServer.getStore(mf);
 			if (hasCover) {
-				FileMapper cover = new FileMapper(user, _cover.length(), _cover.getName(), now,
-						file.getOriginalFilename(), _cover);
+				MyFile cover = new MyFile(user, _cover.length(), _cover.getName(), now, file.getOriginalFilename());
 				FileStorage coverStorage = fileServer.getStore(cover);
 				cover.setIsCover(true);
 				try {
-					cover.setRelativePath(coverStorage.store(cover));
+					cover.setRelativePath(coverStorage.store(cover, _cover));
 				} catch (Exception e) {
 					throw new SystemException(e.getMessage(), e);
 				}
@@ -185,7 +183,7 @@ public class UploadServiceImpl implements UploadService {
 				mf.setCover(cover);
 			}
 			try {
-				mf.setRelativePath(storage.store(mf));
+				mf.setRelativePath(storage.store(mf, _file));
 			} catch (Exception e) {
 				throw new SystemException(e.getMessage(), e);
 			}
@@ -214,7 +212,7 @@ public class UploadServiceImpl implements UploadService {
 		try {
 			FileUtils.forceMkdir(folder);
 		} catch (IOException e) {
-			throw new SystemException(e.getMessage() , e);
+			throw new SystemException(e.getMessage(), e);
 		}
 		File dest = new File(folder, Strings.uuid() + "." + extension);
 		try {
@@ -244,7 +242,7 @@ public class UploadServiceImpl implements UploadService {
 					String.format("将文件%s修改为%s后缀失败", dest.getAbsolutePath(), info.getType().toLowerCase()));
 		}
 		try {
-			im4javas.compress(rename,rename);
+			im4javas.compress(rename, rename);
 		} catch (Exception e) {
 			throw new SystemException(e.getMessage(), e);
 		}

@@ -4,18 +4,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.apache.ibatis.type.JdbcType;
+
 import me.qyh.exception.SystemException;
 import me.qyh.upload.server.FileServer;
 import me.qyh.upload.server.FileStorage;
 import me.qyh.web.SpringContextHolder;
 
-import org.apache.ibatis.type.JdbcType;
-
 public class FileStorageTypeHandler extends DirectResultTypeHandler<FileStorage> {
 	
-	private static final String AVATAR_STORE = "avatarStore";
 	private FileServer fileServer = null;
-	private FileStorage avatarStore = null;
 
 	@Override
 	public FileStorage getNullableResult(ResultSet rs, String str) throws SQLException {
@@ -40,12 +38,6 @@ public class FileStorageTypeHandler extends DirectResultTypeHandler<FileStorage>
 			fileServer = SpringContextHolder.getBean(FileServer.class);
 		}
 		FileStorage store = fileServer.getStore(id);
-		if(store == null){
-			if(avatarStore == null){
-				avatarStore = SpringContextHolder.getBean(AVATAR_STORE,FileStorage.class);
-			}
-			store = avatarStore;
-		}
 		if(store == null){
 			throw new SystemException(String.format("无法找到%s找到FileStorage", id));
 		}

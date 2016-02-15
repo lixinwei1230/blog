@@ -9,11 +9,9 @@ import me.qyh.bean.Info;
 import me.qyh.entity.MyFile;
 import me.qyh.exception.MyFileNotFoundException;
 import me.qyh.exception.SystemException;
-import me.qyh.upload.server.FileMapper;
 import me.qyh.upload.server.FileStorage;
 import me.qyh.utils.Files;
 import me.qyh.utils.Strings;
-import me.qyh.web.Webs;
 import me.qyh.web.tag.url.UrlHelper;
 
 public class LocalFileStorage implements FileStorage {
@@ -21,21 +19,19 @@ public class LocalFileStorage implements FileStorage {
 	private String absPath;
 	private int id;
 	private FileMapping mapping = new DefaultMapping();
-	private StoreType type = StoreType.ALL;
 
 	@Autowired
 	private UrlHelper urlHelper;
 
 	@Override
-	public String store(FileMapper mapper) throws Exception {
-		File mappered = mapper.getMappered();
-		if (!mappered.exists()) {
-			throw new SystemException(String.format("文件%s不存在", mappered.getAbsolutePath()));
+	public String store(MyFile my,File file) throws Exception {
+		if (!file.exists()) {
+			throw new SystemException(String.format("文件%s不存在", file.getAbsolutePath()));
 		}
 		String path = Files.ymd();
 		File dir = new File(absPath, path);
 		Files.forceMkdir(dir);
-		FileUtils.copyFile(mappered, new File(dir, mappered.getName()));
+		FileUtils.copyFile(file, new File(dir, file.getName()));
 		return path;
 	}
 
@@ -51,14 +47,7 @@ public class LocalFileStorage implements FileStorage {
 
 	@Override
 	public boolean canStore(MyFile file) {
-		switch (type) {
-		case IMAGE_ONLY:
-			return Webs.isWebImage(file.getName());
-		case ALL:
-			return true;
-		default:
-			return false;
-		}
+		return !(file instanceof me.qyh.service.impl.AvatarFile);
 	}
 
 	public File seek(String path) throws MyFileNotFoundException {
@@ -98,14 +87,6 @@ public class LocalFileStorage implements FileStorage {
 
 	public void setMapping(FileMapping mapping) {
 		this.mapping = mapping;
-	}
-
-	public void setType(StoreType type) {
-		this.type = type;
-	}
-
-	public enum StoreType {
-		IMAGE_ONLY, ALL
 	}
 
 	@Override

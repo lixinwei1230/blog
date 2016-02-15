@@ -26,7 +26,6 @@ import me.qyh.exception.LogicException;
 import me.qyh.exception.MyFileNotFoundException;
 import me.qyh.service.UploadService;
 import me.qyh.service.UserService;
-import me.qyh.upload.server.FileStorage;
 import me.qyh.utils.Files;
 
 @Controller
@@ -34,18 +33,14 @@ import me.qyh.utils.Files;
 public class MyAvatarController extends BaseController {
 
 	private static final String AVATAR = "avatar";
-	private static final String STORE = "store";
 
 	@Autowired
 	private UploadService uploadService;
 	@Autowired
 	private UserService userService;
-	@Autowired
-	private FileStorage avatarStore;
 
 	@RequestMapping(value = "index", method = RequestMethod.GET)
 	public String index(ModelMap model) {
-		model.addAttribute(STORE, avatarStore.id());
 		return "my/avatar/index";
 	}
 

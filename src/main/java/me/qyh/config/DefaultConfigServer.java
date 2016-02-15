@@ -3,6 +3,13 @@ package me.qyh.config;
 import java.io.File;
 import java.util.Date;
 
+import org.apache.commons.lang.time.DateUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+
 import me.qyh.config.FileUploadConfig.SizeLimit;
 import me.qyh.config.FileUploadConfig._Config;
 import me.qyh.config.FileUploadConfig._ImageConfig;
@@ -10,16 +17,9 @@ import me.qyh.entity.RoleEnum;
 import me.qyh.entity.User;
 import me.qyh.helper.html.HtmlContentHandler;
 import me.qyh.page.PageType;
+import me.qyh.service.impl.AvatarStorage;
 import me.qyh.upload.server.FileStorage;
-import me.qyh.upload.server.inner.LocalFileStorage;
 import me.qyh.utils.Files;
-
-import org.apache.commons.lang.time.DateUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 默认配置源
@@ -85,8 +85,6 @@ public class DefaultConfigServer implements ConfigServer {
 	@Autowired
 	private HtmlContentHandler widgetHtmlHandler;
 	@Autowired
-	private LocalFileStorage avatarStore;
-	@Autowired
 	private HtmlContentHandler bootstrapHtmlHandler;
 	@Autowired
 	private HtmlContentHandler commentHtmlHandler;
@@ -144,7 +142,7 @@ public class DefaultConfigServer implements ConfigServer {
 	@Override
 	public FileWriteConfig getFileWriteConfig(FileStorage store) {
 		FileWriteConfig config = null;
-		if (avatarStore.id() == store.id()) {
+		if (store instanceof AvatarStorage) {
 			config = new FileWriteConfig(fileWriteMatcher, new DefaultImageZoomMatcher(avatar_allowSizes));
 		} else {
 			config = new FileWriteConfig(fileWriteMatcher, new DefaultImageZoomMatcher(fileImage_allowSizes));
@@ -201,7 +199,7 @@ public class DefaultConfigServer implements ConfigServer {
 		Date now = new Date();
 		Date small = DateUtils.addMinutes(now, -comment_minute);
 		config.setLimit(new FrequencyLimit(small, now, comment_count));
-		
+
 		config.setBeforeHandler(commentHtmlHandler);
 		config.setAfterHandler(bootstrapHtmlHandler);
 		return config;

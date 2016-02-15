@@ -1,7 +1,6 @@
 package me.qyh.service.impl;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +8,6 @@ import java.util.UUID;
 
 import javax.mail.MessagingException;
 
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +26,6 @@ import me.qyh.dao.RoleDao;
 import me.qyh.dao.UserCodeDao;
 import me.qyh.dao.UserDao;
 import me.qyh.entity.LoginInfo;
-import me.qyh.entity.MyFile;
 import me.qyh.entity.Role;
 import me.qyh.entity.RoleEnum;
 import me.qyh.entity.User;
@@ -37,8 +34,8 @@ import me.qyh.entity.UserCodeType;
 import me.qyh.exception.LogicException;
 import me.qyh.exception.SystemException;
 import me.qyh.helper.file.BadImageException;
-import me.qyh.helper.file.Im4javas;
 import me.qyh.helper.file.ImageInfo;
+import me.qyh.helper.file.ImageProcessing;
 import me.qyh.helper.freemaker.WebFreemarkers;
 import me.qyh.helper.mail.Mailer;
 import me.qyh.helper.mail.MimeMessageHelperHandler;
@@ -47,6 +44,7 @@ import me.qyh.pageparam.Page;
 import me.qyh.security.UserContext;
 import me.qyh.server.UserServer;
 import me.qyh.service.UserService;
+import me.qyh.upload.server.FileServer;
 import me.qyh.upload.server.FileStorage;
 import me.qyh.utils.Files;
 import me.qyh.utils.Times;
@@ -82,11 +80,9 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 	@Autowired
 	private FileDao fileDao;
 	@Autowired
-	private FileStorage avatarStore;
-	@Value("${config.avatar.absPath}")
-	private String absPath;
+	private FileServer fileServer;
 	@Autowired
-	private Im4javas im4javas;
+	private ImageProcessing im4javas;
 	@Autowired
 	private LoginInfoDao loginInfoDao;
 
@@ -254,9 +250,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 		if (file == null || !file.exists()) {
 			throw new LogicException("error.avatar.fileNotFound");
 		}
-		String relativePath = Files.ymd();
-		File folder = new File(this.absPath + relativePath);
-		Files.forceMkdir(folder);
 		boolean croped = false;
 		try {
 			ImageInfo info = im4javas.read(file);
@@ -264,25 +257,25 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 		} catch (BadImageException e) {
 			throw new LogicException("error.upload.badImage");
 		}
-		String absPath = folder.getAbsolutePath() + File.separator + file.getName();
-		File dest = new File(absPath);
+		File dest = file;
 		if (croped) {
 			try {
 				crop.setFile(file);
-				im4javas.crop(crop,dest);
+				File tmp = new File(file.getParentFile(), Files.appendFilename(file.getName(), "$"));
+				im4javas.crop(crop, tmp);
+				dest = tmp;
 			} catch (Exception e) {
 				throw new LogicException("error.avatar.badCrop");
 			}
-		} else {
-			try {
-				FileUtils.copyFile(file, dest);
-			} catch (IOException e) {
-				throw new SystemException(e.getMessage(), e);
-			}
 		}
-		File cropFile = croped ? dest : file;
-		MyFile avatar = new MyFile(user, cropFile.length(), file.getName(), new Date(), file.getName());
-		avatar.setRelativePath(relativePath);
+		AvatarFile avatar = new AvatarFile(user, dest.length(), dest.getName(), new Date(), file.getName());
+		FileStorage avatarStore = fileServer.getStore(avatar);
+		try {
+			avatar.setRelativePath(avatarStore.store(avatar, dest));
+		} catch (Exception e) {
+			throw new SystemException(e.getMessage(), e);
+		}
+
 		avatar.setStore(avatarStore);
 		fileDao.insert(avatar);
 
