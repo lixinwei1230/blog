@@ -2,6 +2,7 @@ package me.qyh.upload.server;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.springframework.stereotype.Component;
 
@@ -11,7 +12,7 @@ import me.qyh.exception.SystemException;
 /**
  * 
  * @author qyh
- *
+ * 
  */
 @Component(value = "fileServer")
 public class MemoryServer implements FileServer {
@@ -34,13 +35,21 @@ public class MemoryServer implements FileServer {
 
 	@Override
 	public FileStorage getStore(MyFile file) {
+		List<FileStorage> storages = new ArrayList<FileStorage>();
 		for (FileStorage store : stores) {
 			if (store.canStore(file)) {
-				return store;
+				storages.add(store);
 			}
 		}
 		//
-		throw new SystemException(String.format("无法找到能存放%s的存储器", file));
+		if (stores.isEmpty()) {
+			throw new SystemException(String.format("无法找到能存放%s的存储器", file));
+		}
+		if(stores.size() == 1){
+			return stores.get(0);
+		}
+		int index = ThreadLocalRandom.current().nextInt(storages.size());
+		return storages.get(index);
 	}
 
 }
