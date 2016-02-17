@@ -12,6 +12,7 @@ import me.qyh.exception.SystemException;
 import me.qyh.upload.server.FileStorage;
 import me.qyh.utils.Files;
 import me.qyh.utils.Strings;
+import me.qyh.utils.Validators;
 import me.qyh.web.tag.url.UrlHelper;
 
 public class LocalFileStorage implements FileStorage {
@@ -19,12 +20,13 @@ public class LocalFileStorage implements FileStorage {
 	private String absPath;
 	private int id;
 	private FileMapping mapping = new DefaultMapping();
+	private String[] allowExtensions;
 
 	@Autowired
 	private UrlHelper urlHelper;
 
 	@Override
-	public String store(MyFile my,File file) throws Exception {
+	public String store(MyFile my, File file) throws Exception {
 		if (!file.exists()) {
 			throw new SystemException(String.format("文件%s不存在", file.getAbsolutePath()));
 		}
@@ -47,7 +49,35 @@ public class LocalFileStorage implements FileStorage {
 
 	@Override
 	public boolean canStore(MyFile file) {
-		return !(file instanceof me.qyh.service.impl.AvatarFile);
+		if (Validators.isEmptyOrNull(allowExtensions)) {
+			return false;
+		}
+		String ext = file.getExtension();
+		if (ext == null) {
+			return false;
+		}
+		for (String allowExt : allowExtensions) {
+			if (allowExt.equalsIgnoreCase(ext)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public Info del(MyFile file) {
+		File f = new File(absPath, file.getRelativePath() + File.separator + file.getName());
+		boolean flag = false;
+		if (!f.exists()) {
+			flag = true;
+		} else {
+			try {
+				flag = f.delete();
+			} catch (Exception e) {
+				flag = false;
+			}
+		}
+		return new Info(flag);
 	}
 
 	public File seek(String path) throws MyFileNotFoundException {
@@ -89,20 +119,7 @@ public class LocalFileStorage implements FileStorage {
 		this.mapping = mapping;
 	}
 
-	@Override
-	public Info del(MyFile file) {
-		File f = new File(absPath, file.getRelativePath() + File.separator + file.getName());
-		boolean flag = false;
-		if (!f.exists()) {
-			flag = true;
-		} else {
-			try {
-				flag = f.delete();
-			} catch (Exception e) {
-				flag = false;
-			}
-		}
-		return new Info(flag);
+	public void setAllowExtensions(String[] allowExtensions) {
+		this.allowExtensions = allowExtensions;
 	}
-
 }
