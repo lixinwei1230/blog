@@ -2,7 +2,6 @@ package me.qyh.config;
 
 import me.qyh.config.FileUploadConfig._ImageConfig;
 import me.qyh.entity.User;
-import me.qyh.upload.server.FileStorage;
 
 /**
  * 用来获取用户/系统的配置
@@ -39,7 +38,9 @@ public interface ConfigServer {
 
 	BlogConfig getBlogConfig(User user);
 
-	FileWriteConfig getFileWriteConfig(FileStorage store);
+	FileWriteConfig getFileWriteConfig();
+	
+	FileWriteConfig getAvatarWriteConfig();
 	
 	BlogCommentConfig getBlogCommentConfig();
 
