@@ -4,3 +4,8 @@ VALUES((SELECT id FROM blog_user WHERE user_name = 'test'),(SELECT id FROM role 
 ALTER TABLE blog ADD COLUMN editor INT NOT NULL DEFAULT 0;
 ALTER TABLE temporary_blog ADD COLUMN editor INT NOT NULL DEFAULT 0;
 ALTER TABLE blog ADD COLUMN display MEDIUMTEXT NOT NULL;
+
+ALTER TABLE blog_file ADD COLUMN width INT;
+ALTER TABLE blog_file ADD COLUMN height INT;
+UPDATE blog_file SET file_store = 1;
+UPDATE blog_user SET avatar = NULL;
