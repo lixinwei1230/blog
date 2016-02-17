@@ -2,12 +2,12 @@ package me.qyh.entity;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import me.qyh.upload.server.FileStorage;
 import me.qyh.utils.Files;
 import me.qyh.web.Webs;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * 文件对象
@@ -32,8 +32,9 @@ public class MyFile extends Id {
 	private String originalFilename;// 原始文件名
 	private MyFile cover;// 封面 gif图片会用到
 	private String filenameWithoutExtension;
-
-	boolean isCover;
+	private boolean isCover;
+	private Integer width;//宽度(图片)
+	private Integer height;//长度(图片)
 
 	public boolean isImage() {
 		return Webs.isWebImage(originalFilename);
@@ -165,5 +166,24 @@ public class MyFile extends Id {
 				+ ", originalFilename=" + originalFilename + ", cover=" + cover + ", filenameWithoutExtension="
 				+ filenameWithoutExtension + ", isCover=" + isCover + "]";
 	}
-	
+
+	public Integer getWidth() {
+		return width;
+	}
+
+	public void setWidth(Integer width) {
+		this.width = width;
+	}
+
+	public Integer getHeight() {
+		return height;
+	}
+
+	public void setHeight(Integer height) {
+		this.height = height;
+	}
+
+	public void setExtension(String extension) {
+		this.extension = extension;
+	}
 }

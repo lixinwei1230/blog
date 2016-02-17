@@ -15,6 +15,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result column="relativePath" property="relativePath" />
 		<result column="original_name" property="originalFilename" />
 		<result column="is_cover" property="isCover" />
+		<result column="width" property="width"/>
+		<result column="height" property="height"/>
 		<association property="user" javaType="User">
 			<id column="user_id" property="id" />
 		</association>
@@ -24,6 +26,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 				typeHandler="FileStorageTypeHandler" />
 			<result column="cover_relativePath" property="relativePath" />
 			<result column="cover_file_name" property="name" />
+			<result column="cover_width" property="width"/>
+			<result column="cover_height" property="height"/>
 		</association>
 	</resultMap>
 
@@ -31,7 +35,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		SELECT
 		bf.id,bf.file_size,bf.file_name,bf.file_status,bf.extension,bf.uploadDate,bf.file_store,bf.user_id,bf.relativePath,bf.original_name,cv.file_store
 		AS cover_file_store,cv.relativePath AS cover_relativePath,cv.file_name
-		AS cover_file_name,cv.id AS cover_id
+		AS cover_file_name,cv.id AS cover_id,bf.width,bf.height,cv.width AS cover_width,cv.height AS cover_height
 		FROM blog_file bf
 		LEFT OUTER JOIN
 		blog_file cv ON bf.cover = cv.id
@@ -41,8 +45,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
 		INSERT
 		INTO
-		blog_file(file_size,file_name,file_status,extension,uploadDate,file_store,user_id,relativePath,original_name,cover,is_cover)
-		VALUES(#{size},#{name},#{status,javaType=FileStatus,typeHandler=EnumOrdinalTypeHandler},#{extension},#{uploadDate},#{store,typeHandler=FileStorageTypeHandler},#{user.id},#{relativePath},#{originalFilename},#{cover.id},#{isCover})
+		blog_file(file_size,file_name,file_status,extension,uploadDate,file_store,user_id,relativePath,original_name,cover,is_cover,width,height)
+		VALUES(#{size},#{name},#{status,javaType=FileStatus,typeHandler=EnumOrdinalTypeHandler},#{extension},#{uploadDate},#{store,typeHandler=FileStorageTypeHandler},#{user.id},#{relativePath},#{originalFilename},#{cover.id},#{isCover},#{width},#{height})
 	</insert>
 
 	<update id="update">
@@ -60,7 +64,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		SELECT
 		bf.id,bf.file_size,bf.file_name,bf.file_status,bf.extension,bf.uploadDate,bf.file_store,bf.user_id,bf.relativePath,bf.original_name,cv.file_store
 		AS cover_file_store,cv.relativePath AS cover_relativePath,cv.file_name
-		AS cover_file_name
+		AS cover_file_name,bf.width,bf.height,cv.width AS cover_width,cv.height AS cover_height
 		FROM blog_file bf
 		LEFT OUTER JOIN blog_file cv ON
 		bf.cover = cv.id
