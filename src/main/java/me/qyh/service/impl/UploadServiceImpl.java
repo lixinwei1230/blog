@@ -108,9 +108,10 @@ public class UploadServiceImpl implements UploadService {
 			} catch (Exception e1) {
 				throw new SystemException(e1);
 			}
+			ImageInfo ii = null;
 			if (image) {
 				try {
-					ImageInfo ii = im4javas.read(_file);
+					ii = im4javas.read(_file);
 					if (!Strings.inArray(ii.getType(), _config.getAllowFileTypes(), true)) {
 						info.addFile(new UploadedFile(originalFilename,
 								new I18NMessage("error.upload.invalidExtension", ii.getType())));
@@ -168,6 +169,10 @@ public class UploadServiceImpl implements UploadService {
 			boolean hasCover = (_cover != null);
 			Date now = new Date();
 			MyFile mf = new MyFile(user, _file.length(), _file.getName(), now, file.getOriginalFilename());
+			if(image){
+				mf.setWidth(ii.getWidth());
+				mf.setHeight(ii.getHeight());
+			}
 			FileStorage storage = fileServer.getStore(mf);
 			if (hasCover) {
 				MyFile cover = new MyFile(user, _cover.length(), _cover.getName(), now, file.getOriginalFilename());
@@ -178,6 +183,8 @@ public class UploadServiceImpl implements UploadService {
 				} catch (Exception e) {
 					throw new SystemException(e.getMessage(), e);
 				}
+				cover.setWidth(ii.getWidth());
+				cover.setHeight(ii.getHeight());
 				cover.setStore(coverStorage);
 				fileDao.insert(cover);
 				mf.setCover(cover);

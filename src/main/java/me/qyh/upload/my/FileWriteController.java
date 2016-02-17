@@ -6,14 +6,6 @@ import java.util.Collection;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.context.request.ServletWebRequest;
-
 import me.qyh.config.ConfigServer;
 import me.qyh.config.FileWriteConfig;
 import me.qyh.config.ImageZoomMatcher;
@@ -29,6 +21,14 @@ import me.qyh.web.InvalidParamException;
 import me.qyh.web.SpringContextHolder;
 import me.qyh.web.Webs;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.context.request.ServletWebRequest;
+
 @Controller
 public class FileWriteController {
 
@@ -40,6 +40,9 @@ public class FileWriteController {
 	private MyServerFileMapping fileMapping;
 	@Value("${config.image.thumb.cachedir}")
 	private String imageCacheDir;
+	@Value("${config.avatar.filePrefix}")
+	private String avatarPrefix;
+	
 	private Collection<LocalFileStorage> stores = null;
 
 	@RequestMapping(value = "static/{storeId}/{y}/{m}/{d}/{name:.+}", method = RequestMethod.GET)
@@ -55,7 +58,7 @@ public class FileWriteController {
 		ParsedName pn = new ParsedName(name);
 		File seek = store.seek(pathPrefix + pn.fullName);
 		if (pn.isImage && (pn.size != null)) {
-			FileWriteConfig config = configServer.getFileWriteConfig(store);
+			FileWriteConfig config = getFileWriteConfig(pn.fullName);
 			ImageZoomMatcher matcher = config.getZoomMatcher();
 			// can be zoomed
 			File zoom = new File(imageCacheDir, pathPrefix + name);
@@ -144,5 +147,12 @@ public class FileWriteController {
 			}
 		}
 		throw new InvalidParamException();
+	}
+	
+	private FileWriteConfig getFileWriteConfig(String name){
+		if(name.startsWith(avatarPrefix)){
+			return configServer.getAvatarWriteConfig();
+		}
+		return configServer.getFileWriteConfig();
 	}
 }

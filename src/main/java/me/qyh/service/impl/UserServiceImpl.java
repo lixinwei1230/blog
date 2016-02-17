@@ -8,17 +8,6 @@ import java.util.UUID;
 
 import javax.mail.MessagingException;
 
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import me.qyh.bean.Crop;
 import me.qyh.dao.FileDao;
 import me.qyh.dao.LoginInfoDao;
@@ -26,6 +15,7 @@ import me.qyh.dao.RoleDao;
 import me.qyh.dao.UserCodeDao;
 import me.qyh.dao.UserDao;
 import me.qyh.entity.LoginInfo;
+import me.qyh.entity.MyFile;
 import me.qyh.entity.Role;
 import me.qyh.entity.RoleEnum;
 import me.qyh.entity.User;
@@ -48,6 +38,17 @@ import me.qyh.upload.server.FileServer;
 import me.qyh.upload.server.FileStorage;
 import me.qyh.utils.Files;
 import me.qyh.utils.Times;
+
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "userService")
 public class UserServiceImpl extends BaseServiceImpl implements UserService, InitializingBean {
@@ -85,6 +86,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 	private ImageProcessing im4javas;
 	@Autowired
 	private LoginInfoDao loginInfoDao;
+	@Value("${config.avatar.filePrefix}")
+	private String avatarPrefix;
 
 	private static final String MAIL_ACTIVATE_TPL_PATH = "mail/activate.ftl";
 	private static final String MAIL_FINDPASSWORD_TPL_PATH = "mail/findPassword.ftl";
@@ -251,8 +254,9 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 			throw new LogicException("error.avatar.fileNotFound");
 		}
 		boolean croped = false;
+		ImageInfo info = null;
 		try {
-			ImageInfo info = im4javas.read(file);
+			info = im4javas.read(file);
 			croped = (info.getWidth() != crop.getW() || info.getHeight() != crop.getH());
 		} catch (BadImageException e) {
 			throw new LogicException("error.upload.badImage");
@@ -268,14 +272,21 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 				throw new LogicException("error.avatar.badCrop");
 			}
 		}
-		AvatarFile avatar = new AvatarFile(user, dest.length(), dest.getName(), new Date(), file.getName());
+		File rename = new File(dest.getParent() , Files.prependFilename(dest.getName(), avatarPrefix));
+		if(!dest.renameTo(rename)){
+			throw new SystemException(
+					String.format("头像文件%s更名为%失败",dest.getAbsolutePath(),rename.getAbsolutePath()));
+		}
+		MyFile avatar = new MyFile(user, dest.length(), rename.getName(), new Date(), file.getName());
 		FileStorage avatarStore = fileServer.getStore(avatar);
 		try {
-			avatar.setRelativePath(avatarStore.store(avatar, dest));
+			avatar.setRelativePath(avatarStore.store(avatar, rename));
 		} catch (Exception e) {
 			throw new SystemException(e.getMessage(), e);
 		}
 
+		avatar.setWidth(info.getWidth());
+		avatar.setHeight(info.getHeight());
 		avatar.setStore(avatarStore);
 		fileDao.insert(avatar);
 

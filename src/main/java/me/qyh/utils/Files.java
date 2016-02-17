@@ -42,6 +42,20 @@ public final class Files {
 		sb.append(File.separator);
 		return sb.toString();
 	}
+	
+	public static String prependFilename(String name,Object ... appends){
+		if(Validators.isEmptyOrNull(appends)){
+			return name;
+		}
+		String extension = getFileExtension(name);
+		StringBuilder sb = new StringBuilder();
+		for(Object append : appends){
+			sb.append(append);
+		}
+		sb.append(getFilename(name));
+		sb.append((Validators.isEmptyOrNull(extension, true) ? "" : "." + extension));
+		return sb.toString();
+	}
 
 	public static String appendFilename(String name, Object ... appends) {
 		if(Validators.isEmptyOrNull(appends)){

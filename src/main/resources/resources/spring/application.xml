@@ -274,12 +274,6 @@
 		<property name="mapping" ref="myServerFileMapping"/>
 	</bean>
 
-	<bean id="avatarStore" class="me.qyh.service.impl.AvatarStorage">
-		<property name="id" value="0" />
-		<property name="absPath" value="${config.avatar.absPath}"/>
-		<property name="mapping" ref="myServerFileMapping"/>
-	</bean>
-	
 	 <bean id="myServerFileMapping" class="me.qyh.upload.my.MyServerFileMapping">
 		<property name="prefix" value="f"/>
 	</bean> 
@@ -292,7 +286,6 @@
 		<property name="stores">
 			<list>
 				<ref bean="innerFileStore" />
-				<ref bean="avatarStore" />
 			</list>
 		</property>
 	</bean>

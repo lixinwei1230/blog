@@ -14,19 +14,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.context.request.ServletWebRequest;
-import org.springframework.web.util.WebUtils;
-
 import me.qyh.config.ConfigServer;
 import me.qyh.config.FileWriteConfig;
 import me.qyh.config.ImageZoomMatcher;
@@ -43,6 +30,19 @@ import me.qyh.web.SpringContextHolder;
 import me.qyh.web.Webs;
 import me.qyh.web.controller.BaseController;
 
+import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.util.WebUtils;
+
 @Controller
 @RequestMapping("file")
 public class LocalFileController extends BaseController  {
@@ -56,7 +56,7 @@ public class LocalFileController extends BaseController  {
 	private static TimeZone GMT = TimeZone.getTimeZone("GMT");
 
 	@Autowired
-	private ConfigServer configServer;
+	protected ConfigServer configServer;
 	@Autowired
 	private ImageProcessing im4javas;
 	@Value("${config.image.thumb.cachedir}")
@@ -65,11 +65,15 @@ public class LocalFileController extends BaseController  {
 	private boolean supportWebp;
 	@Value("${config.file.maxAge}")
 	private long maxAge;
+	@Value("${config.avatar.filePrefix}")
+	private String avatarPrefix;
+	
 	private Collection<LocalFileStorage> stores = null;
 	
 	@RequestMapping(value = "{storeId}/{y}/{m}/{d}/{name}/{ext}", method = RequestMethod.GET)
 	public void _write(@PathVariable("storeId") int storeId, @PathVariable("y") String y, @PathVariable("m") String m,
-			@PathVariable("d") String d, @PathVariable("name") String name, @PathVariable("ext") String ext,ServletWebRequest request, HttpServletResponse response)
+			@PathVariable("d") String d, @PathVariable("name") String name, @PathVariable("ext") String ext,
+			ServletWebRequest request, HttpServletResponse response)
 					throws MyFileNotFoundException {
 		this.write(storeId, y, m, d, name, ext, null, request, response);
 	}
@@ -83,13 +87,13 @@ public class LocalFileController extends BaseController  {
 		if (!Webs.isSafeFilePath(path)) {
 			throw new InvalidParamException();
 		}
-		LocalFileStorage store = seek(storeId);
-		FileWriteConfig config = configServer.getFileWriteConfig(store);
+		FileWriteConfig config = getFileWriteConfig(name);
 		RequestMatcher matcher = config.getRequestMatcher();
 		// 防盗链
 		if (matcher != null && !matcher.matches(request.getRequest())) {
 			throw new MyFileNotFoundException();
 		}
+		LocalFileStorage store = seek(storeId);
 		File seek = store.seek(path);
 		boolean isImage = Webs.isWebImage("." + ext);
 		if (!isImage) {
@@ -250,6 +254,13 @@ public class LocalFileController extends BaseController  {
 				throw new InvalidParamException();
 			}
 		}
+	}
+	
+	protected FileWriteConfig getFileWriteConfig(String name){
+		if(name.startsWith(avatarPrefix)){
+			return configServer.getAvatarWriteConfig();
+		}
+		return configServer.getFileWriteConfig();
 	}
 	
 }
