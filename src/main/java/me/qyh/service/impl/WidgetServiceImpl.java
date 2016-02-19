@@ -103,8 +103,6 @@ public class WidgetServiceImpl extends BaseServiceImpl implements WidgetService 
 		}
 
 		User current = UserContext.getUser();
-		super.doAuthencation(current, page.getUser());
-
 		int count = locationWidgetDao.selectCountByPage(page);
 		PageConfig pageConfig = configServer.getPageConfig(current);
 
@@ -170,8 +168,6 @@ public class WidgetServiceImpl extends BaseServiceImpl implements WidgetService 
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public void removeWidget(Integer id) throws LogicException {
 		LocationWidget lw = loadLocationWidget(id);
-		Page page = pageDao.selectById(lw.getPage().getId());
-		super.doAuthencation(UserContext.getUser(), page.getUser());
 
 		Widget widget = lw.getWidget();
 		switch (widget.getType()) {
@@ -246,9 +242,6 @@ public class WidgetServiceImpl extends BaseServiceImpl implements WidgetService 
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public void updateConfig(WidgetConfig config) throws LogicException {
 		LocationWidget lw = loadLocationWidget(config.getWidget().getId());
-		Page page = pageDao.selectById(lw.getPage().getId());
-		super.doAuthencation(UserContext.getUser(), page.getUser());
-
 		Widget widget = lw.getWidget();
 
 		WidgetConfig db = null;
@@ -271,10 +264,6 @@ public class WidgetServiceImpl extends BaseServiceImpl implements WidgetService 
 					+ "和需要配置类型不匹配，" + "需要配置类型为" + db.getClass().getName());
 		}
 
-		LocationWidget _lw = loadLocationWidget(db.getWidget().getId());
-		Page _page = pageDao.selectById(_lw.getPage().getId());
-		super.doAuthencation(UserContext.getUser(), _page.getUser());
-
 		switch (widget.getType()) {
 		case SYSTEM:
 			swh.getConfigHandler().updateWidgetConfig(config);
@@ -295,9 +284,6 @@ public class WidgetServiceImpl extends BaseServiceImpl implements WidgetService 
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public void deleteUserWidget(Integer id) throws LogicException {
 		UserWidget uw = loadUserWidget(id);
-
-		super.doAuthencation(uw.getUser(), UserContext.getUser());
-
 		List<LocationWidget> references = locationWidgetDao.selectByWidget(uw);
 		for (LocationWidget lw : references) {
 			userWidgetConfigDao.deleteByLocationWidget(lw);
@@ -331,8 +317,6 @@ public class WidgetServiceImpl extends BaseServiceImpl implements WidgetService 
 			throws LogicException {
 		LocationWidget db = loadLocationWidget(widget.getId());
 		Page page = pageDao.selectById(db.getPage().getId());
-		super.doAuthencation(UserContext.getUser(), page.getUser());
-
 		// 寻找需要交换的挂件
 		LocationWidget targetLocationWidget = locationWidgetDao.selectByIndex(
 				widget.getR(), widget.getX(), widget.getY(), page);
@@ -357,9 +341,7 @@ public class WidgetServiceImpl extends BaseServiceImpl implements WidgetService 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public void updateUserWidget(UserWidget uw) throws LogicException {
-		UserWidget db = loadUserWidget(uw.getId());
-		super.doAuthencation(UserContext.getUser(), db.getUser());
-
+		loadUserWidget(uw.getId());
 		userWidgetDao.update(uw);
 	}
 

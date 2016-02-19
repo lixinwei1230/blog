@@ -41,7 +41,7 @@ public class GolbalExceptionHandler extends BaseController {
 
 	@Autowired
 	private MessageSource messageSource;
-	
+
 	@ExceptionHandler(InvalidPropertyException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ModelAndView handleInvalidPropertyException(InvalidPropertyException e) {
@@ -107,19 +107,27 @@ public class GolbalExceptionHandler extends BaseController {
 
 	@ExceptionHandler(SystemException.class)
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public ModelAndView handleSystemException(SystemException se,HttpServletRequest request,HttpServletResponse response) throws Exception {
+	public ModelAndView handleSystemException(SystemException se, HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
 		logger.error(se.getMessage(), se);
 		if (Webs.isAjaxRequest(request)) {
-			String message = messageSource.getMessage("error.systemError",new Object [] {}, request.getLocale());
+			String message = messageSource.getMessage("error.systemError", new Object[] {}, request.getLocale());
 			Webs.writeInfo(response, new Info(false, message));
 			return null;
 		}
 		return new ModelAndView("/error/500");
 	}
-	
+
 	@ExceptionHandler(BusinessAccessDeinedException.class)
 	@ResponseStatus(HttpStatus.FORBIDDEN)
-	public ModelAndView handleBusinessAccessDeinedException(BusinessAccessDeinedException e) throws IOException {
+	public ModelAndView handleBusinessAccessDeinedException(BusinessAccessDeinedException e, HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
+		I18NMessage im = e.getI18nMessage();
+		if (Webs.isAjaxRequest(request)) {
+			String message = messageSource.getMessage(im.getCode(), im.getParams(), request.getLocale());
+			Webs.writeInfo(response, new Info(false, message));
+			return null;
+		}
 		return new ModelAndView("/error/403").addObject(ERROR, e.getI18nMessage());
 	}
 

@@ -17,7 +17,6 @@ import me.qyh.entity.MyFile;
 import me.qyh.exception.LogicException;
 import me.qyh.pageparam.MyFilePageParam;
 import me.qyh.pageparam.Page;
-import me.qyh.security.UserContext;
 import me.qyh.service.MyFileService;
 import me.qyh.upload.server.FileStorage;
 import me.qyh.utils.Times;
@@ -53,7 +52,6 @@ public class MyFileServiceImpl extends BaseServiceImpl implements MyFileService 
 		if (db == null || FileStatus.RECYCLER.equals(db.getStatus())) {
 			throw new LogicException("error.file.notexists");
 		}
-		super.doAuthencation(UserContext.getUser(), db.getUser());
 
 		if (db.getIsCover()) {
 			throw new LogicException("error.file.canNotDeleteCover");

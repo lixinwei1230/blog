@@ -7,7 +7,7 @@ public class BusinessAccessDeinedException extends BusinessRuntimeException {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final String DEFAULT_CODE = "error.noAuthencation";
+	private static final String DEFAULT_CODE = "error.auth.denied";
 
 	public BusinessAccessDeinedException() {
 		super(DEFAULT_CODE);

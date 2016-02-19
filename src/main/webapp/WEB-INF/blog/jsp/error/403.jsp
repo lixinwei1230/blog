@@ -17,7 +17,7 @@
 			<div class="col-lg-12">
 			<div class="text-align:center" style="margin-top: 20px">
 				<div class="alert alert-warning ">
-					<spring:message code="error.noAuthencation" />
+					<spring:message code="error.auth.denied" />
 				</div>
 				<div>
 					<button type="button" class="btn btn-primary"
