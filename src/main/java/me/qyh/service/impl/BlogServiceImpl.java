@@ -111,6 +111,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public void insertBlog(Blog blog) throws LogicException {
 		BlogCategory category = loadBlogCategory(blog.getCategory().getId());
+		super.doAuthencation(blog.getSpace(), category.getSpace());
 
 		BlogConfig config = configServer.getBlogConfig(UserContext.getUser());
 		checkInsertFrequency(config.getLimit(), blog.getSpace());
@@ -149,6 +150,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public void deleteBlog(Integer id) throws LogicException {
 		Blog blog = loadBlog(id);
+		super.doAuthencation(UserContext.getSpace(), blog.getSpace());
 
 		if (!blog.isScheduled() && !isBlogDeleted(blog)) {
 			throw new LogicException("error.blog.undeleted");
@@ -207,6 +209,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public void deleteBlogCategory(Integer id) throws LogicException {
 		BlogCategory db = loadBlogCategory(id);
+		super.doAuthencation(UserContext.getSpace(), db.getSpace());
 
 		BlogPageParam param = new BlogPageParam();
 		param.setCategory(db);
@@ -257,6 +260,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	public void deleteBlogLogic(Integer id) throws LogicException {
 
 		Blog blog = loadBlog(id);
+		super.doAuthencation(UserContext.getSpace(), blog.getSpace());
 
 		if (isBlogDeleted(blog)) {
 			throw new LogicException("error.blog.deleted");
@@ -278,7 +282,11 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 			throw new LogicException("error.blog.deleted");
 		}
 
-		loadBlogCategory(toUpdate.getCategory().getId());
+		Space current = UserContext.getSpace();
+		super.doAuthencation(current, db.getSpace());
+
+		BlogCategory category = loadBlogCategory(toUpdate.getCategory().getId());
+		super.doAuthencation(current, category.getSpace());
 		
 		if(!db.isScheduled() && toUpdate.isScheduled()){
 			throw new LogicException("error.blog.pubToScheduled");
@@ -309,6 +317,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 			throw new LogicException("error.blog.temporary.notexists");
 		}
 
+		super.doAuthencation(UserContext.getSpace(), tBlogs.get(0).getSpace());
 		boolean insert = true;
 		if (blog.hasId()) {
 			Blog db = blogDao.selectById(blog.getId());
@@ -331,6 +340,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public void recover(Integer id) throws LogicException {
 		Blog blog = loadBlog(id);
+		super.doAuthencation(UserContext.getSpace(), blog.getSpace());
 
 		if (!isBlogDeleted(blog)) {
 			throw new LogicException("error.blog.undeleted");
@@ -375,12 +385,14 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 			if (blog.hasId()) {
 				Blog _blog = blogDao.selectById(blog.getId());
 				if (_blog != null) {
-					tb.setEditor(_blog.getEditor());
+					super.doAuthencation(UserContext.getSpace(), _blog.getSpace());
 				}
+				tb.setEditor(_blog.getEditor());
 			}
 			temporaryBlogDao.insert(tb);
 		} else {
 			TemporaryBlog db = tBlogs.get(0);
+			super.doAuthencation(UserContext.getSpace(), db.getSpace());
 			Date now = new Date();
 			long time = now.getTime() - db.getSaveDate().getTime();
 			if (time < temporarySaveFrequency) {
@@ -588,6 +600,8 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 
 	private void updateBlogCategory(BlogCategory toUpdate) throws LogicException {
 		BlogCategory db = loadBlogCategory(toUpdate.getId());
+		super.doAuthencation(UserContext.getSpace(), db.getSpace());
+
 		BlogCategory toCheck = blogCategoryDao.selectBySpaceAndName(db.getSpace(), toUpdate.getName());
 
 		if (toCheck != null && !toCheck.equals(toUpdate)) {

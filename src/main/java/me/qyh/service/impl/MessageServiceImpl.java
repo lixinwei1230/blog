@@ -154,6 +154,8 @@ public class MessageServiceImpl extends BaseServiceImpl implements MessageServic
 	public void updateIsRead(Set<Integer> receives, boolean isRead) throws LogicException {
 		for (Integer id : receives) {
 			MessageReceive receive = loadMessageReceive(id);
+			super.doAuthencation(UserContext.getUser(), receive.getReceiver());
+
 			boolean _isRead = receive.getIsRead();
 
 			if (!Boolean.valueOf(receive.getIsRead()).equals(isRead)) {
@@ -176,6 +178,7 @@ public class MessageServiceImpl extends BaseServiceImpl implements MessageServic
 	public void deleteMessageReceives(Set<Integer> receives) throws LogicException {
 		for (Integer id : receives) {
 			MessageReceive receive = loadMessageReceive(id);
+			super.doAuthencation(UserContext.getUser(), receive.getReceiver());
 
 			messageReceiveDao.deleteById(id);
 
@@ -190,6 +193,7 @@ public class MessageServiceImpl extends BaseServiceImpl implements MessageServic
 	public void deleteMessageSends(Set<Integer> sends) throws LogicException {
 		for (Integer id : sends) {
 			MessageSend send = loadMessageSend(id);
+			super.doAuthencation(UserContext.getUser(), send.getSender());
 
 			messageSendDao.deleteById(id);
 			
@@ -204,6 +208,7 @@ public class MessageServiceImpl extends BaseServiceImpl implements MessageServic
 	public void updateMessageRecieveStatus(Set<Integer> receives, MessageStatus status) throws LogicException {
 		for (Integer id : receives) {
 			MessageReceive receive = loadMessageReceive(id);
+			super.doAuthencation(UserContext.getUser(), receive.getReceiver());
 
 			if (!receive.getStatus().equals(status)) {
 				receive.setStatus(status);
