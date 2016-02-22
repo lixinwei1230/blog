@@ -10,6 +10,6 @@ public interface BlogIndexHandler {
 
 	public void removeBlogIndex(Blog ... blogs);
 
-	public Page<Blog> search(BlogPageParam param);
+	public Page<Integer> search(BlogPageParam param);
 
 }

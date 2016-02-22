@@ -170,7 +170,7 @@ public class BlogIndexHandlerImpl
 		return doc;
 	}
 
-	public Page<Blog> search(BlogPageParam param) {
+	public Page<Integer> search(BlogPageParam param) {
 		IndexSearcher searcher = new IndexSearcher(getIndexReader());
 		Sort sort = parseSort(param);
 		Query query = parseBlogPageParam(param);
@@ -178,15 +178,15 @@ public class BlogIndexHandlerImpl
 			TopDocs tds = sort == null ? searcher.search(query, maxResults) : searcher.search(query, maxResults, sort);
 			int total = tds.totalHits;
 			int offset = param.getOffset();
-			List<Blog> datas = new ArrayList<Blog>();
+			List<Integer> datas = new ArrayList<Integer>();
 			if (offset < total) {
 				ScoreDoc[] docs = tds.scoreDocs;
 				int last = offset + param.getPageSize();
 				for (int i = offset; i < Math.min(Math.min(last, total), maxResults); i++) {
-					datas.add(parseToBlog(searcher.doc(docs[i].doc)));
+					datas.add(Integer.parseInt(searcher.doc(docs[i].doc).get(ID)));
 				}
 			}
-			return new Page<Blog>(param, Math.min(maxResults, total), datas);
+			return new Page<Integer>(param, Math.min(maxResults, total), datas);
 		} catch (IOException e) {
 			throw new SystemException(e);
 		}
@@ -515,9 +515,15 @@ public class BlogIndexHandlerImpl
 					param.setCurrentPage(1);
 					param.setPageSize(Integer.MAX_VALUE);
 					param.setStatus(null);
-					List<Blog> blogs = blogDao.selectPage(param);
+					List<Integer> datas = blogDao.selectPage(param);
 					try {
-						excutorManager.excute(new DeleteAllAndRebuildBlogsOperation(blogs));
+						if (!datas.isEmpty()) {
+							List<Blog> blogs = new ArrayList<Blog>();
+							for(Integer id : datas){
+								blogs.add(blogDao.selectById(id));
+							}
+							excutorManager.excute(new DeleteAllAndRebuildBlogsOperation(blogs));
+						}
 					} catch (InterruptedException e) {
 					}
 				}

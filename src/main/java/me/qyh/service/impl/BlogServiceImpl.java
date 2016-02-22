@@ -9,6 +9,16 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import me.qyh.bean.Scopes;
 import me.qyh.config.BlogCommentConfig;
 import me.qyh.config.BlogConfig;
@@ -52,16 +62,6 @@ import me.qyh.server.UserServer;
 import me.qyh.service.BlogService;
 import me.qyh.utils.Strings;
 import me.qyh.utils.Validators;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service("blogService")
 public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
@@ -181,7 +181,8 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 			throw new LogicException("error.blog.notexists");
 		}
 		super.doAuthencation(spaceServer.getScopes(UserContext.getUser(), blog.getSpace()), blog.getScope());
-		HtmlContentHandler afterHandler = configServer.getBlogConfig(userServer.getUserBySpace(blog.getSpace())).getAfterHandler();
+		HtmlContentHandler afterHandler = configServer.getBlogConfig(userServer.getUserBySpace(blog.getSpace()))
+				.getAfterHandler();
 		if (afterHandler != null) {
 			blog.setDisplay(afterHandler.handle(blog.getDisplay()));
 		}
@@ -238,20 +239,10 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 	@Transactional(readOnly = true)
 	public Page<Blog> findBlogs(BlogPageParam param) {
 		validBlogPageParam(param);
-		Page<Blog> page = blogIndexHandler.search(param);
-		List<Blog> blogs = page.getDatas();
-		List<Blog> results = new ArrayList<Blog>();
-		if (!blogs.isEmpty()) {
-			for (Blog blog : blogs) {
-				Blog preview = blogDao.selectPreview(blog.getId());
-				if (preview != null) {
-					preview.setTags(blog.getTags());
-					results.add(preview);
-				}
-			}
-			page.setDatas(results);
-		}
-		return page;
+		Page<Integer> page = blogIndexHandler.search(param);
+		List<Integer> datas = page.getDatas();
+		List<Blog> blogs = datas.isEmpty() ? new ArrayList<Blog>() : blogDao.selectByIds(datas);
+		return new Page<Blog>(param, page.getTotalRow(), blogs);
 	}
 
 	@Override
@@ -287,8 +278,8 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 
 		BlogCategory category = loadBlogCategory(toUpdate.getCategory().getId());
 		super.doAuthencation(current, category.getSpace());
-		
-		if(!db.isScheduled() && toUpdate.isScheduled()){
+
+		if (!db.isScheduled() && toUpdate.isScheduled()) {
 			throw new LogicException("error.blog.pubToScheduled");
 		}
 
@@ -487,7 +478,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 			blog.setComments(blog.getComments() + 1);
 			blogIndexHandler.rebuildBlogIndex(blog);
 		}
-		//评论不支持修改，这里直接覆盖
+		// 评论不支持修改，这里直接覆盖
 		comment.setContent(config.getBeforeHandler().handle(comment.getContent()));
 		commentDao.insert(comment);
 
@@ -543,7 +534,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		BlogConfig config = configServer.getBlogConfig(user);
 		String result = config.getBeforeHandler().handle(content);
 		HtmlContentHandler afterHandler = config.getAfterHandler();
-		if(afterHandler != null){
+		if (afterHandler != null) {
 			result = afterHandler.handle(result);
 		}
 		return result;
@@ -690,7 +681,7 @@ public class BlogServiceImpl extends BaseServiceImpl implements BlogService {
 		String content = comment.getContent();
 		BlogCommentConfig config = configServer.getBlogCommentConfig();
 		HtmlContentHandler afterHandler = config.getAfterHandler();
-		if(afterHandler != null){
+		if (afterHandler != null) {
 			comment.setContent(afterHandler.handle(content));
 		}
 		return comment;

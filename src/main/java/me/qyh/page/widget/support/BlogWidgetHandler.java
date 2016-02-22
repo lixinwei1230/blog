@@ -52,20 +52,17 @@ public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 
 	@Override
 	String getPreviewHtml(User user) {
-		BlogWidgetConfig config = (BlogWidgetConfig) (getConfigHandler()
-				.getDefaultWidgetConfig(user));
+		BlogWidgetConfig config = (BlogWidgetConfig) (getConfigHandler().getDefaultWidgetConfig(user));
 		List<Blog> blogs = searchBlog(buildParam(config, user, user)).getDatas();
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("blogs", blogs);
 		map.put("widget", super.getSimpleWidget());
 		map.put("config", config);
 
-		return freeMarkers.processTemplateIntoString(
-				"page/widget/widget_blog_preview.ftl", map);
+		return freeMarkers.processTemplateIntoString("page/widget/widget_blog_preview.ftl", map);
 	}
 
-	protected BlogPageParam buildParam(BlogWidgetConfig config, User owner,
-			User visitor) {
+	protected BlogPageParam buildParam(BlogWidgetConfig config, User owner, User visitor) {
 		BlogPageParam param = new BlogPageParam();
 		param.setCurrentPage(1);
 		param.setPageSize(pageSize);
@@ -92,8 +89,7 @@ public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 	}
 
 	@Override
-	public Widget getWidget(WidgetConfig config, User owner, User visitor)
-			throws LogicException {
+	public Widget getWidget(WidgetConfig config, User owner, User visitor) throws LogicException {
 		BlogWidgetConfig _config = (BlogWidgetConfig) config;
 		if (_config == null) {
 			throw new LogicException(CODE_CONFIG_NOT_EXISTS);
@@ -102,17 +98,15 @@ public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 		sw.setId(id);
 		sw.setName(name);
 
-		List<Blog> blogs = searchBlog(buildParam(_config, owner,
-				visitor)).getDatas();
+		List<Blog> blogs = searchBlog(buildParam(_config, owner, visitor)).getDatas();
 
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("blogs", blogs);
 		map.put("widget", super.getSimpleWidget());
 		map.put("config", _config);
 
-		sw.setHtml(freeMarkers.processTemplateIntoString(
-				"page/widget/widget_blog.ftl", map));
-		
+		sw.setHtml(freeMarkers.processTemplateIntoString("page/widget/widget_blog.ftl", map));
+
 		sw.setType(WidgetType.SYSTEM);
 
 		return sw;
@@ -130,22 +124,12 @@ public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 			}
 		}
 	}
-	
-	private Page<Blog> searchBlog(BlogPageParam param){
-		Page<Blog> page = blogIndexHandler.search(param);
-		List<Blog> blogs = page.getDatas();
-		List<Blog> results = new ArrayList<Blog>();
-		if(!blogs.isEmpty()){
-			for(Blog blog : blogs){
-				Blog preview = blogDao.selectPreview(blog.getId());
-				if(preview != null){
-					preview.setTags(blog.getTags());
-					results.add(preview);
-				}
-			}
-			page.setDatas(results);
-		}
-		return page;
+
+	private Page<Blog> searchBlog(BlogPageParam param) {
+		int count = blogDao.selectCount(param);
+		List<Integer> datas = blogDao.selectPage(param);
+		List<Blog> blogs = datas.isEmpty() ? new ArrayList<Blog>() : blogDao.selectByIds(datas);
+		return new Page<Blog>(param, count, blogs);
 	}
 
 	@Override
@@ -153,8 +137,7 @@ public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 		return new SystemWidgetConfigHandler() {
 
 			@Override
-			public void storeWidgetConfig(WidgetConfig config)
-					throws LogicException {
+			public void storeWidgetConfig(WidgetConfig config) throws LogicException {
 				BlogWidgetConfig bc = (BlogWidgetConfig) config;
 				setSpace(bc);
 				blogWidgetConfigDao.insert(bc);
@@ -171,8 +154,7 @@ public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 			@Override
 			public WidgetConfig getConfig(LocationWidget widget) {
 
-				BlogWidgetConfig config = blogWidgetConfigDao
-						.selectByLocationWidget(widget);
+				BlogWidgetConfig config = blogWidgetConfigDao.selectByLocationWidget(widget);
 
 				if (config == null) {
 					config = new BlogWidgetConfig();
@@ -182,14 +164,12 @@ public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 			}
 
 			@Override
-			public void deleteWidgetConfig(LocationWidget widget)
-					throws LogicException {
+			public void deleteWidgetConfig(LocationWidget widget) throws LogicException {
 				blogWidgetConfigDao.deleteByLocationWidget(widget);
 			}
 
 			@Override
-			public void updateWidgetConfig(WidgetConfig config)
-					throws LogicException {
+			public void updateWidgetConfig(WidgetConfig config) throws LogicException {
 				BlogWidgetConfig bc = (BlogWidgetConfig) config;
 				setSpace(bc);
 				blogWidgetConfigDao.update(bc);
@@ -199,8 +179,7 @@ public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 			public WidgetConfig getConfig(Integer id) throws LogicException {
 				BlogWidgetConfig db = blogWidgetConfigDao.selectById(id);
 				if (db == null) {
-					throw new LogicException(
-							"error.widget.config.blogWidgetConfig.notexists");
+					throw new LogicException("error.widget.config.blogWidgetConfig.notexists");
 				}
 
 				return db;

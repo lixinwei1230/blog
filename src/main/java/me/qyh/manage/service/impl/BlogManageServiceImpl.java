@@ -67,12 +67,12 @@ public class BlogManageServiceImpl extends BlogServiceImpl implements BlogManage
 		param.setCurrentPage(1);
 		param.setPageSize(Integer.MAX_VALUE);
 		param.setStatus(BlogStatus.SCHEDULED);
-		Page<Blog> blogs = blogIndexHandler.search(param);
-		List<Blog> datas = blogs.getDatas();
+		Page<Integer> blogs = blogIndexHandler.search(param);
+		List<Integer> datas = blogs.getDatas();
 		if(!Validators.isEmptyOrNull(datas)){
-			for(Blog blog : datas){
+			for(Integer id : datas){
 				try {
-					Blog db = loadBlog(blog.getId());
+					Blog db = loadBlog(id);
 					if(db.getDel()){
 						continue;
 					}

@@ -98,52 +98,49 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		GROUP BY b.id
 	</select>
 	
-	<select id="selectPreview" resultMap="BlogDetail">
+	<select id="selectByIds" resultMap="BlogDetail">
 		SELECT
 		b.id,b.summary,b.del,blog_status,b.write_date,b.title,b.hits,b.blog_from,b.blog_level,
-		b.category,b.space_id,bc.category_name,scope,b.comment_scope,b.recommend,bs.id AS user_id,nickname,comments,bs.avatar
-		FROM blog b
-		LEFT OUTER JOIN user_space us ON b.space_id = us.id
-		LEFT OUTER JOIN blog_user bs ON us.user_id = bs.id
-		LEFT OUTER JOIN blog_category bc ON b.category = bc.id
-		WHERE b.id = #{id}
-	</select>
-	
-
-	<select id="selectPage" resultMap="BlogDetail">
-		SELECT
-		b.id,b.summary,b.del,blog_status,b.write_date,b.title,b.hits,b.blog_from,b.blog_level,
-		b.category,b.space_id,bc.category_name,scope,b.comment_scope,b.recommend,bs.id AS user_id,nickname,comments
+		b.category,b.space_id,bc.category_name,scope,b.comment_scope,b.recommend,bs.id AS user_id,nickname,comments,bs.avatar,GROUP_CONCAT(CONCAT(t.tag_name,'_',convert(t.id,char))) AS tagList
 		FROM blog b
 		LEFT OUTER JOIN user_space us ON b.space_id = us.id
 		LEFT OUTER JOIN blog_user bs ON us.user_id = bs.id
 		LEFT OUTER JOIN blog_category bc ON b.category = bc.id
 		LEFT OUTER JOIN blog_tag bt ON bt.blog = b.id
+		LEFT OUTER JOIN tag t ON bt.tag_id = t.id
+		WHERE b.id IN
+		<foreach collection="ids" item="id" open="(" close=")" separator=",">
+			#{id}
+		</foreach>
+		GROUP BY b.id
+		ORDER BY field(b.id,
+		<foreach collection="ids" item="id" open="" close="" separator=",">
+			#{id}
+		</foreach>
+		)
+	</select>
+	
+
+	<select id="selectPage" resultType="int">
+		SELECT b.id
+		FROM blog b
 		<where>
 			<if test="del != null">
-				del = #{del}
+				b.del = #{del}
 			</if>
 			<if test="recommend != null">
-				AND recommend = #{recommend}
+				AND b.recommend = #{recommend}
 			</if>
 			<if test="space != null">
 				AND b.space_id = #{space.id}
 			</if>
 			<if test="from != null">
-				AND blog_from =
+				AND b.blog_from =
 				#{from,javaType=BlogFrom,typeHandler=EnumOrdinalTypeHandler}
 			</if>
 			<if test="status != null">
-				AND blog_status =
+				AND b.blog_status =
 				#{status,javaType=BlogStatus,typeHandler=EnumOrdinalTypeHandler}
-			</if>
-			<if test="tags != null and !tags.isEmpty()">
-				AND bt.tag_id IN (SELECT t.id FROM tag t  WHERE (
-				 <foreach collection="tags" item="t" open=""
-				    separator="or" close="">
-				    t.tag_name LIKE CONCAT('%', #{t},'%')
-				  </foreach>
-				))
 			</if>
 			<if test="title != null and title != ''">
 				AND title LIKE CONCAT('%', #{title},'%')
@@ -164,6 +161,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="begin != null and end != null">
 				AND write_date BETWEEN #{begin} AND #{end}
 			</if>
+			<if test="tags != null and !tags.isEmpty()">
+				AND b.id IN (SELECT blog FROM blog_tag bt LEFT OUTER JOIN tag t ON bt.tag_id = t.id WHERE bt.blog = b.id AND t.tag_name IN 
+				<foreach collection="tags" item="t" open="("
+				   	 	separator="," close=")">
+				   	 	#{t}
+				 </foreach>
+				)
+			</if>
 		</where>
 		GROUP BY b.id
 		<choose>
@@ -178,7 +183,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 
 	<select id="selectCount" resultType="int">
-		SELECT COUNT(DISTINCT(b.id))
+		SELECT COUNT(b.id)
 		FROM blog b
 		<if test="tags != null and !tags.isEmpty()">
 			LEFT OUTER JOIN blog_tag bt ON bt.blog = b.id
@@ -221,12 +226,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 				AND write_date BETWEEN #{begin} AND #{end}
 			</if>
 			<if test="tags != null and !tags.isEmpty()">
-				AND bt.tag_id IN (SELECT t.id FROM tag t  WHERE (
-				 <foreach collection="tags" item="t" open=""
-				    separator="or" close="">
-				    t.tag_name LIKE CONCAT('%', #{t},'%')
-				  </foreach>
-				))
+				AND b.id IN (SELECT blog FROM blog_tag bt LEFT OUTER JOIN tag t ON bt.tag_id = t.id WHERE bt.blog = b.id AND t.tag_name IN 
+				<foreach collection="tags" item="t" open="("
+				   	 	separator="," close=")">
+				   	 	#{t}
+				 </foreach>
+				)
 			</if>
 		</where>
 	</select>
