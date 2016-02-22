@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,8 @@ import me.qyh.utils.Strings;
 
 @Service
 public class UploadServiceImpl implements UploadService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(UploadServiceImpl.class);
 
 	@Autowired
 	private ConfigServer configServer;
@@ -269,7 +273,9 @@ public class UploadServiceImpl implements UploadService {
 			try {
 				im4javas.writeFirstFrameOfGif(toCreate, cover);
 			} catch (Exception e) {
-				throw new SystemException(e);
+				logger.warn(String.format("文件%s为图片,但是无法提取封面", dir.getAbsolutePath()));
+//				throw new SystemException(e);
+				return null;
 			}
 		}
 		return cover;
