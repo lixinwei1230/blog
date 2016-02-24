@@ -55,6 +55,8 @@
 									<li><a
 										href="<u:url user="${user }" myMenu="true"/>/blog/write">写博客</a></li>
 									<li><a
+										href="<u:url user="${user }" myMenu="true"/>/blog/scheduled/list/1">计划博客</a></li>
+									<li><a
 										href="<u:url user="${user }" myMenu="true"/>/blog/recycler/list/1">回收站</a></li>
 								</ul></li>
 							<li><a
