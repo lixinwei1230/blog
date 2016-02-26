@@ -20,6 +20,7 @@ import org.apache.lucene.document.NumericDocValuesField;
 import org.apache.lucene.document.SortedDocValuesField;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -85,6 +86,7 @@ public class BlogIndexHandlerImpl
 	private IndexReader reader;
 	private int maxResults = 1000;
 	private int maxTokenCount = 1000;
+	private Analyzer analyzer = new StandardAnalyzer();
 	/**
 	 * 数据量不大且当前没有为博客建立索引时候使用
 	 */
@@ -106,9 +108,9 @@ public class BlogIndexHandlerImpl
 	protected static final String DEL = "del";
 
 	private final SortPro[] pros = new SortPro[] { new SortPro(HITS, Type.INT) };
-
+	
 	protected Analyzer getAnalyzer() {
-		return new StandardAnalyzer();
+		return analyzer;
 	}
 
 	protected SortPro[] getSortPros() {
@@ -144,7 +146,7 @@ public class BlogIndexHandlerImpl
 		Document doc = new Document();
 		doc.add(new StringField(ID, blog.getId().toString(), Field.Store.YES));
 		doc.add(new StringField(SPACE, blog.getSpace().getId(), Field.Store.NO));
-		doc.add(new StringField(TITLE, blog.getTitle(), Field.Store.NO));
+		doc.add(new TextField(TITLE, blog.getTitle(), Field.Store.NO));
 		doc.add(new SortedDocValuesField(CATEGORY_NAME, new BytesRef(blog.getCategory().getName())));
 		doc.add(new StoredField(CATEGORY_NAME, blog.getCategory().getName()));
 		doc.add(new StringField(CATEGORY_ID, blog.getCategory().getId().toString(), Field.Store.NO));
