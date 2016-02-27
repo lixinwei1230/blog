@@ -50,7 +50,7 @@ public final class Strings extends StringUtils {
 	}
 
 	public static String deleteWhitespace(String str) {
-		return org.apache.commons.lang.StringUtils.deleteWhitespace(str);
+		return org.apache.commons.lang3.StringUtils.deleteWhitespace(str);
 	}
 
 	public static String uuid() {
