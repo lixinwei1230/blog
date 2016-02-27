@@ -3,6 +3,10 @@ package me.qyh.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import me.qyh.bean.Scopes;
 import me.qyh.config.ConfigServer;
 import me.qyh.config.PageConfig;
@@ -22,15 +26,11 @@ import me.qyh.page.widget.SystemWidgetConfigHandler;
 import me.qyh.page.widget.SystemWidgetHandler;
 import me.qyh.page.widget.UserWidget;
 import me.qyh.page.widget.Widget;
-import me.qyh.page.widget.WidgetType;
+import me.qyh.page.widget.Widget.WidgetType;
 import me.qyh.page.widget.config.WidgetConfig;
 import me.qyh.security.UserContext;
 import me.qyh.server.UserServer;
 import me.qyh.service.WidgetService;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 public class WidgetServiceImpl extends BaseServiceImpl implements WidgetService {
 

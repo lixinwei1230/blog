@@ -28,13 +28,18 @@ public class MyFile extends Id {
 	private Date uploadDate;
 	private transient FileStorage store;
 	private FileStatus status;
-	private String relativePath;//关键字段
+	private String relativePath;// 关键字段
 	private String originalFilename;// 原始文件名
 	private MyFile cover;// 封面 gif图片会用到
 	private String filenameWithoutExtension;
 	private boolean isCover;
-	private Integer width;//宽度(图片)
-	private Integer height;//长度(图片)
+	private Integer width;// 宽度(图片)
+	private Integer height;// 长度(图片)
+
+	public enum FileStatus {
+		NORMAL, // 正常
+		RECYCLER;// 待删除
+	}
 
 	public boolean isImage() {
 		return Webs.isWebImage(originalFilename);
@@ -125,9 +130,8 @@ public class MyFile extends Id {
 		this.filenameWithoutExtension = Files.getFilename(name);
 	}
 
-	public MyFile(User user, long size, String name, Date uploadDate, String originalFilename,
-			boolean isCover) {
-		this(user,size,name,uploadDate,originalFilename);
+	public MyFile(User user, long size, String name, Date uploadDate, String originalFilename, boolean isCover) {
+		this(user, size, name, uploadDate, originalFilename);
 		this.isCover = isCover;
 	}
 

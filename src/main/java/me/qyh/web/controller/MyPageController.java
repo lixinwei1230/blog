@@ -19,7 +19,7 @@ import me.qyh.exception.LogicException;
 import me.qyh.helper.page.SimpleBootstrapPage;
 import me.qyh.page.LocationWidget;
 import me.qyh.page.PageType;
-import me.qyh.page.widget.WidgetType;
+import me.qyh.page.widget.Widget.WidgetType;
 import me.qyh.page.widget.config.BindingResultWidgetConfig;
 import me.qyh.page.widget.config.WidgetConfigAttribute;
 import me.qyh.security.UserContext;

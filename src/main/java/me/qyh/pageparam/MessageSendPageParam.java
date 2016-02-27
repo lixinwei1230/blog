@@ -3,7 +3,7 @@ package me.qyh.pageparam;
 import java.util.Date;
 
 import me.qyh.entity.User;
-import me.qyh.entity.message.MessageType;
+import me.qyh.entity.message.MessageSend.MessageType;
 
 public class MessageSendPageParam extends PageParam {
 

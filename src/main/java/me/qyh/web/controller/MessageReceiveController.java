@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import me.qyh.bean.Info;
 import me.qyh.entity.message.MessageReceive;
-import me.qyh.entity.message.MessageStatus;
+import me.qyh.entity.message.MessageReceive.MessageStatus;
 import me.qyh.exception.LogicException;
 import me.qyh.pageparam.MessageReceivePageParam;
 import me.qyh.security.UserContext;

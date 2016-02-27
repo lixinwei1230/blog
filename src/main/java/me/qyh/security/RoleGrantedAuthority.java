@@ -2,7 +2,7 @@ package me.qyh.security;
 
 import org.springframework.security.core.GrantedAuthority;
 
-import me.qyh.entity.RoleEnum;
+import me.qyh.entity.Role.RoleEnum;
 
 public class RoleGrantedAuthority implements GrantedAuthority {
 

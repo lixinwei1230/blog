@@ -24,8 +24,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import me.qyh.bean.Info;
 import me.qyh.entity.message.MessageSend;
+import me.qyh.entity.message.MessageSend.MessageType;
 import me.qyh.entity.message.MessageSendDetail;
-import me.qyh.entity.message.MessageType;
 import me.qyh.exception.LogicException;
 import me.qyh.pageparam.MessageReceivePageParam;
 import me.qyh.pageparam.MessageSendPageParam;

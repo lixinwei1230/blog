@@ -3,18 +3,18 @@ package me.qyh.entity.validator;
 import java.util.Date;
 import java.util.Set;
 
-import me.qyh.entity.Editor;
-import me.qyh.entity.blog.Blog;
-import me.qyh.entity.blog.BlogCategory;
-import me.qyh.entity.blog.BlogStatus;
-import me.qyh.entity.tag.Tag;
-import me.qyh.utils.Strings;
-import me.qyh.utils.Validators;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+
+import me.qyh.entity.Editor;
+import me.qyh.entity.blog.Blog;
+import me.qyh.entity.blog.Blog.BlogStatus;
+import me.qyh.entity.blog.BlogCategory;
+import me.qyh.entity.tag.Tag;
+import me.qyh.utils.Strings;
+import me.qyh.utils.Validators;
 
 @Component("blogValidator")
 public class BlogValidator implements Validator {

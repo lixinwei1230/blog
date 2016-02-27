@@ -1,7 +1,7 @@
 package me.qyh.oauth2.security;
 
 import me.qyh.oauth2.AccessToken;
-import me.qyh.oauth2.entity.OauthType;
+import me.qyh.oauth2.entity.OauthUser.OauthType;
 
 public class OauthPrincipal {
 

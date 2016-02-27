@@ -1,7 +1,7 @@
 package me.qyh.oauth2;
 
-import me.qyh.oauth2.entity.OauthType;
 import me.qyh.oauth2.entity.OauthUser;
+import me.qyh.oauth2.entity.OauthUser.OauthType;
 import me.qyh.oauth2.security.OauthPrincipal;
 
 /**

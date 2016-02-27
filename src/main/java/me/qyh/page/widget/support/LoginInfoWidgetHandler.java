@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import me.qyh.dao.LoginInfoDao;
-import me.qyh.entity.RoleEnum;
+import me.qyh.entity.Role.RoleEnum;
 import me.qyh.entity.User;
 import me.qyh.page.widget.config.WidgetConfig;
 import me.qyh.pageparam.LoginInfoPageParam;

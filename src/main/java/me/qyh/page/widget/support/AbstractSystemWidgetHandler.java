@@ -1,13 +1,13 @@
 package me.qyh.page.widget.support;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import me.qyh.entity.User;
 import me.qyh.helper.freemaker.WebFreemarkers;
 import me.qyh.page.widget.SystemWidgetHandler;
 import me.qyh.page.widget.Widget;
-import me.qyh.page.widget.WidgetType;
+import me.qyh.page.widget.Widget.WidgetType;
 import me.qyh.server.UserServer;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbstractSystemWidgetHandler implements SystemWidgetHandler {
 

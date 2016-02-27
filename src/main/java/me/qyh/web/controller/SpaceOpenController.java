@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import me.qyh.bean.I18NMessage;
-import me.qyh.entity.RoleEnum;
+import me.qyh.entity.Role.RoleEnum;
 import me.qyh.entity.Space;
-import me.qyh.entity.SpaceStatus;
+import me.qyh.entity.Space.SpaceStatus;
 import me.qyh.entity.User;
 import me.qyh.exception.LogicException;
 import me.qyh.security.UserContext;

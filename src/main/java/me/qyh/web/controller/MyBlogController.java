@@ -21,7 +21,7 @@ import me.qyh.bean.Info;
 import me.qyh.entity.Editor;
 import me.qyh.entity.Space;
 import me.qyh.entity.blog.Blog;
-import me.qyh.entity.blog.BlogStatus;
+import me.qyh.entity.blog.Blog.BlogStatus;
 import me.qyh.entity.blog.TemporaryBlog;
 import me.qyh.exception.LogicException;
 import me.qyh.pageparam.BlogPageParam;

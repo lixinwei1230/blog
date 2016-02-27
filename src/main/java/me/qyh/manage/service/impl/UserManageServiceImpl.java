@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import me.qyh.dao.RoleDao;
 import me.qyh.dao.UserDao;
-import me.qyh.entity.RoleEnum;
+import me.qyh.entity.Role.RoleEnum;
 import me.qyh.entity.User;
 import me.qyh.exception.LogicException;
 import me.qyh.helper.mail.Mailer;

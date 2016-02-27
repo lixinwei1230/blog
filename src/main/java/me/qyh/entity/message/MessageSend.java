@@ -26,6 +26,12 @@ public class MessageSend extends Id {
 	private MessageDetail detail;// 信息详细
 	private MessageType type;// 信息类型
 	private List<MessageReceive> receives = new ArrayList<MessageReceive>();// 信息接收人
+	
+	public enum MessageType {
+		PERSONAL, // 个人
+		GLOBAL, // 全局
+		SYSTEM// 系统
+	}
 
 	public MessageSend(Integer id) {
 		super(id);

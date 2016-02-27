@@ -4,7 +4,7 @@ import org.apache.ibatis.annotations.Param;
 
 import me.qyh.entity.User;
 import me.qyh.entity.UserCode;
-import me.qyh.entity.UserCodeType;
+import me.qyh.entity.UserCode.UserCodeType;
 
 public interface UserCodeDao extends BaseDao<UserCode, Integer> {
 

@@ -11,9 +11,9 @@ import org.springframework.stereotype.Component;
 import me.qyh.dao.RoleDao;
 import me.qyh.dao.SpaceDao;
 import me.qyh.dao.UserDao;
-import me.qyh.entity.RoleEnum;
+import me.qyh.entity.Role.RoleEnum;
 import me.qyh.entity.Space;
-import me.qyh.entity.SpaceStatus;
+import me.qyh.entity.Space.SpaceStatus;
 import me.qyh.entity.User;
 
 @Component(value = "userDetailsService")

@@ -2,7 +2,7 @@ package me.qyh.oauth2.exception;
 
 import org.springframework.security.core.AuthenticationException;
 
-import me.qyh.oauth2.entity.OauthType;
+import me.qyh.oauth2.entity.OauthUser.OauthType;
 
 public class Oauth2InvalidPrincipalException extends AuthenticationException {
 

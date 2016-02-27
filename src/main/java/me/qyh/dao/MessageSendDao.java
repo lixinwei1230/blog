@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Param;
 
 import me.qyh.entity.User;
 import me.qyh.entity.message.MessageSend;
-import me.qyh.entity.message.MessageType;
+import me.qyh.entity.message.MessageSend.MessageType;
 import me.qyh.pageparam.MessageSendPageParam;
 
 public interface MessageSendDao extends BaseDao<MessageSend, Integer> {

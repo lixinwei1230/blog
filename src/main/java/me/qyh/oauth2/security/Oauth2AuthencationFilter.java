@@ -7,19 +7,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import me.qyh.oauth2.Oauth2;
-import me.qyh.oauth2.Oauth2Provider;
-import me.qyh.oauth2.entity.OauthType;
-import me.qyh.oauth2.entity.OauthUser;
-import me.qyh.oauth2.exception.Oauth2InvalidPrincipalException;
-import me.qyh.oauth2.exception.Oauth2UnbindException;
-import me.qyh.utils.Strings;
-import me.qyh.utils.Validators;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+
+import me.qyh.oauth2.Oauth2;
+import me.qyh.oauth2.Oauth2Provider;
+import me.qyh.oauth2.entity.OauthUser;
+import me.qyh.oauth2.entity.OauthUser.OauthType;
+import me.qyh.oauth2.exception.Oauth2InvalidPrincipalException;
+import me.qyh.oauth2.exception.Oauth2UnbindException;
+import me.qyh.utils.Strings;
+import me.qyh.utils.Validators;
 
 public class Oauth2AuthencationFilter extends
 		AbstractAuthenticationProcessingFilter {

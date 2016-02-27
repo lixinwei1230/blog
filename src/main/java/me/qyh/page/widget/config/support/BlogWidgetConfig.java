@@ -13,6 +13,11 @@ public class BlogWidgetConfig extends WidgetConfig {
 	private Space space;
 	private BlogWidgetDisplayMode mode;
 
+	public enum BlogWidgetDisplayMode {
+		PREVIEW, // 预览模式
+		LIST// 列表
+	}
+
 	public Space getSpace() {
 		return space;
 	}

@@ -18,6 +18,11 @@ public class OauthUser extends Id {
 	private Date createDate;
 	private String nickname;
 
+	public enum OauthType {
+		QQ, // qq
+		SINA
+	}
+
 	/**
 	 * 用户头像，如果存在的话
 	 */

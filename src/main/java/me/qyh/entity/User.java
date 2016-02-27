@@ -5,16 +5,17 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import me.qyh.helper.html.JsonHtmlXssSerializer;
-import me.qyh.security.RoleGrantedAuthority;
-import me.qyh.utils.Validators;
-
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import me.qyh.entity.Role.RoleEnum;
+import me.qyh.helper.html.JsonHtmlXssSerializer;
+import me.qyh.security.RoleGrantedAuthority;
+import me.qyh.utils.Validators;
 
 /**
  * 系统注册用户

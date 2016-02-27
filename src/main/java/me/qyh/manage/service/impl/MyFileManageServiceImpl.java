@@ -1,7 +1,14 @@
 package me.qyh.manage.service.impl;
 
-import me.qyh.entity.FileStatus;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import me.qyh.entity.MyFile;
+import me.qyh.entity.MyFile.FileStatus;
 import me.qyh.exception.LogicException;
 import me.qyh.manage.service.MyFileManageService;
 import me.qyh.pageparam.MyFilePageParam;
@@ -10,13 +17,6 @@ import me.qyh.server.TipMessage;
 import me.qyh.server.TipServer;
 import me.qyh.service.impl.MyFileServiceImpl;
 import me.qyh.utils.Validators;
-
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MyFileManageServiceImpl extends MyFileServiceImpl implements MyFileManageService {

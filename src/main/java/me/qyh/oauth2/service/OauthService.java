@@ -4,8 +4,8 @@ import java.util.List;
 
 import me.qyh.entity.User;
 import me.qyh.exception.LogicException;
-import me.qyh.oauth2.entity.OauthType;
 import me.qyh.oauth2.entity.OauthUser;
+import me.qyh.oauth2.entity.OauthUser.OauthType;
 import me.qyh.oauth2.security.OauthPrincipal;
 
 public interface OauthService {

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import me.qyh.bean.Info;
-import me.qyh.entity.blog.BlogStatus;
+import me.qyh.entity.blog.Blog.BlogStatus;
 import me.qyh.exception.LogicException;
 import me.qyh.manage.service.BlogManageService;
 import me.qyh.pageparam.BlogPageParam;

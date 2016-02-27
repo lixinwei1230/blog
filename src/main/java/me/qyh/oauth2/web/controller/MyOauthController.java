@@ -12,7 +12,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import me.qyh.bean.I18NMessage;
 import me.qyh.bean.Info;
 import me.qyh.exception.LogicException;
-import me.qyh.oauth2.entity.OauthType;
+import me.qyh.oauth2.entity.OauthUser.OauthType;
 import me.qyh.oauth2.service.OauthService;
 import me.qyh.security.UserContext;
 import me.qyh.utils.Validators;

@@ -2,13 +2,13 @@ package me.qyh.dao;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import me.qyh.entity.Role;
-import me.qyh.entity.RoleEnum;
+import me.qyh.entity.Role.RoleEnum;
 import me.qyh.entity.Space;
 import me.qyh.entity.User;
 import me.qyh.pageparam.UserPageParam;
-
-import org.apache.ibatis.annotations.Param;
 
 public interface UserDao extends BaseDao<User, Integer> {
 

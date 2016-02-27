@@ -8,7 +8,7 @@ import me.qyh.exception.LogicException;
 import me.qyh.page.LocationWidget;
 import me.qyh.page.widget.SystemWidgetConfigHandler;
 import me.qyh.page.widget.Widget;
-import me.qyh.page.widget.WidgetType;
+import me.qyh.page.widget.Widget.WidgetType;
 import me.qyh.page.widget.config.WidgetConfig;
 
 public abstract class AbstractSimpleSystemWidgetHandler extends AbstractSystemWidgetHandler {

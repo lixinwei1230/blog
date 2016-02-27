@@ -9,7 +9,7 @@ import me.qyh.dao.RoleDao;
 import me.qyh.dao.SpaceDao;
 import me.qyh.dao.UserDao;
 import me.qyh.entity.Role;
-import me.qyh.entity.RoleEnum;
+import me.qyh.entity.Role.RoleEnum;
 import me.qyh.entity.Space;
 import me.qyh.exception.LogicException;
 import me.qyh.server.UserServer;

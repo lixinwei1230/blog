@@ -26,6 +26,14 @@ public class Space implements Serializable {
 	private Date createDate;// 创建日期
 	private SpaceStatus status;// 空间状态
 
+	public enum SpaceStatus {
+
+		NORMAL, // 正常
+		CLOSED, // 关闭
+		DISABLED;// 不可用
+
+	}
+
 	public User getUser() {
 		return user;
 	}

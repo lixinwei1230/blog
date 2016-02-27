@@ -7,7 +7,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import me.qyh.entity.blog.BlogStatus;
+import me.qyh.entity.blog.Blog.BlogStatus;
 import me.qyh.pageparam.BlogPageParam;
 import me.qyh.service.BlogService;
 

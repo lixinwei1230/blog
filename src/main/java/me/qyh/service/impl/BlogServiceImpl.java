@@ -32,7 +32,7 @@ import me.qyh.dao.TagDao;
 import me.qyh.dao.TemporaryBlogDao;
 import me.qyh.dao.UserTagDao;
 import me.qyh.entity.Editor;
-import me.qyh.entity.RoleEnum;
+import me.qyh.entity.Role.RoleEnum;
 import me.qyh.entity.Scope;
 import me.qyh.entity.Space;
 import me.qyh.entity.User;

@@ -7,22 +7,22 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import me.qyh.oauth2.AccessToken;
-import me.qyh.oauth2.Oauth2;
-import me.qyh.oauth2.entity.OauthAvatar;
-import me.qyh.oauth2.entity.OauthType;
-import me.qyh.oauth2.entity.OauthUser;
-import me.qyh.oauth2.exception.Oauth2Exception;
-import me.qyh.oauth2.exception.Oauth2InvalidPrincipalException;
-import me.qyh.oauth2.security.OauthPrincipal;
-import me.qyh.utils.Validators;
-import me.qyh.web.Webs;
-
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import me.qyh.oauth2.AccessToken;
+import me.qyh.oauth2.Oauth2;
+import me.qyh.oauth2.entity.OauthAvatar;
+import me.qyh.oauth2.entity.OauthUser;
+import me.qyh.oauth2.entity.OauthUser.OauthType;
+import me.qyh.oauth2.exception.Oauth2Exception;
+import me.qyh.oauth2.exception.Oauth2InvalidPrincipalException;
+import me.qyh.oauth2.security.OauthPrincipal;
+import me.qyh.utils.Validators;
+import me.qyh.web.Webs;
 
 public class QQOauth2Impl implements Oauth2, InitializingBean {
 

@@ -16,60 +16,61 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-co
 			alias="SimpleTagSetTypeHandler" />
 		<typeAlias type="me.qyh.mybatis.handler.RolesTypeHandler"
 			alias="RolesTypeHandler" />
-			
-		<typeAlias type="me.qyh.entity.Editor" alias="Editor" />	
+
+		<typeAlias type="me.qyh.entity.Editor" alias="Editor" />
 
 		<typeAlias type="me.qyh.entity.User" alias="User" />
 		<typeAlias type="me.qyh.entity.Role" alias="Role" />
+		<typeAlias type="me.qyh.entity.Role$RoleEnum" alias="RoleEnum" />
 		<typeAlias type="me.qyh.entity.UserCode" alias="UserCode" />
-		<typeAlias type="me.qyh.entity.RoleEnum" alias="RoleEnum" />
+		<typeAlias type="me.qyh.entity.UserCode$UserCodeType" alias="UserCodeType" />
 		<typeAlias type="me.qyh.entity.LoginInfo" alias="LoginInfo" />
 
 		<typeAlias type="me.qyh.entity.MyFile" alias="MyFile" />
-		<typeAlias type="me.qyh.entity.FileStatus" alias="FileStatus" />
-
-		<typeAlias type="me.qyh.entity.UserCodeType" alias="UserCodeType" />
+		<typeAlias type="me.qyh.entity.MyFile$FileStatus" alias="FileStatus" />
 
 		<typeAlias type="me.qyh.entity.message.MessageSend" alias="MessageSend" />
 		<typeAlias type="me.qyh.entity.message.MessageReceive"
 			alias="MessageReceive" />
-		<typeAlias type="me.qyh.entity.message.MessageType" alias="MessageType" />
+		<typeAlias type="me.qyh.entity.message.MessageSend$MessageType"
+			alias="MessageType" />
 		<typeAlias type="me.qyh.entity.message.MessageDetail" alias="MessageDetail" />
-		<typeAlias type="me.qyh.entity.message.MessageStatus" alias="MessageStatus" />
+		<typeAlias type="me.qyh.entity.message.MessageReceive$MessageStatus"
+			alias="MessageStatus" />
 
 		<typeAlias type="me.qyh.entity.Scope" alias="Scope" />
 
 		<typeAlias type="me.qyh.entity.blog.BlogCategory" alias="BlogCategory" />
 		<typeAlias type="me.qyh.entity.blog.Blog" alias="Blog" />
-		<typeAlias type="me.qyh.entity.blog.BlogStatus" alias="BlogStatus" />
-		<typeAlias type="me.qyh.entity.blog.BlogFrom" alias="BlogFrom" />
+		<typeAlias type="me.qyh.entity.blog.Blog$BlogStatus" alias="BlogStatus" />
+		<typeAlias type="me.qyh.entity.blog.Blog$BlogFrom" alias="BlogFrom" />
 		<typeAlias type="me.qyh.entity.blog.TemporaryBlog" alias="TemporaryBlog" />
 		<typeAlias type="me.qyh.entity.blog.BlogTag" alias="BlogTag" />
 		<typeAlias type="me.qyh.entity.blog.BlogComment" alias="BlogComment" />
 
 		<typeAlias type="me.qyh.entity.Space" alias="Space" />
-		<typeAlias type="me.qyh.entity.SpaceStatus" alias="SpaceStatus" />
+		<typeAlias type="me.qyh.entity.Space$SpaceStatus" alias="SpaceStatus" />
 
 		<typeAlias type="me.qyh.entity.tag.Tag" alias="Tag" />
 		<typeAlias type="me.qyh.entity.tag.UserTag" alias="UserTag" />
 
 		<typeAlias type="me.qyh.page.widget.UserWidget" alias="UserWidget" />
-		<typeAlias type="me.qyh.page.widget.WidgetType" alias="WidgetType" />
 		<typeAlias type="me.qyh.page.Page" alias="Page" />
 		<typeAlias type="me.qyh.page.PageType" alias="PageType" />
 		<typeAlias type="me.qyh.page.LocationWidget" alias="LocationWidget" />
 		<typeAlias type="me.qyh.page.widget.Widget" alias="Widget" />
+		<typeAlias type="me.qyh.page.widget.Widget$WidgetType" alias="WidgetType" />
 		<typeAlias type="me.qyh.page.widget.config.WidgetConfig"
 			alias="WidgetConfig" />
 		<typeAlias type="me.qyh.page.widget.config.support.BlogWidgetConfig"
 			alias="BlogWidgetConfig" />
-		<typeAlias type="me.qyh.page.widget.config.support.BlogWidgetDisplayMode"
+		<typeAlias type="me.qyh.page.widget.config.support.BlogWidgetConfig$BlogWidgetDisplayMode"
 			alias="BlogWidgetDisplayMode" />
 
 
 		<!--oauth2 -->
 		<typeAlias type="me.qyh.oauth2.entity.OauthUser" alias="OauthUser" />
-		<typeAlias type="me.qyh.oauth2.entity.OauthType" alias="OauthType" />
+		<typeAlias type="me.qyh.oauth2.entity.OauthUser$OauthType" alias="OauthType" />
 	</typeAliases>
 	<mappers>
 		<mapper resource="resources/mybatis/mapper/roleMapper.xml" />

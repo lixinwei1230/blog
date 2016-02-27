@@ -6,11 +6,11 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import me.qyh.oauth2.entity.OauthType;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import me.qyh.oauth2.entity.OauthUser.OauthType;
 
 public class Oauth2Provider implements InitializingBean {
 

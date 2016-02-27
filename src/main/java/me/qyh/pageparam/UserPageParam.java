@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import me.qyh.entity.RoleEnum;
+import me.qyh.entity.Role.RoleEnum;
 
 public class UserPageParam extends PageParam {
 

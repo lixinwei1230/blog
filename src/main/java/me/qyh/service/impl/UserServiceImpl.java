@@ -8,6 +8,17 @@ import java.util.UUID;
 
 import javax.mail.MessagingException;
 
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import me.qyh.bean.Crop;
 import me.qyh.dao.FileDao;
 import me.qyh.dao.LoginInfoDao;
@@ -17,10 +28,10 @@ import me.qyh.dao.UserDao;
 import me.qyh.entity.LoginInfo;
 import me.qyh.entity.MyFile;
 import me.qyh.entity.Role;
-import me.qyh.entity.RoleEnum;
+import me.qyh.entity.Role.RoleEnum;
 import me.qyh.entity.User;
 import me.qyh.entity.UserCode;
-import me.qyh.entity.UserCodeType;
+import me.qyh.entity.UserCode.UserCodeType;
 import me.qyh.exception.LogicException;
 import me.qyh.exception.SystemException;
 import me.qyh.helper.file.BadImageException;
@@ -38,17 +49,6 @@ import me.qyh.upload.server.FileServer;
 import me.qyh.upload.server.FileStorage;
 import me.qyh.utils.Files;
 import me.qyh.utils.Times;
-
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "userService")
 public class UserServiceImpl extends BaseServiceImpl implements UserService, InitializingBean {

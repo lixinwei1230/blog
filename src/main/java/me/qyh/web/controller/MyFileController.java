@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import me.qyh.bean.Info;
-import me.qyh.entity.FileStatus;
+import me.qyh.entity.MyFile.FileStatus;
 import me.qyh.exception.LogicException;
 import me.qyh.pageparam.MyFilePageParam;
 import me.qyh.security.UserContext;

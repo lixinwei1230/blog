@@ -3,8 +3,8 @@ package me.qyh.pageparam;
 import java.util.Date;
 
 import me.qyh.entity.User;
+import me.qyh.entity.message.MessageReceive.MessageStatus;
 import me.qyh.entity.message.MessageSend;
-import me.qyh.entity.message.MessageStatus;
 
 public class MessageReceivePageParam extends PageParam {
 

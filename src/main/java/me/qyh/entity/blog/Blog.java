@@ -54,8 +54,18 @@ public class Blog extends Id {
 	private Integer level;// 博客级别，级别越高将越靠前显示
 	private boolean recommend;// 推荐才能上首页
 	private Boolean del;// 是否删除(回收站)
-	private Editor editor = Editor.HTML;//编辑方式
-	private String display;//博客展现内容
+	private Editor editor = Editor.HTML;// 编辑方式
+	private String display;// 博客展现内容
+
+	public enum BlogFrom {
+		ORIGINAL, // 原创
+		COPIED;// 转载
+	}
+
+	public enum BlogStatus {
+		NORMAL, // 正常
+		SCHEDULED
+	}
 
 	public Blog() {
 

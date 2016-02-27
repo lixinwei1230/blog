@@ -1,8 +1,8 @@
 package me.qyh.oauth2.exception;
 
-import me.qyh.oauth2.entity.OauthType;
-
 import org.springframework.security.core.AuthenticationException;
+
+import me.qyh.oauth2.entity.OauthUser.OauthType;
 
 /**
  * 在向服务商请求oauth2信息过程中发生的异常，包括连接、解析异常等

@@ -4,9 +4,9 @@ import java.util.Set;
 
 import me.qyh.entity.User;
 import me.qyh.entity.message.MessageReceive;
+import me.qyh.entity.message.MessageReceive.MessageStatus;
 import me.qyh.entity.message.MessageSend;
 import me.qyh.entity.message.MessageSendDetail;
-import me.qyh.entity.message.MessageStatus;
 import me.qyh.exception.LogicException;
 import me.qyh.pageparam.MessageReceivePageParam;
 import me.qyh.pageparam.MessageSendPageParam;

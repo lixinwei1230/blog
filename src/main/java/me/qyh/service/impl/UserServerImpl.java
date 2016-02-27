@@ -2,18 +2,18 @@ package me.qyh.service.impl;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import me.qyh.bean.Scopes;
 import me.qyh.dao.RoleDao;
 import me.qyh.dao.UserDao;
-import me.qyh.entity.RoleEnum;
+import me.qyh.entity.Role.RoleEnum;
 import me.qyh.entity.Space;
 import me.qyh.entity.User;
 import me.qyh.exception.LogicException;
 import me.qyh.server.UserServer;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class UserServerImpl implements UserServer {

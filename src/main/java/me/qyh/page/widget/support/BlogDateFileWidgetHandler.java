@@ -11,7 +11,7 @@ import me.qyh.bean.BlogFilesQueryBean;
 import me.qyh.bean.DateFileIndex;
 import me.qyh.bean.DateFileIndexs;
 import me.qyh.dao.BlogDao;
-import me.qyh.entity.RoleEnum;
+import me.qyh.entity.Role.RoleEnum;
 import me.qyh.entity.User;
 import me.qyh.page.widget.config.WidgetConfig;
 

@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import me.qyh.entity.FileStatus;
+import me.qyh.entity.MyFile.FileStatus;
 import me.qyh.entity.User;
 
 public class MyFilePageParam extends PageParam  {

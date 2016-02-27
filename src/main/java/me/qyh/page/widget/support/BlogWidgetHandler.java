@@ -20,7 +20,7 @@ import me.qyh.helper.lucene.BlogIndexHandler;
 import me.qyh.page.LocationWidget;
 import me.qyh.page.widget.SystemWidgetConfigHandler;
 import me.qyh.page.widget.Widget;
-import me.qyh.page.widget.WidgetType;
+import me.qyh.page.widget.Widget.WidgetType;
 import me.qyh.page.widget.config.WidgetConfig;
 import me.qyh.page.widget.config.support.BlogWidgetConfig;
 import me.qyh.pageparam.BlogPageParam;

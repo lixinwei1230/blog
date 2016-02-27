@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import me.qyh.dao.SpaceDao;
 import me.qyh.entity.blog.Blog;
-import me.qyh.entity.blog.BlogStatus;
+import me.qyh.entity.blog.Blog.BlogStatus;
 import me.qyh.exception.LogicException;
 import me.qyh.manage.service.BlogManageService;
 import me.qyh.pageparam.BlogPageParam;

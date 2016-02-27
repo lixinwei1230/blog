@@ -9,7 +9,7 @@ import me.qyh.page.Page;
 import me.qyh.page.PageType;
 import me.qyh.page.widget.UserWidget;
 import me.qyh.page.widget.Widget;
-import me.qyh.page.widget.WidgetType;
+import me.qyh.page.widget.Widget.WidgetType;
 import me.qyh.page.widget.config.WidgetConfig;
 
 public interface WidgetService {

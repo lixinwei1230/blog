@@ -17,6 +17,11 @@ public class Widget extends Id {
 	private String html;
 	private WidgetType type;
 
+	public enum WidgetType {
+		SYSTEM, // 系统
+		USER;// 用户
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -34,7 +39,7 @@ public class Widget extends Id {
 	}
 
 	public Widget() {
-		
+
 	}
 
 	public WidgetType getType() {
@@ -45,5 +50,4 @@ public class Widget extends Id {
 		this.type = type;
 	}
 
-	
 }

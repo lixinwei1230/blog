@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.ibatis.type.JdbcType;
+
 import me.qyh.entity.Role;
-import me.qyh.entity.RoleEnum;
+import me.qyh.entity.Role.RoleEnum;
 import me.qyh.exception.SystemException;
 import me.qyh.utils.Validators;
-
-import org.apache.ibatis.type.JdbcType;
 
 public class RolesTypeHandler extends DirectResultTypeHandler<List<Role>>{
 

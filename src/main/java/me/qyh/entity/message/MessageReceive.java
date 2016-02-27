@@ -21,6 +21,12 @@ public class MessageReceive extends Id {
 	private boolean isRead;// 是否阅读
 	private MessageStatus status;// 信息状态
 
+	public enum MessageStatus {
+		COMMON, // 普通
+		FAVORITES;// 收藏
+
+	}
+
 	public User getReceiver() {
 		return receiver;
 	}

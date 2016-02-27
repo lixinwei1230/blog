@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import me.qyh.bean.Info;
-import me.qyh.entity.RoleEnum;
+import me.qyh.entity.Role.RoleEnum;
+import me.qyh.entity.message.MessageSend.MessageType;
 import me.qyh.entity.message.MessageSendDetail;
-import me.qyh.entity.message.MessageType;
 import me.qyh.exception.LogicException;
 import me.qyh.manage.service.SpaceManageService;
 import me.qyh.manage.service.UserManageService;
