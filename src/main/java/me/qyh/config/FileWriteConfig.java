@@ -11,16 +11,8 @@ public class FileWriteConfig {
 		return requestMatcher;
 	}
 
-	public void setRequestMatcher(RequestMatcher requestMatcher) {
-		this.requestMatcher = requestMatcher;
-	}
-
 	public ImageZoomMatcher getZoomMatcher() {
 		return zoomMatcher;
-	}
-
-	public void setZoomMatcher(ImageZoomMatcher zoomMatcher) {
-		this.zoomMatcher = zoomMatcher;
 	}
 
 	FileWriteConfig(RequestMatcher requestMatcher, ImageZoomMatcher zoomMatcher) {

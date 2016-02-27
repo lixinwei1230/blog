@@ -16,11 +16,7 @@ public class PageConfig {
 		return userWidgetLimit;
 	}
 
-	public void setUserWidgetLimit(int userWidgetLimit) {
-		this.userWidgetLimit = userWidgetLimit;
-	}
-
-	public void addWidgetCountLimits(PageType type, int maxWidget) {
+	void addWidgetCountLimits(PageType type, int maxWidget) {
 		widgetCountLimits.put(type, maxWidget);
 	}
 
@@ -32,7 +28,9 @@ public class PageConfig {
 		return clean;
 	}
 
-	public void setClean(HtmlContentHandler clean) {
+	PageConfig(int userWidgetLimit, HtmlContentHandler clean) {
+		super();
+		this.userWidgetLimit = userWidgetLimit;
 		this.clean = clean;
 	}
 }

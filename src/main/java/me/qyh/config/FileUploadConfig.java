@@ -12,12 +12,7 @@ public class FileUploadConfig {
 		return maxSizeOfUser;
 	}
 
-	public void setMaxSizeOfUser(long maxSizeOfUser) {
-		this.maxSizeOfUser = maxSizeOfUser;
-	}
-
-	public FileUploadConfig(long maxSizeOfUser, _Config config, _ImageConfig imageConfig) {
-		super();
+	FileUploadConfig(long maxSizeOfUser, _Config config, _ImageConfig imageConfig) {
 		this.maxSizeOfUser = maxSizeOfUser;
 		this.config = config;
 		this.imageConfig = imageConfig;

@@ -89,18 +89,16 @@ public class DefaultConfigServer implements ConfigServer {
 
 	@Override
 	public PageConfig getPageConfig(User user) {
-		PageConfig config = new PageConfig();
+		PageConfig config = null;
+		if (user.hasRole(RoleEnum.ROLE_SUPERVISOR)) {
+			config = new PageConfig(userWidgetLimit, fullWidgetHtmlHandler);
+		} else {
+			config = new PageConfig(userWidgetLimit, widgetHtmlHandler);
+		}
 		for (PageType type : PageType.values()) {
 			config.addWidgetCountLimits(type, maxWidgetsAtOthers);
 		}
 		config.addWidgetCountLimits(PageType.HOMEPAGE, maxWidgetsAtHomePage);
-		config.setUserWidgetLimit(userWidgetLimit);
-
-		if (user.hasRole(RoleEnum.ROLE_SUPERVISOR)) {
-			config.setClean(fullWidgetHtmlHandler);
-		} else {
-			config.setClean(widgetHtmlHandler);
-		}
 		return config;
 	}
 
@@ -112,20 +110,15 @@ public class DefaultConfigServer implements ConfigServer {
 
 	@Override
 	public BlogConfig getBlogConfig(User user) {
-		BlogConfig config = new BlogConfig();
-
 		Date now = new Date();
 		Date small = DateUtils.addMinutes(now, -blog_minute);
-		config.setLimit(new FrequencyLimit(small, now, blog_count));
+		FrequencyLimit limit = new FrequencyLimit(small, now, blog_count);
 
 		if (user.hasRole(RoleEnum.ROLE_SUPERVISOR)) {
-			config.setBeforeHandler(fullBlogHtmlHandler);
+			return new BlogConfig(limit, fullBlogHtmlHandler, bootstrapHtmlHandler);
 		} else {
-			config.setBeforeHandler(blogHtmlHandler);
+			return new BlogConfig(limit, blogHtmlHandler, bootstrapHtmlHandler);
 		}
-		config.setAfterHandler(bootstrapHtmlHandler);
-
-		return config;
 	}
 
 	@Override
@@ -192,13 +185,10 @@ public class DefaultConfigServer implements ConfigServer {
 
 	@Override
 	public BlogCommentConfig getBlogCommentConfig() {
-		BlogCommentConfig config = new BlogCommentConfig();
 		Date now = new Date();
 		Date small = DateUtils.addMinutes(now, -comment_minute);
-		config.setLimit(new FrequencyLimit(small, now, comment_count));
-
-		config.setBeforeHandler(commentHtmlHandler);
-		config.setAfterHandler(bootstrapHtmlHandler);
+		BlogCommentConfig config = new BlogCommentConfig(new FrequencyLimit(small, now, comment_count),
+				commentHtmlHandler, bootstrapHtmlHandler);
 		return config;
 	}
 }

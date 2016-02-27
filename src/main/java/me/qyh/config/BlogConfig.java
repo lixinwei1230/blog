@@ -12,23 +12,18 @@ public class BlogConfig {
 		return limit;
 	}
 
-	public void setLimit(FrequencyLimit limit) {
-		this.limit = limit;
-	}
-
 	public HtmlContentHandler getBeforeHandler() {
 		return beforeHandler;
-	}
-
-	public void setBeforeHandler(HtmlContentHandler beforeHandler) {
-		this.beforeHandler = beforeHandler;
 	}
 
 	public HtmlContentHandler getAfterHandler() {
 		return afterHandler;
 	}
 
-	public void setAfterHandler(HtmlContentHandler afterHandler) {
+	BlogConfig(FrequencyLimit limit, HtmlContentHandler beforeHandler, HtmlContentHandler afterHandler) {
+		super();
+		this.limit = limit;
+		this.beforeHandler = beforeHandler;
 		this.afterHandler = afterHandler;
 	}
 
