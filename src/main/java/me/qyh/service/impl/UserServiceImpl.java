@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import me.qyh.bean.Crop;
 import me.qyh.dao.FileDao;
 import me.qyh.dao.LoginInfoDao;
+import me.qyh.dao.PageDao;
 import me.qyh.dao.RoleDao;
 import me.qyh.dao.UserCodeDao;
 import me.qyh.dao.UserDao;
@@ -40,6 +41,7 @@ import me.qyh.helper.file.ImageProcessing;
 import me.qyh.helper.freemaker.WebFreemarkers;
 import me.qyh.helper.mail.Mailer;
 import me.qyh.helper.mail.MimeMessageHelperHandler;
+import me.qyh.page.PageType;
 import me.qyh.pageparam.LoginInfoPageParam;
 import me.qyh.pageparam.Page;
 import me.qyh.security.UserContext;
@@ -68,14 +70,11 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	@Autowired
-	private ActivateSuccessHandler activateSuccessHandler;
-	@Autowired
 	private WebFreemarkers freemarkers;
 	@Autowired
 	private Mailer mailer;
 	@Autowired
 	private UserServer userServer;
-	private UserNameChecker userNameChecker = new SafeUserNameChecker();
 	@Autowired
 	private MessageSource messageSource;
 	@Autowired
@@ -88,6 +87,11 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 	private LoginInfoDao loginInfoDao;
 	@Value("${config.avatar.filePrefix}")
 	private String avatarPrefix;
+	@Autowired
+	private PageDao pageDao;
+	
+	private UserNameChecker userNameChecker = new NoChecker();
+	private ActivateSuccessHandler activateSuccessHandler = new SendEmailActivateSuccessHandler();
 
 	private static final String MAIL_ACTIVATE_TPL_PATH = "mail/activate.ftl";
 	private static final String MAIL_FINDPASSWORD_TPL_PATH = "mail/findPassword.ftl";
@@ -118,6 +122,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public void reactive(String name, String mail) throws LogicException {
+		
 		User user = userDao.selectByName(name);
 		if (user == null || !user.getEmail().equals(mail)) {
 			throw new LogicException("error.user.notexists");
@@ -158,10 +163,9 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 		userCode.setAlive(false);
 		userCodeDao.update(userCode);
 		insertUserRole(user, RoleEnum.ROLE_USER);
-
+		pageDao.insert(new me.qyh.page.Page(user, PageType.HOMEPAGE));
+		
 		activateSuccessHandler.activateSuccess(user);
-
-		sendRegisterSuccessMail(user);
 	}
 
 	@Override
@@ -375,15 +379,28 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService, Ini
 		}
 	}
 
-	public void setUserNameChecker(UserNameChecker userNameChecker) {
-		this.userNameChecker = userNameChecker;
-	}
-
 	private void checkMailFrequency(UserCode userCode) throws LogicException {
 		double second = Times.getSecond(userCode.getCreateDate(), new Date());
 		if (second < mailFrequency) {
 			throw new LogicException("error.frequenceOperation", mailFrequency - (int) second);
 		}
 	}
+	
+	private final class SendEmailActivateSuccessHandler implements ActivateSuccessHandler{
 
+		@Override
+		public void activateSuccess(User user) throws LogicException {
+			sendRegisterSuccessMail(user);
+		}
+	}
+	
+	public void setUserNameChecker(UserNameChecker userNameChecker) {
+		this.userNameChecker = userNameChecker;
+	}
+
+	public void setActivateSuccessHandler(
+			ActivateSuccessHandler activateSuccessHandler) {
+		this.activateSuccessHandler = activateSuccessHandler;
+	}
+	
 }

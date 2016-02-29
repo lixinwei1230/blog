@@ -24,7 +24,7 @@ import me.qyh.server.TipMessage;
 public class ManageBlogController extends ManageBaseController {
 
 	@Value("${config.pagesize.blog}")
-	private int pageSize;
+	private int [] pageSizes;
 	@Autowired
 	private BlogManageService blogService;
 
@@ -32,7 +32,7 @@ public class ManageBlogController extends ManageBaseController {
 	public String list(@PathVariable("currentPage") int currentPage, ModelMap model, BlogPageParam param) {
 
 		param.setCurrentPage(currentPage);
-		param.setPageSize(pageSize);
+		checkPageSize(pageSizes, param);
 		param.setStatus(BlogStatus.NORMAL);
 		param.setIgnoreLevel(true);
 		param.setDel(false);

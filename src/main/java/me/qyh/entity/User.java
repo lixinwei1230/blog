@@ -19,8 +19,6 @@ import me.qyh.utils.Validators;
 
 /**
  * 系统注册用户
- * 
- * @author henry.qian
  *
  */
 @JsonIgnoreProperties(value = { "password", "email", "activateDate", "activate", "registerDate", "authorities",

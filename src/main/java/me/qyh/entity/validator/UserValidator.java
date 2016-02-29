@@ -2,14 +2,16 @@ package me.qyh.entity.validator;
 
 import java.util.regex.Pattern;
 
+import me.qyh.entity.User;
+import me.qyh.utils.Strings;
+import me.qyh.utils.Validators;
+
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-
-import me.qyh.entity.User;
-import me.qyh.utils.Strings;
-import me.qyh.utils.Validators;
 
 @Component(value = "userValidator")
 public class UserValidator implements Validator {
@@ -46,6 +48,10 @@ public class UserValidator implements Validator {
 					new Object[] { nameMinLength, nameMaxLength },
 					"用户名长度在" + nameMinLength + "和" + nameMaxLength + "之间");
 			return;
+		}
+		if (!Jsoup.isValid(name, Whitelist.none())) {
+			e.rejectValue("username","validation.username.invalid");
+			return ;
 		}
 		user.setUsername(name);
 		String password = user.getPassword();

@@ -23,7 +23,7 @@ public class BlogController extends BaseController {
 	@Autowired
 	private BlogService blogService;
 	@Value("${config.pagesize.blog}")
-	private int pageSize;
+	private int [] pageSizes;
 
 	@RequestMapping(value = "hit/{id}", method = RequestMethod.POST)
 	@ResponseBody
@@ -47,7 +47,7 @@ public class BlogController extends BaseController {
 			throws LogicException {
 
 		param.setCurrentPage(currentPage);
-		param.setPageSize(pageSize);
+		checkPageSize(pageSizes, param);
 		param.setStatus(BlogStatus.NORMAL);
 		param.setIgnoreLevel(true);
 		param.setDel(false);

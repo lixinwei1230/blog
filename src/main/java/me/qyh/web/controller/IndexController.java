@@ -17,13 +17,13 @@ public class IndexController extends BaseController {
 	@Autowired
 	private BlogService blogService;
 	@Value("${config.pagesize.blog}")
-	private int pageSize;
+	private int [] pageSizes;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(ModelMap model) {
 		BlogPageParam param = new BlogPageParam();
 		param.setCurrentPage(1);
-		param.setPageSize(pageSize);
+		param.setPageSize(pageSizes[0]);
 		param.setStatus(BlogStatus.NORMAL);
 		param.setRecommend(true);
 		param.setIgnoreLevel(true);

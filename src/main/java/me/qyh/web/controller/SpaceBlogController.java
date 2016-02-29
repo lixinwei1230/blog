@@ -27,7 +27,7 @@ public class SpaceBlogController extends SpaceBaseController {
 	private static final String BLOG_CATEGORYS = "categorys";
 
 	@Value("${config.pagesize.blog}")
-	private int pageSize;
+	private int [] pageSizes;
 	@Autowired
 	private BlogService blogService;
 
@@ -36,7 +36,7 @@ public class SpaceBlogController extends SpaceBaseController {
 			throws LogicException {
 
 		param.setCurrentPage(currentPage);
-		param.setPageSize(pageSize);
+		checkPageSize(pageSizes, param);
 		param.setStatus(BlogStatus.NORMAL);
 		param.setSpace(getSpace(model));
 		param.setDel(false);

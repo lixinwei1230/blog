@@ -27,7 +27,7 @@ public class MyFileController extends BaseController {
 	@Autowired
 	private MyFileService myFileService;
 	@Value("${config.pageSize.myfile}")
-	private int pageSize;
+	private int [] pageSizes;
 
 	@RequestMapping(value = "list/{currentPage}", method = RequestMethod.GET)
 	public String list(@PathVariable("currentPage") int currentPage, MyFilePageParam param, ModelMap model) {
@@ -39,7 +39,7 @@ public class MyFileController extends BaseController {
 		model.put(INDEXS, myFileService.findIndexs(_param));
 
 		param.setCurrentPage(currentPage);
-		param.setPageSize(pageSize);
+		checkPageSize(pageSizes, param);
 		param.validate();
 		model.put(PAGE, myFileService.findMyFiles(param));
 		return "my/file/index";
@@ -51,7 +51,7 @@ public class MyFileController extends BaseController {
 		param.setStatus(FileStatus.NORMAL);
 		param.setUser(UserContext.getUser());
 		param.setCurrentPage(currentPage);
-		param.setPageSize(pageSize);
+		checkPageSize(pageSizes, param);
 		param.setShowCover(false);
 		param.validate();
 

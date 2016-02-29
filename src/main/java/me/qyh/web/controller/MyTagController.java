@@ -20,13 +20,13 @@ public class MyTagController extends BaseController {
 	@Autowired
 	private TagService tagService;
 	@Value("${config.pagesize.userTag}")
-	private int pageSize;
+	private int [] pageSizes;
 
 	@RequestMapping(value = "list/{currentPage}", method = RequestMethod.GET)
 	@ResponseBody
 	public Info list(@PathVariable("currentPage") int currentPage, UserTagPageParam param) {
 		param.setCurrentPage(currentPage);
-		param.setPageSize(pageSize);
+		checkPageSize(pageSizes, param);
 		param.setUser(UserContext.getUser());
 		param.validate();
 		return new Info(true, tagService.findUserTags(param));

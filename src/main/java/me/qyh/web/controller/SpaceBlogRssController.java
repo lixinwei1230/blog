@@ -25,13 +25,13 @@ public class SpaceBlogRssController extends SpaceBaseController {
 	@Autowired
 	private BlogService blogService;
 	@Value("${config.pagesize.blog}")
-	private int pageSize;
+	private int [] pageSizes;
 
 	@RequestMapping(value = "rss", method = RequestMethod.GET)
 	public View rss(ModelMap model, BlogPageParam param) {
 		param.setIgnoreLevel(true);
 		param.setSpace(super.getSpace(model));
-		param.setPageSize(pageSize);
+		checkPageSize(pageSizes, param);
 		param.setCurrentPage(1);
 
 		param.validate();

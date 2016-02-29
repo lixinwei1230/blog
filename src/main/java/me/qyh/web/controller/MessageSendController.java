@@ -43,9 +43,9 @@ public class MessageSendController extends BaseController {
 	@Autowired
 	private MessageService messageService;
 	@Value("${config.pageSize.messageSend}")
-	private int pageSize;
+	private int [] pageSizes;
 	@Value("${config.pageSize.messageReceive}")
-	private int receivePageSize;
+	private int [] receivePageSizes;
 	@Autowired
 	private MessageSource messageSource;
 
@@ -74,7 +74,7 @@ public class MessageSendController extends BaseController {
 			MessageReceivePageParam param) {
 		param.setSend(new MessageSend(sendId));
 		param.setCurrentPage(currentPage);
-		param.setPageSize(receivePageSize);
+		checkPageSize(receivePageSizes, param);
 		param.validate();
 
 		return new Info(true, messageService.findMessageReceives(param));
@@ -83,7 +83,7 @@ public class MessageSendController extends BaseController {
 	@RequestMapping(value = "list/{currentPage}", method = RequestMethod.GET)
 	public String list(@PathVariable("currentPage") int currentPage, MessageSendPageParam param, ModelMap model) {
 		param.setCurrentPage(currentPage);
-		param.setPageSize(pageSize);
+		checkPageSize(pageSizes, param);
 		param.setSender(UserContext.getUser());
 		param.validate();
 
@@ -108,7 +108,7 @@ public class MessageSendController extends BaseController {
 	}
 
 	private void validIds(@RequestParam("ids") Set<Integer> ids) {
-		if (ids.isEmpty() || ids.size() > pageSize) {
+		if (ids.isEmpty() || ids.size() > pageSizes[pageSizes.length-1]) {
 			throw new InvalidParamException();
 		}
 	}

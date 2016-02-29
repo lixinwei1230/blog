@@ -24,7 +24,7 @@ import me.qyh.server.TipMessage;
 public class ManageMyFileController extends ManageBaseController {
 
 	@Value("${config.pageSize.myfile}")
-	private int pageSize;
+	private int [] pageSizes;
 	@Autowired
 	private MyFileManageService service;
 
@@ -32,7 +32,7 @@ public class ManageMyFileController extends ManageBaseController {
 	public String list(@PathVariable("currentPage") int currentPage, MyFilePageParam param, ModelMap model) {
 		param.setStatus(FileStatus.NORMAL);
 		param.setCurrentPage(currentPage);
-		param.setPageSize(pageSize);
+		checkPageSize(pageSizes, param);
 		param.setShowCover(false);
 		param.validate();
 

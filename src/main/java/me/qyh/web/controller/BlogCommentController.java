@@ -20,13 +20,13 @@ public class BlogCommentController extends BaseController {
 	@Autowired
 	private BlogService blogService;
 	@Value("${config.pagesize.comment}")
-	private int pageSize;
+	private int [] pageSizes;
 
 	@RequestMapping(value = "list/{currentPage}", method = RequestMethod.GET)
 	@ResponseBody
 	public Info list(@PathVariable("currentPage") int currentPage, CommentPageParam param) throws LogicException {
 		param.setCurrentPage(currentPage);
-		param.setPageSize(pageSize);
+		checkPageSize(pageSizes, param);
 		param.validate();
 		return new Info(true, blogService.findComments(param));
 	}

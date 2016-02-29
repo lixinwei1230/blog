@@ -42,7 +42,7 @@ public class ManageUserController extends ManageBaseController {
 	@Autowired
 	private SpaceManageService spaceManageService;
 	@Value("${config.pagesize.user}")
-	private int pageSize;
+	private int [] pageSizes;
 
 	@InitBinder(value = "messageSendDetail")
 	protected void initBinder(WebDataBinder binder) {
@@ -52,7 +52,7 @@ public class ManageUserController extends ManageBaseController {
 	@RequestMapping(value = "list/{currentPage}", method = RequestMethod.GET)
 	public String list(@PathVariable("currentPage") int currentPage, UserPageParam param, ModelMap model) {
 		param.setCurrentPage(currentPage);
-		param.setPageSize(pageSize);
+		checkPageSize(pageSizes, param);
 		param.addIgnoreRole(RoleEnum.ROLE_MESSAGER, RoleEnum.ROLE_SUPERVISOR);
 
 		model.addAttribute(PAGE, userService.findUsers(param));

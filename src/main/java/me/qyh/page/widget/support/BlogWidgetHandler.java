@@ -35,7 +35,7 @@ public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 	@Autowired
 	private SpaceServer spaceServer;
 	@Value("${config.pagesize.blog}")
-	private int pageSize;
+	private int [] pageSizes;
 	@Autowired
 	private BlogDao blogDao;
 	@Autowired
@@ -65,7 +65,7 @@ public class BlogWidgetHandler extends AbstractSystemWidgetHandler {
 	protected BlogPageParam buildParam(BlogWidgetConfig config, User owner, User visitor) {
 		BlogPageParam param = new BlogPageParam();
 		param.setCurrentPage(1);
-		param.setPageSize(pageSize);
+		param.setPageSize(pageSizes[0]);
 		param.setDel(false);
 
 		Space configSpace = config.getSpace();

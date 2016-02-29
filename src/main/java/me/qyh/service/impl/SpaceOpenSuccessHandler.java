@@ -5,6 +5,6 @@ import me.qyh.exception.LogicException;
 
 public interface SpaceOpenSuccessHandler {
 
-	void handler(Space opened) throws LogicException;
+	void openSuccess(Space opened) throws LogicException;
 
 }

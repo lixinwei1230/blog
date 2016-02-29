@@ -44,7 +44,7 @@ public class MyBlogController extends BaseController {
 	@Autowired
 	private Validator blogValidator;
 	@Value("${config.pagesize.blog}")
-	private int pageSize;
+	private int [] pageSizes;
 
 	@InitBinder(value = "blog")
 	protected void initBinder(WebDataBinder binder) {
@@ -85,7 +85,7 @@ public class MyBlogController extends BaseController {
 		Space current = UserContext.getSpace();
 
 		param.setCurrentPage(currentPage);
-		param.setPageSize(pageSize);
+		checkPageSize(pageSizes, param);
 		param.setSpace(current);
 		param.setStatus(BlogStatus.NORMAL);
 		param.setDel(false);
@@ -101,7 +101,7 @@ public class MyBlogController extends BaseController {
 	public String recycler(@PathVariable("currentPage") int currentPage, ModelMap model) {
 		BlogPageParam param = new BlogPageParam();
 		param.setCurrentPage(currentPage);
-		param.setPageSize(pageSize);
+		checkPageSize(pageSizes , param);
 		param.setSpace(UserContext.getSpace());
 		param.setDel(true);
 		param.setStatus(null);
@@ -115,7 +115,7 @@ public class MyBlogController extends BaseController {
 	public String scheduled(@PathVariable("currentPage") int currentPage, ModelMap model) {
 		BlogPageParam param = new BlogPageParam();
 		param.setCurrentPage(currentPage);
-		param.setPageSize(pageSize);
+		checkPageSize(pageSizes, param);
 		param.setSpace(UserContext.getSpace());
 		param.setStatus(BlogStatus.SCHEDULED);
 		param.setDel(false);

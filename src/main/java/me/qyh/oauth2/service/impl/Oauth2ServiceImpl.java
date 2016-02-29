@@ -7,18 +7,7 @@ import java.util.Map;
 
 import javax.mail.MessagingException;
 
-import org.apache.commons.lang3.RandomStringUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
+import me.qyh.dao.PageDao;
 import me.qyh.dao.RoleDao;
 import me.qyh.dao.UserCodeDao;
 import me.qyh.dao.UserDao;
@@ -36,13 +25,25 @@ import me.qyh.oauth2.entity.OauthUser;
 import me.qyh.oauth2.entity.OauthUser.OauthType;
 import me.qyh.oauth2.security.OauthPrincipal;
 import me.qyh.oauth2.service.OauthService;
+import me.qyh.page.PageType;
 import me.qyh.server.UserServer;
-import me.qyh.service.impl.ActivateSuccessHandler;
-import me.qyh.service.impl.SafeUserNameChecker;
+import me.qyh.service.impl.NoChecker;
 import me.qyh.service.impl.UserNameChecker;
 import me.qyh.utils.Strings;
 import me.qyh.utils.Times;
 import me.qyh.utils.Validators;
+
+import org.apache.commons.lang3.RandomStringUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 public class Oauth2ServiceImpl implements OauthService {
 
@@ -75,13 +76,13 @@ public class Oauth2ServiceImpl implements OauthService {
 	@Autowired
 	private MessageSource messageSource;
 	private int randomCodeLength = RANDOMCODELENGTH;
-	private UserNameChecker userNameChecker = new SafeUserNameChecker();
-	@Autowired
-	private ActivateSuccessHandler activateSuccessHandler;
+	private UserNameChecker userNameChecker = new NoChecker();
 	@Autowired
 	private UserServer userServer;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	@Autowired
+	private PageDao pageDao;
 
 	@Override
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
@@ -108,9 +109,8 @@ public class Oauth2ServiceImpl implements OauthService {
 
 		insertUserRole(random, RoleEnum.ROLE_OAUTH);
 
-		// 激活成功处理
-		activateSuccessHandler.activateSuccess(random);
-
+		pageDao.insert(new me.qyh.page.Page(random, PageType.HOMEPAGE));
+		
 		oauthUser.setUser(random);
 		oauthUser.setCreateDate(random.getRegisterDate());
 		oauth2Dao.insert(oauthUser);
