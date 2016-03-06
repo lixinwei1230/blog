@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
+import org.springframework.util.StringUtils;
 
 public final class Validators {
 
@@ -78,7 +79,7 @@ public final class Validators {
 			return true;
 		}
 		if (trim) {
-			return str.trim().isEmpty();
+			return StringUtils.trimWhitespace(str).isEmpty();
 		} else {
 			return str.isEmpty();
 		}
