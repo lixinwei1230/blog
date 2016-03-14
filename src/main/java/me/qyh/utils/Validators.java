@@ -9,6 +9,8 @@ import org.jsoup.safety.Whitelist;
 import org.springframework.util.StringUtils;
 
 public final class Validators {
+	
+	private static final char nbsp = '\u00a0';
 
 	private static final Pattern IPADDRESS_PATTERN = Pattern
 			.compile("((25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9])\\.(25[0-5]|2[0-4]"
@@ -79,14 +81,32 @@ public final class Validators {
 			return true;
 		}
 		if (trim) {
-			return StringUtils.trimWhitespace(str).isEmpty();
+			return trimAll(str).isEmpty();
 		} else {
 			return str.isEmpty();
 		}
 	}
-	
+
 	public static boolean hasText(String html) {
 		return !Jsoup.clean(html, Whitelist.simpleText()).isEmpty();
+	}
+
+	public static String trimAll(String str) {
+		if (!StringUtils.hasLength(str)) {
+			return str;
+		}
+		StringBuilder sb = new StringBuilder(str);
+		while (sb.length() > 0 && isWhitespace(sb.charAt(0))) {
+			sb.deleteCharAt(0);
+		}
+		while (sb.length() > 0 && isWhitespace(sb.charAt(sb.length() - 1))) {
+			sb.deleteCharAt(sb.length() - 1);
+		}
+		return sb.toString();
+	}
+	
+	private static boolean isWhitespace(char ch){
+		return Character.isWhitespace(ch) || (ch == nbsp);
 	}
 
 }
