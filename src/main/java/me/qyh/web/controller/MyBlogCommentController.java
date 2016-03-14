@@ -29,7 +29,7 @@ public class MyBlogCommentController extends BaseController {
 	@Autowired
 	private Validator commentValidator;
 
-	@InitBinder(value = "comment")
+	@InitBinder(value = "blogComment")
 	protected void initBinder(WebDataBinder binder) {
 		binder.setValidator(commentValidator);
 	}
