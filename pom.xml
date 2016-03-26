@@ -219,6 +219,13 @@
 			<artifactId>lucene-queryparser</artifactId>
 			<version>5.4.0</version>
 		</dependency>
+
+
+		<dependency>
+			<groupId>com.madgag</groupId>
+			<artifactId>animated-gif-lib</artifactId>
+			<version>1.2</version>
+		</dependency>
 	</dependencies>
 
 	<build>

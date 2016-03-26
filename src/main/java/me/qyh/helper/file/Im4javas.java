@@ -1,12 +1,13 @@
 package me.qyh.helper.file;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.im4java.core.ConvertCmd;
@@ -17,16 +18,18 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.madgag.gif.fmsware.GifDecoder;
+
 import me.qyh.bean.Crop;
 import me.qyh.exception.SystemException;
 import me.qyh.utils.Validators;
 
 @Component
-public class Im4javas implements InitializingBean , ImageProcessing {
+public class Im4javas implements InitializingBean, ImageProcessing {
 
 	private static final boolean windows = File.separatorChar == '\\';
-	private static final String GIF = "GIF";
-	
+	private static final String PNG = "PNG";
+
 	@Value("${config.magick.path}")
 	private String magickPath;
 
@@ -49,11 +52,14 @@ public class Im4javas implements InitializingBean , ImageProcessing {
 	public void zoom(File src, File dest, Resize size) throws Exception {
 		IMOperation op = new IMOperation();
 		op.addImage();
-		op.thumbnail(size.getSize(),size.getSize(),">");
+		op.thumbnail(size.getSize(), size.getSize(), ">");
+		op.background("rgb(255,255,255)");
+		op.extent(0, 0);
+		op.addRawArgs("+matte");
 		op.strip();
 		op.p_profile("*");
 		op.addImage();
-		getConvertCmd().run(op, src.getAbsolutePath() +"[0]", dest.getAbsolutePath());
+		getConvertCmd().run(op, src.getAbsolutePath() + "[0]", dest.getAbsolutePath());
 	}
 
 	@Override
@@ -61,6 +67,11 @@ public class Im4javas implements InitializingBean , ImageProcessing {
 		IMOperation op = new IMOperation();
 		op.addImage();
 		op.crop(crop.getW(), crop.getH(), crop.getX(), crop.getY());
+		op.background("rgb(255,255,255)");
+		op.extent(0, 0);
+		op.addRawArgs("+matte");
+		op.strip();
+		op.p_profile("*");
 		op.addImage();
 		getConvertCmd().run(op, crop.getFile().getAbsolutePath() + "[0]", dest.getAbsolutePath());
 	}
@@ -75,7 +86,7 @@ public class Im4javas implements InitializingBean , ImageProcessing {
 	}
 
 	@Override
-	public ImageInfo read(File src) throws BadImageException{
+	public ImageInfo read(File src) throws BadImageException {
 		IMOperation localIMOperation = new IMOperation();
 		localIMOperation.ping();
 		localIMOperation.format("%w\n%h\n%m\n");
@@ -98,23 +109,65 @@ public class Im4javas implements InitializingBean , ImageProcessing {
 
 	@Override
 	public int getFrameNumsOfGif(File gif) throws Exception {
-		ImageInputStream in = null;
-		try{
-			ImageReader ir = ImageIO.getImageReadersBySuffix(GIF).next();
-			in = ImageIO.createImageInputStream(gif);
-			ir.setInput(in);
-			return ir.getNumImages(true);
-		}finally{
-			IOUtils.closeQuietly(in);
+		GifDecoder gd = new GifDecoder();
+		InputStream is = null;
+		try {
+			is = new FileInputStream(gif);
+			int flag = gd.read(is);
+			if (flag != GifDecoder.STATUS_OK) {
+				throw new SystemException("Corrupt Gif");
+			}
+			return gd.getFrameCount();
+		} finally {
+			IOUtils.closeQuietly(is);
 		}
 	}
 
 	@Override
 	public void writeFirstFrameOfGif(File gif, File desc) throws Exception {
-		IMOperation op = new IMOperation();
-		op.addImage();
-		op.addImage();
-		getConvertCmd().run(op, gif.getAbsolutePath() + "[0]", desc.getAbsolutePath());
+		try {
+			IMOperation op = new IMOperation();
+			op.addImage();
+			op.background("rgb(255,255,255)");
+			op.extent(0, 0);
+			op.addRawArgs("+matte");
+			op.strip();
+			op.p_profile("*");
+			op.addImage();
+			getConvertCmd().run(op, gif.getAbsolutePath() + "[0]", desc.getAbsolutePath());
+		} catch (Exception e) {
+			// Corrupt Image
+			GifDecoder gd = new GifDecoder();
+			InputStream is = null;
+			try {
+				is = new FileInputStream(gif);
+				int flag = gd.read(is);
+				if (flag != GifDecoder.STATUS_OK) {
+					throw new SystemException("Corrupt Gif");
+				}
+				BufferedImage bi = gd.getFrame(0);
+				// write png  
+				File png = new File(desc.getAbsolutePath() + "." + PNG);
+				try {
+					ImageIO.write(bi, PNG, png);
+					//png to dest
+					IMOperation op = new IMOperation();
+					op.addImage();
+					op.background("rgb(255,255,255)");
+					op.extent(0, 0);
+					op.addRawArgs("+matte");
+					op.strip();
+					op.p_profile("*");
+					op.addImage();
+					getConvertCmd().run(op, png.getAbsolutePath(), desc.getAbsolutePath());
+				} finally {
+					png.delete();
+				}
+
+			} finally {
+				IOUtils.closeQuietly(is);
+			}
+		}
 	}
 
 	@Override
